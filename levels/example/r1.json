@@ -1,0 +1,41 @@
+{
+  "dimension" : [16, 10],
+  "spawnPosition" : [2, 3],
+  "exit" : {
+    "vertices" : [16, 7, 16, 5]
+  },
+  "geometry" : [
+    {
+      "type" : "RECT",
+      "scheme" : "SECONDARY",
+      "vertices" : [0, 10, 16, 7]
+    },
+    {
+      "type" : "RECT",
+      "vertices" : [9, 5, 16, 0]
+    },
+    {
+      "type" : "RECT",
+      "vertices" : [0, 2, 16, 0]
+    },
+    {
+      "type" : "TRIANGLE",
+      "vertices" : [7, 2, 9, 5, 9, 2]
+    }
+  ],
+  "objects" : [
+    {
+      "type" : "DOOR",
+      "scheme" : "SECONDARY",
+      "id" : 0,
+      "vertices" : [10, 7, 10, 5]
+    },
+    {
+      "type" : "LEVER",
+      "scheme" : "PRIMARY",
+      "id" : 1,
+      "position" : [3, 3],
+      "linkedTo" : [0]
+    }
+  ]
+}

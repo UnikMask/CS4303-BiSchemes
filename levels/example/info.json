@@ -1,0 +1,8 @@
+{
+  "displayName" : "Example Level",
+  "id" : 0,
+  "prerequisites" : [],
+  "colourPrimary" : "#ffffff",
+  "colourSecondary" : "#000000",
+  "rooms" : ["r1.json", "r2.json"]
+}

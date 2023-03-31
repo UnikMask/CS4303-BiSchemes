@@ -1,0 +1,42 @@
+{
+  "dimension" : [16, 10],
+  "spawnPosition" : [2, 3],
+  "exit" : {
+    "vertices" : [16, 9, 16, 7]
+  },
+  "geometry" : [
+    {
+      "type" : "RECT",
+      "scheme" : "SECONDARY",
+      "vertices" : [0, 10, 16, 6]
+    },
+    {
+      "type" : "RECT",
+      "vertices" : [0, 2, 16, 0]
+    },
+    {
+      "type" : "RECT",
+      "vertices" : [8, 6, 10, 4]
+    }
+  ],
+  "objects" : [
+    {
+      "type" : "BLOCK",
+      "scheme" : "PRIMARY",
+      "id" : 0,
+      "vertices" : [4, 2, 6, 4]
+    },
+    {
+      "type" : "PORTAL",
+      "id" : 1,
+      "vertices" : [9, 2, 7, 2]
+    },
+    {
+      "type" : "LEVER",
+      "scheme" : "SECONDARY",
+      "id" : 2,
+      "position" : [3, 3],
+      "linkedTo" : [1]
+    }
+  ]
+}

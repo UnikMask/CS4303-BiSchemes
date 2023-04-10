@@ -16,7 +16,7 @@ public class VisualUtils {
 			float angle = baseAngle + i * increment;
 			vertices.add(new PVector((float) (anchor.x + size.x / 2 * Math.cos(angle)),
 					(float) (anchor.y + size.y / 2 * Math.sin(angle))));
-			uvMap.add(new PVector(1 / 2 * (float) Math.cos(angle), 1 / 2 * (float) Math.sin(angle)));
+			uvMap.add(new PVector(1 / 2 + 1 / 2 * (float) Math.cos(angle), 1 / 2 + 1 / 2 * (float) Math.sin(angle)));
 		}
 		return new VisualAttribute(vertices, uvMap, texture);
 	}

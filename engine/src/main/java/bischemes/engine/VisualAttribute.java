@@ -64,15 +64,41 @@ public class VisualAttribute {
 		this.obj = obj;
 	}
 
-	public VisualAttribute(List<PVector> vertices, List<PVector> texCoords, String texturePath) {
-		visualKind = VisualKind.TEXTURED;
-		this.vertices = vertices;
-		texture = EngineRuntime.applet.loadImage(texturePath);
+	public void makeUntextured(int colour) {
+		this.visualKind = VisualKind.UNTEXTURED;
+		this.color = colour;
+		this.texture = null;
+		this.texCoords = null;
 	}
 
-	public VisualAttribute(List<PVector> vertices, int color) {
-		visualKind = VisualKind.UNTEXTURED;
+	public void makeTextured(List<PVector> texCoords, PImage texture) {
+		this.visualKind = VisualKind.TEXTURED;
+		this.texture = texture;
+		this.texCoords = texCoords;
+	}
+
+	public void makeTextured(List<PVector> texCoords, String texture) {
+		makeTextured(texCoords, EngineRuntime.applet.loadImage(texture));
+	}
+
+	public VisualAttribute(List<PVector> vertices, List<PVector> texCoords, String texturePath) {
 		this.vertices = vertices;
-		this.color = color;
+		this.makeTextured(texCoords, texturePath);
+	}
+
+	// ch315 - Added a constructor which takes a PImage so that we that a loaded PImage texture can be
+	//		   re-used and to try to reduce unnecessary calls of loadImage()
+	public VisualAttribute(List<PVector> vertices, List<PVector> texCoords, PImage texture) {
+		this.vertices = vertices;
+		this.makeTextured(texCoords, texture);
+	}
+
+
+	public VisualAttribute(List<PVector> vertices) {
+		this(vertices, 0x000000ff);
+	}
+	public VisualAttribute(List<PVector> vertices, int color) {
+		this.vertices = vertices;
+		this.makeUntextured(color);
 	}
 }

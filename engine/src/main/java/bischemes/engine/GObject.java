@@ -69,7 +69,8 @@ public class GObject {
 	public GObject(GObject parent, PVector position, float rotation) {
 		this.position = position;
 		this.orientation = rotation;
-		parent.addChild(this);
+		if (parent != null)
+			parent.addChild(this);
 	}
 
 	/////////////////////

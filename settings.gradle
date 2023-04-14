@@ -14,6 +14,5 @@ pluginManagement {
 }
 
 rootProject.name = 'BiSchemes'
-include('game', 'engine')
-include 'level'
+include('game', 'engine', 'level')
 

@@ -1,72 +1,133 @@
 package bischemes.level;
 
+import bischemes.level.util.InvalidIdException;
+import bischemes.level.util.JParsing;
+import bischemes.level.util.LColour;
+import bischemes.level.util.LevelParseException;
+
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import javax.json.*;
+import java.io.IOException;
+
 
 public class Level {
 
-    private String displayName;
+    private final String name;
+    private final int id;
+    private final int[] prerequisites;
+    private final int colourPrimary;
+    private final int colourSecondary;
+    private final Room initRoom;
+    private final Room[] rooms;
 
-    // TODO add checks to make sure id is unique across all levels (probably implement this in LevelParser)
-    // TODO make final
-    private int id;
+    private Level(String name, int id, int[] prerequisites, int colourPrimary, int colourSecondary, Room initRoom, Room[] rooms) {
+        this.name = name;
+        this.id = id;
+        this.prerequisites = prerequisites;
+        this.colourPrimary = colourPrimary;
+        this.colourSecondary = colourSecondary;
+        this.initRoom = initRoom;
+        this.rooms = rooms;
+    }
 
-    // IDs of levels required for completion before this level can be started
-    // I'm currently undecided whether the list is conjunctive or disjunctive (i.e. complete all or complete 1 of the prerequisite levels
-    private int[] prerequisites;
+    public String getName() { return name; }
+    public int getId() { return id; }
+    public int[] getPrerequisites() { return prerequisites; }
+    public int getColourPrimary() { return colourPrimary; }
+    public int getColourSecondary() { return colourSecondary; }
+    public Room getInitRoom() { return initRoom; }
+    public Room[] getRooms() { return rooms; }
+    public Room getRoom(int id) { return Room.getRoom(rooms, id); }
+    public int getColour(LColour colour) {
+        return switch (colour) {
+            case PRIMARY -> colourPrimary;
+            case SECONDARY -> colourSecondary;
+        };
+    }
 
-    // The two colour schemes for the level, defined as RGB values (but read in as hex)
-    // I've distinctly separated the two colours into a 'primary'/'secondary' but 'colour1' and 'colour2' is probably a better alternative
-    private int[] colourPrimary;
-    private int[] colourSecondary;
-
-    // Sequence of individual rooms, the intention is entering the exit portal of one room puts the player into the next room
-    private Room[] rooms;
-
-    private Level(){}
 
 
 
     public static Level parseLevel(String levelDir, String infoFile) {
-        BufferedInputStream in;
-        JsonReader jsonReader;
+        return parseLevel(levelDir, infoFile, false);
+    }
+    public static Level parseLevel(String levelDir, String infoFile, boolean skipOnFail) {
+        BufferedInputStream in = null;
+        JsonReader jsonReader = null;
         String fullFilePath = levelDir + "\\" + infoFile;
         try {
             in = new BufferedInputStream(new FileInputStream(fullFilePath));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            jsonReader = Json.createReader(in);
+            return parseLevel(jsonReader, levelDir);
+        } catch (FileNotFoundException | InvalidIdException | LevelParseException e) {
+            System.out.println("parseLevel(" + levelDir + ", " + infoFile + "), encountered an exception:");
+            System.out.println("\t" + e.getLocalizedMessage());
+            if (skipOnFail) System.out.println("\tSkipping level parse...");
+            else throw new RuntimeException(e);
         }
-        jsonReader = Json.createReader(in);
-        JsonObject levelJson = jsonReader.readObject();
-        Level level = new Level();
         try {
-            level.displayName = levelJson.getString("displayName");
-            level.id = levelJson.getInt("id");
-            level.colourPrimary = LevelParser.hexToRGB(levelJson.getString("colourPrimary"));
-            level.colourSecondary = LevelParser.hexToRGB(levelJson.getString("colourSecondary"));
+            if (jsonReader != null) jsonReader.close();
+            if (in != null) in.close();
+        } catch (IOException ignored) {}
+        return null;
+    }
 
-            JsonArray prerequisites = levelJson.getJsonArray("prerequisites");
-            level.prerequisites = new int[prerequisites.size()];
-            for (int i = 0; i < level.prerequisites.length; i++) {
-                level.prerequisites[i] = prerequisites.getInt(i);
+    private static Level parseLevel(JsonReader jsonReader, String roomDir) throws InvalidIdException, LevelParseException {
+        JsonObject levelJson = jsonReader.readObject();
+
+        int id = JParsing.parseInt(levelJson, "id");
+        int initId  = JParsing.parseInt(levelJson, "initRoomID");
+
+        String name = JParsing.parseStr(levelJson, "name");
+
+        int cPri = JParsing.parseColour(levelJson, "colourPrimary");
+        int cSec = JParsing.parseColour(levelJson, "colourSecondary");
+        int[] prqs = JParsing.parseInts(levelJson, "prerequisites");
+
+        JsonArray jRooms = JParsing.parseArr(levelJson, "rooms");
+        if (jRooms.size() == 0)
+            throw new LevelParseException("\"rooms\" is empty (the level has no rooms)");
+
+        JsonObject[] roomObjs = new JsonObject[jRooms.size()];
+        if (jRooms.get(0) instanceof JsonObject) {
+            for (int i = 0; i < roomObjs.length; i++) roomObjs[i] = jRooms.getJsonObject(i);
+        }
+        else {
+            String[] rooms = JParsing.parseStrs(jRooms, "rooms");
+            for (int i = 0; i < roomObjs.length; i++) {
+                BufferedInputStream in;
+                try { in = new BufferedInputStream(new FileInputStream(roomDir + "\\" + rooms[i])); }
+                catch (FileNotFoundException e) {
+                    throw new LevelParseException("FileNotFoundException, could not find \"" + roomDir + "\\" + rooms[i] + "\" from \"rooms\"");
+                }
+
+                JsonReader roomReader = Json.createReader(in);
+                roomObjs[i] = roomReader.readObject();
+
+                jsonReader.close();
+                try { in.close(); }
+                catch (IOException ignored) {}
             }
-
-            JsonArray rooms = levelJson.getJsonArray("rooms");
-            if (rooms.size() == 0)
-                throw new RuntimeException("Empty Level - " + fullFilePath + " has no rooms");
-            level.rooms = new Room[rooms.size()];
-            for (int i = 0; i < level.rooms.length; i++) {
-                Room room = Room.parseRoom(levelDir + "\\" + rooms.getString(i));
-                level.rooms[i] = room;
-            }
-
-        } catch (NullPointerException | ClassCastException e ) {
-            throw new RuntimeException(e);
         }
 
-        return level;
+        Room[] rooms = new Room[jRooms.size()];
+        for(int i = 0; i < rooms.length; i++) {
+            rooms[i] = Room.parseRoom(roomObjs[i]);
+            //todo add better error reporting here?
+            for (int j = 0; j < i; j++) {
+                if (rooms[i].getId() == rooms[j].getId())
+                    throw new InvalidIdException("\"id\" " + id + " for room in level (" + id + ", " + name + ") is repeated (indexes " + j + ", " + i + ")");
+            }
+        }
+
+        Room initRoom = Room.getRoom(rooms, initId);
+
+        return new Level(name, id, prqs, cPri, cSec, initRoom, rooms);
     }
 
 }

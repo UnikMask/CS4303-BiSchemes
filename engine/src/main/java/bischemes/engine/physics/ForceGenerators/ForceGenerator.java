@@ -1,5 +1,7 @@
 package bischemes.engine.physics.ForceGenerators;
 
-public interface ForceGenerator {
+import bischemes.engine.physics.RigidBody;
 
+public interface ForceGenerator {
+	public void updateForce(RigidBody b);
 }

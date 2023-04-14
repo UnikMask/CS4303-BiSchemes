@@ -10,7 +10,7 @@ public class GObject {
 	private GObject parent;
 	private List<GObject> children = new ArrayList<>();
 	private PVector position;
-	private float rotation;
+	private double orientation;
 	private List<VisualAttribute> visualAttributes = new ArrayList<>();
 
 	/////////////////////////
@@ -27,22 +27,30 @@ public class GObject {
 		return globalPosition;
 	}
 
-	public float getRotation() {
-		GObject currentObject = this;
-		float globalRotation = 0;
-		while (currentObject.parent != null) {
-			globalRotation += currentObject.rotation;
-			currentObject = currentObject.parent;
-		}
-		return globalRotation;
+	public void setLocalPosition(PVector newLocalPosition) {
+		this.position = newLocalPosition;
 	}
 
 	public PVector getLocalPosition() {
 		return position;
 	}
 
-	public float getLocalRotation() {
-		return rotation;
+	public double getOrientation() {
+		GObject currentObject = this;
+		float globalRotation = 0;
+		while (currentObject.parent != null) {
+			globalRotation += currentObject.orientation;
+			currentObject = currentObject.parent;
+		}
+		return globalRotation;
+	}
+
+	public void setLocalOrientation(double orientation) {
+		this.orientation = orientation;
+	}
+
+	public double getLocalOrientation() {
+		return orientation;
 	}
 
 	////////////////////
@@ -60,7 +68,7 @@ public class GObject {
 
 	public GObject(GObject parent, PVector position, float rotation) {
 		this.position = position;
-		this.rotation = rotation;
+		this.orientation = rotation;
 		parent.addChild(this);
 	}
 

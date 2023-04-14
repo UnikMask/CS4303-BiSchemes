@@ -1,0 +1,62 @@
+{
+  "id" : 1,
+  "dimensions" : [16, 10],
+  "spawnPosition" : [1.5, 2.5],
+  "adjacent" : [
+    {
+      "id": 0,
+      "anchor" : [0, 0],
+      "vertex" : [0, 10],
+      "visible" : false
+    }
+  ],
+  "geometry" : {
+    "primary": [
+    ],
+    "secondary": [
+      {
+        "type" : "RECT",
+        "anchor" : [0, 6],
+        "dimensions" : [16, 4]
+      },
+      {
+        "type" : "RECT",
+        "anchor" : [4, 7],
+        "dimensions" : [2, 2]
+      },
+      {
+        "type" : "RECT",
+        "anchor" : [0, 0],
+        "dimensions" : [16, 2]
+      }
+    ]
+  },
+  "objects" : [
+    {
+      "type" : "BLOCK",
+      "colour" : "PRIMARY",
+      "id" : 0,
+      "anchor" : [4, 2],
+      "dimensions" : [2, 2]
+    },
+    {
+      "type" : "PORTAL",
+      "id" : 1,
+      "anchor" : [13, 2],
+      "vertex" : [2, 0]
+    },
+    {
+      "type" : "LEVER",
+      "colour" : "SECONDARY",
+      "id" : 2,
+      "anchor" : [2, 2],
+      "linkedTo" : [1]
+    },
+    {
+      "type" : "EXIT",
+      "id" : 3,
+      "anchor" : [16, 6],
+      "edge" : [0, 4]
+    }
+  ]
+}

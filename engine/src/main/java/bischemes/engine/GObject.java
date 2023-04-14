@@ -61,7 +61,9 @@ public class GObject {
 	public GObject(GObject parent, PVector position, float rotation) {
 		this.position = position;
 		this.rotation = rotation;
-		parent.addChild(this);
+		// ch315 - altered addChild() so that parent != null is checked first,
+		// 		   sorry in advance if I've broken something by doing this :)
+		if (parent != null) parent.addChild(this);
 	}
 
 	/////////////////////

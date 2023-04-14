@@ -1,0 +1,109 @@
+{
+  "name": "Example Level 2",
+  "id": 1,
+  "prerequisites": [],
+  "colourPrimary": "ffffff",
+  "colourSecondary": "000000",
+  "initRoomID": 0,
+  "rooms": [
+    {
+      "id": 0,
+      "dimensions": [
+        16,
+        10
+      ],
+      "spawnPosition": [
+        1.5,
+        2.5
+      ],
+      "adjacent": [],
+      "geometry": {
+        "primary": [
+        ],
+        "secondary": [
+          {
+            "type": "RECT",
+            "anchor": [
+              0,
+              0
+            ],
+            "dimensions": [
+              16,
+              1
+            ]
+          },
+          {
+            "type": "RECT",
+            "anchor": [
+              4,
+              1
+            ],
+            "dimensions": [
+              12,
+              1
+            ]
+          },
+          {
+            "type": "RECT",
+            "anchor": [
+              0,
+              6
+            ],
+            "dimensions": [
+              16,
+              4
+            ]
+          },
+          {
+            "type": "TRIANGLE",
+            "anchor": [
+              3,
+              1
+            ],
+            "vertex1": [
+              1,
+              0
+            ],
+            "vertex2": [
+              1,
+              1
+            ]
+          }
+        ]
+      },
+      "objects": [
+        {
+          "type": "DOOR",
+          "colour": "SECONDARY",
+          "id": 0,
+          "anchor": [
+            10,
+            2
+          ],
+          "dimensions": [
+            1,
+            4
+          ]
+        },
+        {
+          "type": "LEVER",
+          "colour": "PRIMARY",
+          "id": 1,
+          "anchor": [
+            2,
+            6
+          ],
+          "linkedTo": [
+            0
+          ]
+        },
+        {
+          "type" : "EXIT",
+          "id" : 2,
+          "anchor" : [16, 0],
+          "edge" : [0, 10]
+        }
+      ]
+    }
+  ]
+}

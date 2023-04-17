@@ -4,7 +4,6 @@ import java.util.List;
 
 import processing.core.PGraphics;
 import processing.core.PImage;
-import processing.core.PMatrix;
 import processing.core.PShape;
 import processing.core.PVector;
 
@@ -19,7 +18,7 @@ public class VisualAttribute {
 	private List<PVector> texCoords;
 
 	enum VisualKind {
-		TEXTURED, UNTEXTURED
+		TEXTURED, UNTEXTURED, TINTED_TEXTURED
 	}
 
 	public VisualKind getVisualKind() {
@@ -36,17 +35,21 @@ public class VisualAttribute {
 		}
 		shape = EngineRuntime.applet.createShape();
 		shape.beginShape();
-		if (visualKind == VisualKind.TEXTURED) {
-			for (int i = 0; i < vertices.size(); i++) {
-				shape.vertex(vertices.get(i).x, vertices.get(i).y, texCoords.get(i).x, texCoords.get(i).y);
-			}
-			shape.texture(texture);
-		} else {
+
+		if (visualKind == VisualKind.UNTEXTURED) {
 			for (PVector v : vertices) {
 				shape.vertex(v.x, v.y);
 			}
 			shape.fill(color);
+		} else {
+			for (int i = 0; i < vertices.size(); i++) {
+				shape.vertex(vertices.get(i).x, vertices.get(i).y, texCoords.get(i).x, texCoords.get(i).y);
+			}
+			if (visualKind == VisualKind.TINTED_TEXTURED)
+				shape.tint(color);
+			shape.texture(texture);
 		}
+
 		shape.endShape();
 	}
 
@@ -69,16 +72,38 @@ public class VisualAttribute {
 		this.color = colour;
 		this.texture = null;
 		this.texCoords = null;
+		this.shape = null;
+	}
+
+	public void makeTextured(List<PVector> texCoords, String texture) {
+		makeTextured(texCoords, EngineRuntime.applet.loadImage(texture));
 	}
 
 	public void makeTextured(List<PVector> texCoords, PImage texture) {
 		this.visualKind = VisualKind.TEXTURED;
 		this.texture = texture;
 		this.texCoords = texCoords;
+		this.shape = null;
 	}
 
-	public void makeTextured(List<PVector> texCoords, String texture) {
-		makeTextured(texCoords, EngineRuntime.applet.loadImage(texture));
+	public void makeTintedTexture(int colour, List<PVector> texCoords, PImage texture) {
+		this.visualKind = VisualKind.TINTED_TEXTURED;
+		this.color = colour;
+		this.texture = texture;
+		this.texCoords = texCoords;
+		this.shape = null;
+	}
+
+	public void makeTintedTexture(int colour) {
+		if (this.visualKind == VisualKind.UNTEXTURED)
+			throw new IllegalStateException("Cannot set a TINTED_TEXTURE tint unless VisualAttribute is in TEXTURED or TINTED_TEXTURE state");
+		this.color = colour;
+		this.shape = null;
+	}
+
+	public void setColour(int colour) {
+		if (this.visualKind == VisualKind.UNTEXTURED) makeUntextured(colour);
+		else makeTintedTexture(colour);
 	}
 
 	public VisualAttribute(List<PVector> vertices, List<PVector> texCoords, String texturePath) {

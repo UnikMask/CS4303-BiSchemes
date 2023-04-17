@@ -86,10 +86,6 @@ public final class JParsing {
         return new PVector(x, y, z);
     }
 
-    //todo add method to iteratitvly add GObjects as child to a provided one
-
-    //todo add sub exception catching to help geometry parsing
-
     public static void parseGeometryArr(JsonObject obj, String name, GObject parent) {
         JsonArray arr = parseArr(obj, name);
         int i = 0;

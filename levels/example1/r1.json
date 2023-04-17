@@ -56,7 +56,7 @@
       "type" : "EXIT",
       "id" : 3,
       "anchor" : [16, 6],
-      "edge" : [0, 4]
+      "vertex" : [0, 4]
     }
   ]
 }

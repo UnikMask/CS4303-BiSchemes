@@ -11,7 +11,7 @@ import javax.json.JsonObject;
 
 public class Room {
 
-
+    private Level parent;
 
     private final int id;
     private final PVector dimensions; // Dimension (width/height) of the room
@@ -20,7 +20,7 @@ public class Room {
     private final GObject primaryGeometry;
     private final GObject secondaryGeometry;
 
-    private final GObject objects;
+    private final GObject roomObjects;
 
     //TODO private final ??? adjacent; // to make points of adjacency between rooms
 
@@ -35,7 +35,14 @@ public class Room {
     public PVector getSpawnPosition() { return spawnPos; }
     public GObject getPrimaryGeometry() { return primaryGeometry; }
     public GObject getSecondaryGeometry() { return secondaryGeometry; }
-    public GObject getObjects() { return objects; }
+    public GObject getObjects() { return roomObjects; }
+
+    public void setParentLevel(Level level) {
+        this.parent = level;
+
+        primaryGeometry.setColour(level.getColourPrimary());
+        secondaryGeometry.setColour(level.getColourSecondary());
+    }
 
     private Room(int id, PVector dimensions, PVector spawnPos) {
         this.id = id;
@@ -43,12 +50,12 @@ public class Room {
         this.spawnPos = spawnPos;
         primaryGeometry = new GObject(null, new PVector(), 0);
         secondaryGeometry = new GObject(null, new PVector(), 0);
-        objects = new GObject(null, new PVector(), 0);
+        roomObjects = new GObject(null, new PVector(), 0);
     }
 
 
     public static Room parseRoom(JsonObject roomJson) {
-        Room room = null;
+        Room room;
         int id = -1;
         try {
              id = JParsing.parseInt(roomJson, "id");
@@ -59,6 +66,7 @@ public class Room {
              JsonObject geometry = JParsing.parseObj(roomJson, "geometry");
              JParsing.parseGeometryArr(geometry, "primary", room.primaryGeometry);
              JParsing.parseGeometryArr(geometry, "secondary", room.secondaryGeometry);
+
 
              // TODO room object parsing
              // TODO adjacency parsing

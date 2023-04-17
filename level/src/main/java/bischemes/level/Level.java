@@ -33,6 +33,8 @@ public class Level {
         this.colourSecondary = colourSecondary;
         this.initRoom = initRoom;
         this.rooms = rooms;
+
+        for (Room room : this.rooms) room.setParentLevel(this);
     }
 
     public String getName() { return name; }
@@ -124,6 +126,8 @@ public class Level {
                     throw new InvalidIdException("\"id\" " + id + " for room in level (" + id + ", " + name + ") is repeated (indexes " + j + ", " + i + ")");
             }
         }
+
+        //TODO check validity of rooms, i.e. room adjacency is valid
 
         Room initRoom = Room.getRoom(rooms, initId);
 

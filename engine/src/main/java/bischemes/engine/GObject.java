@@ -7,11 +7,11 @@ import processing.core.PGraphics;
 import processing.core.PVector;
 
 public class GObject {
-	private GObject parent;
-	private List<GObject> children = new ArrayList<>();
-	private PVector position;
-	private double orientation;
-	private List<VisualAttribute> visualAttributes = new ArrayList<>();
+	protected GObject parent;
+	protected List<GObject> children = new ArrayList<>();
+	protected PVector position;
+	protected double orientation;
+	protected List<VisualAttribute> visualAttributes = new ArrayList<>();
 
 	/////////////////////////
 	// Getters And Setters //
@@ -65,6 +65,16 @@ public class GObject {
 			child.draw(g);
 		}
 	}
+
+	// recursively set the colour of this GObject's and its children's visualAttributes.
+	// TEXTURED visualAttributes become TINTED_TEXTURED
+	public void setColour(int colour) {
+		for (VisualAttribute visAttr : visualAttributes)
+			visAttr.setColour(colour);
+		for (GObject child : children)
+			child.setColour(colour);
+	}
+
 
 	public GObject(GObject parent, PVector position, float rotation) {
 		this.position = position;

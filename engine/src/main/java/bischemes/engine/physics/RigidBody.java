@@ -166,6 +166,12 @@ public class RigidBody {
 	// Constructors //
 	//////////////////
 
+	/**
+	 * Constructor for a rigid body.
+	 *
+	 * @param parent     The rigid body's parent object.
+	 * @param properties The rigid body's property structure.
+	 */
 	public RigidBody(GObject parent, RigidBodyProperties properties) {
 		this.parent = parent;
 		this.properties = properties;

@@ -48,6 +48,29 @@ public class Manifold {
 	}
 
 	/**
+	 * TODO Finish the impulse resolution algorithm Compute the impulse coefficient
+	 * of the manifold on the 2 rigid bodies.
+	 *
+	 * @return The impulse factor.
+	 */
+	public PVector computeImpulse() {
+		for (Interpenetration contact : contactPoints) {
+			PVector radA = PVector.sub(contact.contactPoint, objectA.getPosition());
+			PVector radB = PVector.sub(contact.contactPoint, objectB.getPosition());
+
+			PVector relVelocity = PVector.sub(objectB.properties.velocity, objectA.properties.velocity)
+					.sub(new PVector(-radA.y, radA.x).mult((float) objectA.properties.rotation))
+					.add(new PVector(-radB.y, radB.x).mult((float) objectB.properties.rotation));
+
+			float velocityProjectionOnNormal = PVector.dot(relVelocity, contact.surfaceNormal);
+			if (velocityProjectionOnNormal > 0) {
+				return new PVector();
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Combine 2 manifolds into a same manifold. Deals with reversed parents cases.
 	 * This method silently fails if the given manifold does not share the same
 	 * parents as the current one.

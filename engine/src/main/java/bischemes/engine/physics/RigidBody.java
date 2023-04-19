@@ -13,11 +13,7 @@ public class RigidBody {
 	private GObject parent;
 
 	// Real Values
-	double mass;
-	double inertia;
-	double damping;
-	PVector velocity;
-	double rotation;
+	RigidBodyProperties properties;
 
 	// Derived Values
 	private PMatrix transformMatrix;
@@ -38,7 +34,7 @@ public class RigidBody {
 	/////////////////////////
 
 	public double getMass() {
-		return mass;
+		return properties.mass;
 	}
 
 	/**
@@ -71,6 +67,8 @@ public class RigidBody {
 
 	/**
 	 * Set the local position of the rigid body, in regards to its closest parent.
+	 *
+	 * @param newPosition The new local position of the rigid body.
 	 */
 	public void setPosition(PVector newPosition) {
 		parent.setLocalPosition(newPosition);
@@ -79,6 +77,8 @@ public class RigidBody {
 	/**
 	 * Set the local orientation of the rigid body, in regards to its closeset
 	 * parent.
+	 *
+	 * @param newOrientation The new local orientation of the rigid body.
 	 */
 	public void setOrientation(double newOrientation) {
 		parent.setLocalOrientation(newOrientation);
@@ -87,6 +87,8 @@ public class RigidBody {
 	/**
 	 * Get the global orientation of the rigid body, in regards to world
 	 * coordinates.
+	 *
+	 * @return the global orientation of the rigid body.
 	 */
 	public double getOrientation() {
 		return parent.getOrientation();
@@ -94,6 +96,8 @@ public class RigidBody {
 
 	/**
 	 * Get the transform matrix derived from the rigid body and the game object.
+	 *
+	 * @return The transform matrix of the rigid body.
 	 */
 	public PMatrix getTransformMatrix() {
 		return transformMatrix;
@@ -127,8 +131,9 @@ public class RigidBody {
 		}
 
 		// Apply accumulator to velocity, and velocity to position
-		velocity = PVector.add(velocity, PVector.mult(forceAccumulation, (float) duration));
-		parent.setLocalPosition(PVector.add(parent.getLocalPosition(), PVector.mult(velocity, (float) duration)));
+		properties.velocity = PVector.add(properties.velocity, PVector.mult(forceAccumulation, (float) duration));
+		parent.setLocalPosition(
+				PVector.add(parent.getLocalPosition(), PVector.mult(properties.velocity, (float) duration)));
 	}
 
 	/**
@@ -147,8 +152,8 @@ public class RigidBody {
 	// Derivate derived values (mass, transform matrix) from
 	// real values.
 	private void derive() {
-		inverseMass = (hasMass && mass != 0) ? 1 / mass : 0;
-		inverseInertia = (hasInertia && inertia != 0) ? 1 / inertia : 0;
+		inverseMass = (hasMass && properties.mass != 0) ? 1 / properties.mass : 0;
+		inverseInertia = (hasInertia && properties.inertia != 0) ? 1 / properties.inertia : 0;
 
 		// Derive transform matrix from position and orientation
 		PVector pos = parent.getPosition();
@@ -157,4 +162,12 @@ public class RigidBody {
 		transformMatrix.rotate((float) parent.getOrientation());
 	}
 
+	//////////////////
+	// Constructors //
+	//////////////////
+
+	public RigidBody(GObject parent, RigidBodyProperties properties) {
+		this.parent = parent;
+		this.properties = properties;
+	}
 }

@@ -8,9 +8,9 @@ import java.util.ArrayList;
  * Details on a collision between 2 rigid bodies.
  */
 public class Manifold {
-	List<Interpenetration> contactPoints = new ArrayList<>();
-	RigidBody objectA;
-	RigidBody objectB;
+	private List<Interpenetration> contactPoints = new ArrayList<>();
+	private RigidBody objectA;
+	private RigidBody objectB;
 
 	/**
 	 * Representation of an interpenetration of a point from one rigid body into the
@@ -60,6 +60,16 @@ public class Manifold {
 			return;
 		}
 		contactPoints.addAll(m.contactPoints);
+	}
+
+	/**
+	 * Getter to whether the manifold has detected a collision between both rigid
+	 * bodies or not.
+	 *
+	 * @return Whether the 2 rigid bodies of the manifold are collided.
+	 */
+	public boolean isCollision() {
+		return !contactPoints.isEmpty();
 	}
 
 	/**

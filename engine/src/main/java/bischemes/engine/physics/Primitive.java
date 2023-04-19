@@ -76,9 +76,72 @@ public class Primitive implements PhysicsMesh {
 		}
 	}
 
-	// TODO - Polygon-to-Polygon collision code.
+	/////////////////////
+	// Private Methods //
+	/////////////////////
+
+	// Get full collision manifold for contact between 2 polygon primitives.
 	private Manifold polygonToPolygonCollision(Primitive b, PVector offset) {
-		return null;
+		Manifold m = new Manifold(this.parent, b.getParent());
+		m.combine(queryFaceDistance(b, offset));
+		m.combine(b.queryFaceDistance(this, PVector.mult(offset, -1)));
+		return m;
+	}
+
+	// Query face distance between this polygon, from which the faces are checked,
+	// against another polygon's vertices. Returns a collision manifold with a
+	// potential collision point if there is one.
+	private Manifold queryFaceDistance(Primitive b, PVector offset) {
+		Manifold m = new Manifold(this.parent, b.getParent());
+
+		double minPenetration = -Double.MAX_VALUE;
+		PVector bestNormal = new PVector();
+		PVector bestSupport = new PVector();
+
+		float reverseFactor = 1.0f;
+		PVector v2 = PVector.add(this.vertices.get(this.vertices.size() - 1), this.parent.getPosition());
+		boolean calibrating = true;
+		for (PVector p1 : this.vertices) {
+			PVector v1 = PVector.add(p1, this.parent.getPosition());
+
+			PVector v1v2 = PVector.sub(v2, v1);
+			PVector normal = new PVector(v1v2.y, -v1v2.x).mult(reverseFactor).normalize();
+			PVector support = PVector.add(b.getSupportPoint(PVector.mult(v1v2, -1)), offset);
+			double dist = PVector.dot(PVector.sub(support, v1), normal);
+
+			if (calibrating && dist > 0) {
+				dist = -dist;
+				reverseFactor = -1.0f;
+			}
+			if (dist > minPenetration) {
+				if (minPenetration > 0) {
+					return m;
+				}
+
+				minPenetration = dist;
+				bestNormal = normal;
+				bestSupport = support;
+			}
+			v2 = v1;
+		}
+		m.addContactPoint(bestSupport, bestNormal, minPenetration);
+
+		return m;
+	}
+
+	// Get the support point of a polygon primitive in a given direction.
+	// CAUTION: Primitive MUST be a polygon
+	private PVector getSupportPoint(PVector direction) {
+		PVector max = vertices.get(0);
+		double maxDot = PVector.dot(vertices.get(0), direction);
+		for (PVector v : vertices) {
+			double dot = v.dot(direction);
+			if (dot > maxDot) {
+				max = v;
+				maxDot = dot;
+			}
+		}
+		return max;
 	}
 
 	// Generate a circle-to-polygon collision, where b is the polygon primitive.

@@ -33,12 +33,6 @@ public class Primitive implements PhysicsMesh {
 	// Physics Methods //
 	/////////////////////
 
-	/**
-	 * Check for collision with a single other primitive.
-	 *
-	 * @param b The primitive to check against for collisions.
-	 * @return The contact manifold between this primitive and b.
-	 */
 	public Manifold getCollision(Primitive b, PVector offset) {
 		return switch (this.primitiveType) {
 		case CIRCLE -> switch (b.primitiveType) {
@@ -52,12 +46,6 @@ public class Primitive implements PhysicsMesh {
 		};
 	}
 
-	/**
-	 * Check for collision with an assembly of multiple primitives.
-	 *
-	 * @param b The primitive assembly to check against for collisions.
-	 * @return The contact manifold between this primitive and b.
-	 */
 	public Manifold getCollision(PrimitiveAssembly b, PVector offset) {
 		Manifold m = new Manifold(this.parent, b.getParent());
 		for (PrimitiveInSet p : b.getAssembly()) {

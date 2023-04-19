@@ -2,6 +2,7 @@ package bischemes.engine.physics;
 
 import java.util.List;
 
+import bischemes.engine.physics.PrimitiveAssembly.PrimitiveInSet;
 import processing.core.PVector;
 
 public class Primitive implements PhysicsMesh {
@@ -24,6 +25,10 @@ public class Primitive implements PhysicsMesh {
 		return primitiveType;
 	}
 
+	public RigidBody getParent() {
+		return parent;
+	}
+
 	/////////////////////
 	// Physics Methods //
 	/////////////////////
@@ -34,28 +39,52 @@ public class Primitive implements PhysicsMesh {
 	 * @param b The primitive to check against for collisions.
 	 * @return The contact manifold between this primitive and b.
 	 */
-	public Manifold getCollision(Primitive b) {
+	public Manifold getCollision(Primitive b, PVector offset) {
 		return switch (this.primitiveType) {
 		case CIRCLE -> switch (b.primitiveType) {
-			case CIRCLE -> this.circleToCircleCollision(b);
-			case POLYGON -> this.circleToPolygonCollision(b);
+			case CIRCLE -> this.circleToCircleCollision(b, offset);
+			case POLYGON -> this.circleToPolygonCollision(b, offset);
 			};
 		case POLYGON -> switch (b.primitiveType) {
-			case CIRCLE -> b.circleToPolygonCollision(this);
-			case POLYGON -> this.polygonToPolygonCollision(b);
+			case CIRCLE -> b.circleToPolygonCollision(this, PVector.mult(offset, -1));
+			case POLYGON -> this.polygonToPolygonCollision(b, offset);
 			};
 		};
 	}
 
+	/**
+	 * Check for collision with an assembly of multiple primitives.
+	 *
+	 * @param b The primitive assembly to check against for collisions.
+	 * @return The contact manifold between this primitive and b.
+	 */
+	public Manifold getCollision(PrimitiveAssembly b, PVector offset) {
+		Manifold m = new Manifold(this.parent, b.getParent());
+		for (PrimitiveInSet p : b.getAssembly()) {
+			m.combine(getCollision(p.primitive, PVector.sub(p.offset, offset)));
+		}
+		return m;
+	}
+
+	public Manifold getCollision(PhysicsMesh b) {
+		if (b instanceof Primitive) {
+			return getCollision((Primitive) b);
+		} else if (b instanceof PrimitiveAssembly) {
+			return getCollision((PrimitiveAssembly) b);
+		} else {
+			return null;
+		}
+	}
+
 	// TODO - Polygon-to-Polygon collision code.
-	private Manifold polygonToPolygonCollision(Primitive b) {
+	private Manifold polygonToPolygonCollision(Primitive b, PVector offset) {
 		return null;
 	}
 
 	// Generate a circle-to-polygon collision, where b is the polygon primitive.
-	// TODO - Circle-to-Polygon collision code.
-	private Manifold circleToPolygonCollision(Primitive b) {
+	private Manifold circleToPolygonCollision(Primitive b, PVector offset) {
 		Manifold m = new Manifold(this.parent, b.parent);
+		PVector vertexParentPosition = PVector.add(b.parent.getPosition(), offset);
 
 		// Step 1 - find the nearest penetration edge.
 		double minPenetration = -Double.MAX_VALUE;
@@ -66,7 +95,7 @@ public class Primitive implements PhysicsMesh {
 		boolean calibrated = false;
 		PVector v0 = null;
 		for (PVector v : b.vertices) {
-			v = PVector.add(b.parent.getPosition(), v);
+			v = PVector.add(vertexParentPosition, v);
 			if (v0 == null) {
 				v0 = v;
 			}
@@ -115,8 +144,8 @@ public class Primitive implements PhysicsMesh {
 
 	// Generate a circle-to-circle collision between 2 primitives, and return a
 	// manifold.
-	private Manifold circleToCircleCollision(Primitive b) {
-		PVector dir = PVector.sub(b.parent.getPosition(), this.parent.getPosition());
+	private Manifold circleToCircleCollision(Primitive b, PVector offset) {
+		PVector dir = PVector.sub(PVector.add(b.parent.getPosition(), offset), this.parent.getPosition());
 		Manifold m = new Manifold(this.parent, b.parent);
 		if (dir.mag() < this.radius + b.radius) {
 			double penetration = this.radius + b.radius - dir.mag();

@@ -14,6 +14,9 @@ public class RigidBodyProperties {
 	PVector velocity;
 	double rotation;
 
+	boolean isMovable = false;
+	boolean isRotatable = false;
+
 	PhysicsMesh mesh;
 
 	/**
@@ -29,6 +32,8 @@ public class RigidBodyProperties {
 		case "damping" -> damping = (double) value;
 		case "velocity" -> velocity = (PVector) value;
 		case "rotation" -> rotation = (double) value;
+		case "move" -> isMovable = (boolean) value;
+		case "rotate" -> isRotatable = (boolean) value;
 		case "mesh" -> mesh = (PhysicsMesh) value;
 		}
 	}

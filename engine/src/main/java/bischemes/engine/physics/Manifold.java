@@ -55,7 +55,6 @@ public class Manifold {
 	 * rigid bodies. THE MANIFOLD MUST NOT BE USED AGAIN AFTER THIS.
 	 */
 	public void resolveCollision() {
-
 	}
 
 	/**
@@ -64,7 +63,7 @@ public class Manifold {
 	 *
 	 * @return The impulse factor.
 	 */
-	public PVector computeImpulse() {
+	public void applyImpulse() {
 		for (Interpenetration contact : contactPoints) {
 			PVector radA = PVector.sub(contact.contactPoint, objectA.getPosition());
 			PVector radB = PVector.sub(contact.contactPoint, objectB.getPosition());
@@ -73,14 +72,36 @@ public class Manifold {
 					.sub(new PVector(-radA.y, radA.x).mult((float) objectA.properties.rotation))
 					.add(new PVector(-radB.y, radB.x).mult((float) objectB.properties.rotation));
 
-			float velocityProjectionOnNormal = PVector.dot(relVelocity, contact.surfaceNormal);
+			double velocityProjectionOnNormal = PVector.dot(relVelocity, contact.surfaceNormal);
 			if (velocityProjectionOnNormal > 0) {
-				return new PVector();
+				continue;
 			}
 
 			// Calculate impulse resolution
+			double radACrossNormal = Math.pow(radA.cross(contact.surfaceNormal).z, 2),
+					radBCrossNormal = Math.pow(radB.cross(contact.surfaceNormal).z, 2);
+			double factorDiv = 1 / (contactPoints.size() * (objectA.getInverseMass() + objectB.getInverseMass()
+					+ radACrossNormal * objectA.getInverseInertia() + radBCrossNormal * objectB.getInverseInertia()));
+			double j = -(1 + contact.restitution) * velocityProjectionOnNormal * factorDiv;
+			PVector impulse = PVector.mult(contact.surfaceNormal, (float) j);
+
+			// TODO Apply impulse on A and B
+
+			PVector tan = PVector
+					.sub(relVelocity,
+							PVector.mult(contact.surfaceNormal, PVector.dot(relVelocity, contact.surfaceNormal)))
+					.normalize();
+			double velocityProjectionOnTan = PVector.dot(relVelocity, tan);
+			double frictionFactor = -velocityProjectionOnTan * factorDiv;
+			PVector frictionImpulse;
+			if (Math.abs(frictionFactor) > contact.staticFriction * j) {
+				frictionImpulse = PVector.mult(tan, (float) (-j * contact.dynamicFriction));
+			} else {
+				frictionImpulse = PVector.mult(tan, (float) frictionFactor);
+			}
+
+			// TODO Apply friction impulses on A and B.
 		}
-		return null;
 	}
 
 	/**

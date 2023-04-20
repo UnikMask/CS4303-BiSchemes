@@ -145,6 +145,11 @@ public class RigidBody {
 		forces.add(force);
 	}
 
+	public void applyImpulse(PVector impulse, PVector applicationPoint) {
+		properties.velocity = PVector.add(properties.velocity, PVector.mult(impulse, (float) getInverseMass()));
+		properties.rotation += inverseInertia * applicationPoint.cross(impulse).z;
+	}
+
 	/////////////////////
 	// Private methods //
 	/////////////////////

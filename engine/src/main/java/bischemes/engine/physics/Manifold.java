@@ -85,7 +85,8 @@ public class Manifold {
 			double j = -(1 + contact.restitution) * velocityProjectionOnNormal * factorDiv;
 			PVector impulse = PVector.mult(contact.surfaceNormal, (float) j);
 
-			// TODO Apply impulse on A and B
+			objectA.applyImpulse(PVector.mult(impulse, -1), contact.contactPoint);
+			objectB.applyImpulse(impulse, contact.contactPoint);
 
 			PVector tan = PVector
 					.sub(relVelocity,
@@ -100,7 +101,8 @@ public class Manifold {
 				frictionImpulse = PVector.mult(tan, (float) frictionFactor);
 			}
 
-			// TODO Apply friction impulses on A and B.
+			objectA.applyImpulse(PVector.mult(frictionImpulse, -1), contact.contactPoint);
+			objectB.applyImpulse(frictionImpulse, contact.contactPoint);
 		}
 	}
 

@@ -1,5 +1,9 @@
 package bischemes.engine;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
@@ -7,7 +11,7 @@ import processing.core.PVector;
 public class EngineRuntime {
 	public static PApplet applet;
 	private PGraphics g;
-	private GObject scene;
+	private Set<GObject> scenes = new HashSet<>();
 
 	// Camera Variables
 	private PVector cameraPosition = new PVector(16, 9);
@@ -32,12 +36,18 @@ public class EngineRuntime {
 		g.rotate(-cameraRotation);
 		g.scale(scale.x, scale.y);
 		g.translate(-posAnchored.x, -posAnchored.y);
-		scene.draw(g);
+		for (GObject scene : scenes) {
+			scene.draw(g);
+		}
 		g.popMatrix();
 	}
 
 	public void attachScene(GObject scene) {
-		this.scene = scene;
+		scenes.add(scene);
+	}
+
+	public void removeScene(GObject scene) {
+		scenes.remove(scene);
 	}
 
 	public void setCameraPosition(PVector position) {

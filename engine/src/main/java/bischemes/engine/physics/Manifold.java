@@ -51,17 +51,7 @@ public class Manifold {
 	}
 
 	/**
-	 * Resolve the collsion described by the manifold by applying impulses to the
-	 * rigid bodies. THE MANIFOLD MUST NOT BE USED AGAIN AFTER THIS.
-	 */
-	public void resolveCollision() {
-	}
-
-	/**
-	 * TODO Finish the impulse resolution algorithm Compute the impulse coefficient
-	 * of the manifold on the 2 rigid bodies.
-	 *
-	 * @return The impulse factor.
+	 * Apply the impulse of the manifold to the two rigid bodies.
 	 */
 	public void applyImpulse() {
 		for (Interpenetration contact : contactPoints) {

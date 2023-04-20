@@ -21,10 +21,21 @@ public class Manifold {
 		PVector surfaceNormal;
 		double penetration;
 
-		Interpenetration(PVector contactPoint, PVector surfaceNormal, double penetration) {
+		double restitution;
+		double staticFriction;
+		double dynamicFriction;
+
+		Interpenetration(PVector contactPoint, PVector surfaceNormal, double penetration, Primitive a, Primitive b) {
 			this.contactPoint = contactPoint;
 			this.surfaceNormal = surfaceNormal;
 			this.penetration = penetration;
+
+			// Calculate restitution, static and dynamic friction
+			this.restitution = (b.surface.restitution + a.surface.restitution) / 2;
+			this.staticFriction = Math
+					.sqrt(Math.pow(a.surface.staticFriction, 2) + Math.pow(b.surface.staticFriction, 2));
+			this.dynamicFriction = Math
+					.sqrt(Math.pow(a.surface.dynamicFriction, 2) + Math.pow(b.surface.dynamicFriction, 2));
 		}
 	}
 
@@ -35,8 +46,8 @@ public class Manifold {
 	 * @param normal      The normal of the collision surface.
 	 * @param penetration The penetration depth of the collision.
 	 */
-	public void addContactPoint(PVector point, PVector normal, double penetration) {
-		contactPoints.add(new Interpenetration(point, normal, penetration));
+	public void addContactPoint(PVector point, PVector normal, double penetration, Primitive a, Primitive b) {
+		contactPoints.add(new Interpenetration(point, normal, penetration, a, b));
 	}
 
 	/**
@@ -66,6 +77,8 @@ public class Manifold {
 			if (velocityProjectionOnNormal > 0) {
 				return new PVector();
 			}
+
+			// Calculate impulse resolution
 		}
 		return null;
 	}

@@ -8,6 +8,7 @@ import processing.core.PVector;
 public class Primitive implements PhysicsMesh {
 	private PrimitiveType primitiveType;
 	private RigidBody parent;
+	Surface surface;
 
 	private List<PVector> vertices;
 	private double radius;
@@ -112,7 +113,7 @@ public class Primitive implements PhysicsMesh {
 			}
 			v2 = v1;
 		}
-		m.addContactPoint(bestSupport, bestNormal, minPenetration);
+		m.addContactPoint(bestSupport, bestNormal, minPenetration, this, b);
 
 		return m;
 	}
@@ -188,7 +189,7 @@ public class Primitive implements PhysicsMesh {
 			contactPoint = PVector.sub(this.parent.getPosition(), PVector.mult(vNormal, (float) this.radius));
 			minPenetration = PVector.dot(PVector.sub(distV0 < distV1 ? v0min : v1min, contactPoint), vNormal);
 		}
-		m.addContactPoint(contactPoint, vNormal, minPenetration);
+		m.addContactPoint(contactPoint, vNormal, minPenetration, this, b);
 
 		return m;
 	}
@@ -202,7 +203,7 @@ public class Primitive implements PhysicsMesh {
 			double penetration = this.radius + b.radius - dir.mag();
 			PVector normal = dir.normalize();
 			PVector contactPoint = PVector.add(this.parent.getPosition(), PVector.mult(normal, (float) this.radius));
-			m.addContactPoint(contactPoint, normal, penetration);
+			m.addContactPoint(contactPoint, normal, penetration, this, b);
 		}
 		return m;
 	}
@@ -218,9 +219,10 @@ public class Primitive implements PhysicsMesh {
 	 * @param vertices The list of vertices that define a primitive - the polygon
 	 *                 MUST be flat and convex.
 	 */
-	public Primitive(RigidBody parent, List<PVector> vertices) {
+	public Primitive(RigidBody parent, Surface surface, List<PVector> vertices) {
 		this.parent = parent;
 		primitiveType = PrimitiveType.POLYGON;
+		this.surface = surface;
 		this.vertices = vertices;
 
 		// Assemble AABB bounds
@@ -241,10 +243,11 @@ public class Primitive implements PhysicsMesh {
 	 * @param parent The rigid body parent of the primitive.
 	 * @param radius The radius of the circle.
 	 */
-	public Primitive(RigidBody parent, double radius) {
+	public Primitive(RigidBody parent, Surface surface, double radius) {
 		this.parent = parent;
 		primitiveType = PrimitiveType.CIRCLE;
 		this.radius = radius;
+		this.surface = surface;
 		this.AABBBounds = new PVector(2 * (float) radius, 2 * (float) radius);
 	}
 }

@@ -1,5 +1,8 @@
 package bischemes.engine.physics;
 
+import java.util.List;
+
+import bischemes.engine.physics.SpatialPartition.PrimitiveStore;
 import processing.core.PVector;
 
 public interface PhysicsMesh {
@@ -36,4 +39,6 @@ public interface PhysicsMesh {
 	 *         is neither a primitive nor a primitive assembly.
 	 */
 	Manifold getCollision(PhysicsMesh b);
+
+	List<PrimitiveStore> getPrimitiveStores();
 }

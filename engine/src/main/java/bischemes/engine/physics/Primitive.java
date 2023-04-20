@@ -1,8 +1,10 @@
 package bischemes.engine.physics;
 
+import java.util.Arrays;
 import java.util.List;
 
 import bischemes.engine.physics.PrimitiveAssembly.PrimitiveInSet;
+import bischemes.engine.physics.SpatialPartition.PrimitiveStore;
 import processing.core.PVector;
 
 public class Primitive implements PhysicsMesh {
@@ -63,6 +65,10 @@ public class Primitive implements PhysicsMesh {
 		} else {
 			return null;
 		}
+	}
+
+	public List<PrimitiveStore> getPrimitiveStores() {
+		return Arrays.asList(new PrimitiveStore(this, new PVector()));
 	}
 
 	/////////////////////

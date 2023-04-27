@@ -78,18 +78,16 @@ public class Manifold {
 			objectA.applyImpulse(PVector.mult(impulse, -1), contact.contactPoint);
 			objectB.applyImpulse(impulse, contact.contactPoint);
 
+			// Calculate friction resolution
 			PVector tan = PVector
 					.sub(relVelocity,
 							PVector.mult(contact.surfaceNormal, PVector.dot(relVelocity, contact.surfaceNormal)))
 					.normalize();
 			double velocityProjectionOnTan = PVector.dot(relVelocity, tan);
 			double frictionFactor = -velocityProjectionOnTan * factorDiv;
-			PVector frictionImpulse;
-			if (Math.abs(frictionFactor) > contact.staticFriction * j) {
-				frictionImpulse = PVector.mult(tan, (float) (-j * contact.dynamicFriction));
-			} else {
-				frictionImpulse = PVector.mult(tan, (float) frictionFactor);
-			}
+			PVector frictionImpulse = PVector.mult(tan,
+					(float) (Math.abs(frictionFactor) > contact.staticFriction * j ? -j * contact.dynamicFriction
+							: frictionFactor));
 
 			objectA.applyImpulse(PVector.mult(frictionImpulse, -1), contact.contactPoint);
 			objectB.applyImpulse(frictionImpulse, contact.contactPoint);

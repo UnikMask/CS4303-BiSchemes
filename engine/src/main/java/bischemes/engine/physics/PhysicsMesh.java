@@ -36,4 +36,9 @@ public interface PhysicsMesh {
 	 *         is neither a primitive nor a primitive assembly.
 	 */
 	Manifold getCollision(PhysicsMesh b);
+
+	/**
+	 * Derive the derived values of the primitive for per-frame checks.
+	 */
+	void derive();
 }

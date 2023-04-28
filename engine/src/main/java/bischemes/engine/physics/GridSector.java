@@ -53,7 +53,6 @@ public class GridSector {
 			this.p = p.primitive;
 			this.position = PVector.add(p.primitive.getParent().getPosition(), p.offset);
 			this.offset = p.offset;
-			this.offset.rotate((float) p.primitive.getParent().getOrientation());
 			this.AABBbounds = p.primitive.getAABBBounds();
 		}
 	}

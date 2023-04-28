@@ -11,10 +11,18 @@ import processing.core.PVector;
 public class PrimitiveAssembly implements PhysicsMesh {
 	private RigidBody parent;
 	private List<PrimitiveInSet> assembly = new ArrayList<>();
+	private List<PrimitiveInSet> baseAssembly = new ArrayList<>();
 
 	class PrimitiveInSet {
 		Primitive primitive;
 		PVector offset;
+
+		PrimitiveInSet copyDerived() {
+			primitive.derive();
+			PVector noffset = offset.copy();
+			noffset.rotate((float) getParent().getOrientation());
+			return new PrimitiveInSet(primitive, noffset);
+		}
 
 		PrimitiveInSet(Primitive primitive, PVector offset) {
 			this.primitive = primitive;
@@ -38,8 +46,15 @@ public class PrimitiveAssembly implements PhysicsMesh {
 	// Public Methods //
 	////////////////////
 
+	public void derive() {
+		assembly = new ArrayList<>(baseAssembly.size());
+		for (PrimitiveInSet p : baseAssembly) {
+			assembly.add(p.copyDerived());
+		}
+	}
+
 	public void addPrimitive(Primitive primitive, PVector offset) {
-		assembly.add(new PrimitiveInSet(primitive, offset));
+		baseAssembly.add(new PrimitiveInSet(primitive, offset));
 	}
 
 	public Manifold getCollision(PhysicsMesh b) {

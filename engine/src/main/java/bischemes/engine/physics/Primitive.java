@@ -1,6 +1,6 @@
 package bischemes.engine.physics;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import bischemes.engine.physics.PrimitiveAssembly.PrimitiveInSet;
@@ -11,9 +11,13 @@ public class Primitive implements PhysicsMesh {
 	private RigidBody parent;
 	Surface surface;
 
-	private List<PVector> vertices;
+	// Reals
+	private List<PVector> baseVerts;
 	private double radius;
 	private PVector AABBBounds;
+
+	// Derived
+	private List<PVector> vertices;
 
 	static enum PrimitiveType {
 		POLYGON, CIRCLE
@@ -38,6 +42,18 @@ public class Primitive implements PhysicsMesh {
 	/////////////////////
 	// Physics Methods //
 	/////////////////////
+
+	public void derive() {
+		if (primitiveType == PrimitiveType.POLYGON) {
+			vertices = new ArrayList<>(baseVerts.size());
+			for (PVector v : baseVerts) {
+				PVector vn = v.copy();
+				vn.rotate((float) getParent().getOrientation());
+				vertices.add(vn);
+			}
+
+		}
+	}
 
 	public Manifold getCollision(Primitive b, PVector offset) {
 		return switch (this.primitiveType) {
@@ -234,11 +250,11 @@ public class Primitive implements PhysicsMesh {
 		this.parent = parent;
 		primitiveType = PrimitiveType.POLYGON;
 		this.surface = surface;
-		this.vertices = vertices;
+		this.baseVerts = vertices;
 
 		// Assemble AABB bounds
 		PVector min = new PVector(), max = new PVector();
-		for (PVector v : vertices) {
+		for (PVector v : baseVerts) {
 			min.x = v.x < min.x ? v.x : min.x;
 			min.y = v.y < min.y ? v.y : min.y;
 			max.x = v.x > max.x ? v.x : max.x;

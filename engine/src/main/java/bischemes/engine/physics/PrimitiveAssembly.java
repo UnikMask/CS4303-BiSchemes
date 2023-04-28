@@ -3,7 +3,6 @@ package bischemes.engine.physics;
 import java.util.ArrayList;
 import java.util.List;
 
-import bischemes.engine.physics.SpatialPartition.PrimitiveStore;
 import processing.core.PVector;
 
 /**
@@ -67,14 +66,6 @@ public class PrimitiveAssembly implements PhysicsMesh {
 			m.combine(p.primitive.getCollision(b, PVector.mult(p.offset, -1)));
 		}
 		return m;
-	}
-
-	public List<PrimitiveStore> getPrimitiveStores() {
-		return assembly.stream().map((pInSet) -> {
-			PVector transformedOffset = pInSet.offset.copy();
-			transformedOffset.rotate((float) parent.getOrientation());
-			return new PrimitiveStore(pInSet.primitive, pInSet.offset);
-		}).toList();
 	}
 
 	//////////////////

@@ -32,6 +32,10 @@ public class Primitive implements PhysicsMesh {
 		return parent;
 	}
 
+	public PVector getAABBBounds() {
+		return AABBBounds;
+	}
+
 	/////////////////////
 	// Physics Methods //
 	/////////////////////

@@ -4,7 +4,7 @@ public enum LColour {
     PRIMARY,
     SECONDARY;
 
-    public LColour parse(String s) {
+    public static LColour parse(String s) {
         return switch (s.toUpperCase()) {
             case "PRIMARY" -> PRIMARY;
             case "SECONDARY" -> SECONDARY;

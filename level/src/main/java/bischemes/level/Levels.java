@@ -56,6 +56,6 @@ public final class Levels {
 
     public static void main(String[] args) {
         loadLevels(true);
-        //System.out.println("Successfully loaded " + levels.size() + " levels");
+        System.out.println("Successfully loaded " + levels.size() + " levels");
     }
 }

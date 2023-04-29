@@ -1,12 +1,15 @@
 package bischemes.level;
 
 import bischemes.engine.GObject;
+import bischemes.level.parts.RObject;
 import bischemes.level.util.InvalidIdException;
 import bischemes.level.util.JParsing;
 import bischemes.level.util.LevelParseException;
 import processing.core.PVector;
 
 import javax.json.JsonObject;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Room {
@@ -17,10 +20,11 @@ public class Room {
     private final PVector dimensions; // Dimension (width/height) of the room
     private final PVector spawnPos; // Position the player spawns at in the room (x,y)
 
+
+    private final GObject coreGObject;
     private final GObject primaryGeometry;
     private final GObject secondaryGeometry;
-
-    private final GObject roomObjects;
+    private final List<RObject> roomObjects;
 
     //TODO private final ??? adjacent; // to make points of adjacency between rooms
 
@@ -35,7 +39,7 @@ public class Room {
     public PVector getSpawnPosition() { return spawnPos; }
     public GObject getPrimaryGeometry() { return primaryGeometry; }
     public GObject getSecondaryGeometry() { return secondaryGeometry; }
-    public GObject getObjects() { return roomObjects; }
+    public List<RObject> getObjects() { return roomObjects; }
 
     public void setParentLevel(Level level) {
         this.parent = level;
@@ -48,9 +52,10 @@ public class Room {
         this.id = id;
         this.dimensions = dimensions;
         this.spawnPos = spawnPos;
-        primaryGeometry = new GObject(null, new PVector(), 0);
-        secondaryGeometry = new GObject(null, new PVector(), 0);
-        roomObjects = new GObject(null, new PVector(), 0);
+        coreGObject = new GObject(null, new PVector(), 0);
+        primaryGeometry = new GObject(coreGObject, new PVector(), 0);
+        secondaryGeometry = new GObject(coreGObject, new PVector(), 0);
+        roomObjects = new ArrayList<>();
     }
 
 
@@ -67,7 +72,7 @@ public class Room {
              JParsing.parseGeometryArr(geometry, "primary", room.primaryGeometry);
              JParsing.parseGeometryArr(geometry, "secondary", room.secondaryGeometry);
 
-
+            JParsing.parseRObjectAr(roomJson, "objects", room.coreGObject, room.roomObjects);
              // TODO room object parsing
              // TODO adjacency parsing
 

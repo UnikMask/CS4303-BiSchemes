@@ -1,7 +1,6 @@
 {
   "id" : 0,
   "dimensions" : [16, 10],
-  "spawnPosition" : [1.5, 2.5],
   "adjacent" : [
     {
       "id": 0,
@@ -10,48 +9,70 @@
       "visible" : false
     }
   ],
-  "geometry" : {
-    "primary" : [
-
-    ],
-    "secondary" : [
+  "spawnPosition": [1.5, 7.5],
+  "geometry": {
+    "primary": [
       {
         "type" : "RECT",
-        "anchor" : [0, 0],
-        "dimensions" : [16, 1]
-      },
-      {
-        "type" : "RECT",
-        "anchor" : [4, 1],
-        "dimensions" : [12, 1]
-      },
-      {
-        "type" : "RECT",
-        "anchor" : [0, 6],
+        "anchor" : [0, 4],
         "dimensions" : [16, 4]
       },
       {
-        "type" : "TRIANGLE",
-        "anchor" : [3, 1],
-        "vertex1" : [1, 0],
-        "vertex2" : [1, 1]
+        "type" : "RECT",
+        "anchor" : [0, 8],
+        "dimensions" : [1, 3]
+      },
+      {
+        "type": "TRIANGLE",
+        "anchor": [3, 9],
+        "vertex1": [1, 0],
+        "vertex2": [1, -1]
+      }
+    ],
+    "secondary": [
+      {
+        "type": "RECT",
+        "anchor": [0, 9],
+        "dimensions": [16, 1]
+      },
+      {
+        "type": "RECT",
+        "anchor": [4, 8],
+        "dimensions": [12, 1]
+      },
+      {
+        "type": "RECT",
+        "anchor": [0, 0],
+        "dimensions": [16, 4]
+      },
+      {
+        "type": "TRIANGLE",
+        "anchor": [3, 9],
+        "vertex1": [1, -1],
+        "vertex2": [1, 0]
       }
     ]
   },
-  "objects" : [
+  "objects": [
     {
-      "type" : "DOOR",
-      "colour" : "SECONDARY",
-      "id" : 0,
-      "anchor" : [10, 2],
-      "dimensions" : [1, 4]
+      "type": "DOOR",
+      "colour": "SECONDARY",
+      "id": 0,
+      "anchor": [10, 4],
+      "dimensions": [1, 4]
     },
     {
-      "type" : "LEVER",
-      "colour" : "PRIMARY",
-      "id" : 1,
-      "anchor" : [2, 6],
-      "linkedTo" : [0]
+      "type": "LEVER",
+      "colour": "PRIMARY",
+      "id": 1,
+      "anchor": [0, 8],
+      "linkedTo": [0]
+    },
+    {
+      "type" : "EXIT",
+      "id" : 2,
+      "anchor" : [16, 0],
+      "edge" : [0, 10]
     }
   ]
 }

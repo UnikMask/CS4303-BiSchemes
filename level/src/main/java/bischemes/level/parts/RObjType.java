@@ -3,6 +3,7 @@ package bischemes.level.parts;
 import bischemes.level.util.LColour;
 
 public enum RObjType {
+    GEOMETRY,
     DOOR,
     LEVER,
     BLOCK,
@@ -10,7 +11,7 @@ public enum RObjType {
     PORTAL,
     EXIT;
 
-    public RObjType parse(String s) {
+    public static RObjType parse(String s) {
         return switch (s.toUpperCase()) {
             case "DOOR" -> DOOR;
             case "LEVER" -> LEVER;

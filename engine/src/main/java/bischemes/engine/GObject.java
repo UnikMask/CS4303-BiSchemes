@@ -3,6 +3,7 @@ package bischemes.engine;
 import java.util.ArrayList;
 import java.util.List;
 
+import bischemes.engine.physics.RigidBody;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
@@ -53,6 +54,7 @@ public class GObject {
 		return orientation;
 	}
 
+
 	////////////////////
 	// Public Methods //
 	////////////////////
@@ -83,6 +85,13 @@ public class GObject {
 			parent.addChild(this);
 	}
 
+	public void addVisualAttributes(VisualAttribute... attributes) {
+		for (VisualAttribute a : attributes) {
+			a.activate(this);
+			visualAttributes.add(a);
+		}
+	}
+
 	/////////////////////
 	// Private Methods //
 	/////////////////////
@@ -90,13 +99,6 @@ public class GObject {
 	private void addChild(GObject child) {
 		child.parent = this;
 		children.add(child);
-	}
-
-	public void addVisualAttributes(VisualAttribute... attributes) {
-		for (VisualAttribute a : attributes) {
-			a.activate(this);
-			visualAttributes.add(a);
-		}
 	}
 
 }

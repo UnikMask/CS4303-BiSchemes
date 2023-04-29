@@ -3,6 +3,7 @@ package bischemes.engine.physics;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import bischemes.engine.physics.PrimitiveAssembly.PrimitiveInSet;
 import processing.core.PVector;
@@ -24,6 +25,7 @@ public class GridSector {
 	class PrimitiveStore {
 		Primitive p;
 		PVector position;
+		PVector offset;
 		PVector AABBbounds;
 
 		@Override
@@ -43,12 +45,14 @@ public class GridSector {
 		public PrimitiveStore(Primitive p) {
 			this.p = p;
 			this.position = p.getParent().getPosition();
+			this.offset = new PVector();
 			this.AABBbounds = p.getAABBBounds();
 		}
 
 		public PrimitiveStore(PrimitiveInSet p) {
 			this.p = p.primitive;
 			this.position = PVector.add(p.primitive.getParent().getPosition(), p.offset);
+			this.offset = p.offset;
 			this.AABBbounds = p.primitive.getAABBBounds();
 		}
 	}
@@ -61,6 +65,29 @@ public class GridSector {
 
 		public boolean hasOverlap() {
 			return list.size() > 1;
+		}
+	}
+
+	class Pair<T> {
+		T a;
+		T b;
+
+		public int hashCode() {
+			return a.hashCode() + 97 * b.hashCode();
+		}
+
+		public boolean equals(Object o) {
+			if (o instanceof Pair<?>) {
+				Pair<?> ot = (Pair<?>) o;
+				return (ot.a == a && ot.b == b) || (ot.b == a && ot.a == b);
+			} else {
+				return false;
+			}
+		}
+
+		public Pair(T a, T b) {
+			this.a = a;
+			this.b = b;
 		}
 	}
 
@@ -120,6 +147,9 @@ public class GridSector {
 	}
 
 	private void remove(PrimitiveStore p) {
+		if (!primitives.containsKey(p)) {
+			return;
+		}
 		for (GridCell c : primitives.get(p)) {
 			c.list.remove(p);
 			if (overlaps.contains(c) && !c.hasOverlap()) {
@@ -129,9 +159,33 @@ public class GridSector {
 		primitives.remove(p);
 	}
 
-	public ArrayList<Manifold> getCollisions() {
-		ArrayList<Manifold> manifolds = new ArrayList<>(overlaps.size());
-		return manifolds;
+	/**
+	 * Get all actual collisions happening in the grid sector.
+	 *
+	 * @return A map of rigid body pairs to their corresponding manifolds.
+	 */
+	public HashMap<Pair<RigidBody>, Manifold> getCollisions() {
+		HashMap<Pair<RigidBody>, Manifold> pairs = new HashMap<>();
+		HashSet<Pair<PrimitiveStore>> donePrimitives = new HashSet<>();
+		for (GridCell c : overlaps) {
+			ArrayList<PrimitiveStore> clist = new ArrayList<>(c.list);
+			for (int i = 0; i < clist.size(); i++) {
+				PrimitiveStore a = clist.get(i);
+				for (int j = i; j < clist.size(); j++) {
+					PrimitiveStore b = clist.get(j);
+					Pair<RigidBody> p = new Pair<>(a.p.getParent(), b.p.getParent());
+					Pair<PrimitiveStore> donePair = new Pair<>(a, b);
+					Manifold m = a.p.getCollision(b.p, PVector.sub(b.offset, a.offset));
+					donePrimitives.add(donePair);
+					if (pairs.containsKey(p)) {
+						pairs.get(p).combine(m);
+					} else {
+						pairs.put(p, m);
+					}
+				}
+			}
+		}
+		return pairs;
 	}
 
 	/**

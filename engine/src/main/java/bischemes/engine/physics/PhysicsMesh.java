@@ -1,8 +1,5 @@
 package bischemes.engine.physics;
 
-import java.util.List;
-
-import bischemes.engine.physics.SpatialPartition.PrimitiveStore;
 import processing.core.PVector;
 
 public interface PhysicsMesh {
@@ -40,5 +37,8 @@ public interface PhysicsMesh {
 	 */
 	Manifold getCollision(PhysicsMesh b);
 
-	List<PrimitiveStore> getPrimitiveStores();
+	/**
+	 * Derive the derived values of the primitive for per-frame checks.
+	 */
+	void derive();
 }

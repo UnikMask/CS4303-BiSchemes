@@ -1,9 +1,9 @@
 package bischemes.engine;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
+import bischemes.engine.physics.RigidBody;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
@@ -12,6 +12,7 @@ public class EngineRuntime {
 	public static PApplet applet;
 	private PGraphics g;
 	private Set<GObject> scenes = new HashSet<>();
+	private HashSet<RigidBody> bodies = new HashSet<>();
 
 	// Camera Variables
 	private PVector cameraPosition = new PVector(16, 9);
@@ -40,6 +41,10 @@ public class EngineRuntime {
 			scene.draw(g);
 		}
 		g.popMatrix();
+	}
+
+	public void update() {
+		// TODO update loop
 	}
 
 	public void attachScene(GObject scene) {

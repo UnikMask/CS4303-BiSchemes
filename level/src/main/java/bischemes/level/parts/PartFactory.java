@@ -3,6 +3,8 @@ package bischemes.level.parts;
 import bischemes.engine.GObject;
 import bischemes.engine.VisualUtils;
 import bischemes.engine.physics.*;
+import bischemes.level.parts.behaviour.OnStateChangeBlock;
+import bischemes.level.parts.behaviour.OnStateChangeDoor;
 import bischemes.level.util.LColour;
 import processing.core.PVector;
 
@@ -216,13 +218,17 @@ public class PartFactory {
     }
 
     // TODO
-    public RObject makeBlock(GObject parent, PVector anchor, PVector dimensions, LColour colour, int id) {
-        return null;
+    public RObject makeBlock(GObject parent, PVector anchor, PVector dimensions, boolean initState, LColour colour, int id) {
+        RObject block = createRect(parent, anchor, dimensions, 0f, colour, id);
+        OnStateChangeBlock.newOnStateChange(block, initState, dimensions);
+        return block;
     }
 
     // TODO
-    public RObject makeDoor(GObject parent, PVector anchor, PVector dimensions, LColour colour, int id) {
-        return null;
+    public RObject makeDoor(GObject parent, PVector anchor, PVector dimensions, boolean initState, LColour colour, int id) {
+        RObject rect = createRect(parent, anchor, dimensions, 0f, colour, id);
+        OnStateChangeDoor.newOnStateChange(rect, initState, dimensions);
+        return rect;
     }
 
     // TODO

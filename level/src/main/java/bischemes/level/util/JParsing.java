@@ -33,8 +33,8 @@ public final class JParsing {
         catch (ClassCastException e) { throw new LevelParseException("\"" + name + "\" is not an assignable integer"); }
     }
     public static int parseInt(JsonObject obj, String name, int defaultValue) {
-        try { return obj.getInt(name); }
-        catch (NullPointerException | ClassCastException e) { return defaultValue; }
+        try { return parseInt(obj, name); }
+        catch (LevelParseException e) { return defaultValue; }
     }
     public static int[] parseInts(JsonObject obj, String name) {
         JsonArray arr = parseArr(obj, name);
@@ -43,15 +43,23 @@ public final class JParsing {
         catch (ClassCastException e) { throw new LevelParseException("\"" + name + "\" array does not contain assignable integers"); }
         return ints;
     }
-
     public static float parseFloat(JsonObject obj, String name) {
         try { return (float) obj.getJsonNumber(name).doubleValue(); }
         catch (NullPointerException e) { throw new LevelParseException("\"" + name + "\" does not have a mapping"); }
         catch (ClassCastException e) { throw new LevelParseException("\"" + name + "\" is not an assignable float"); }
     }
     public static float parseFloat(JsonObject obj, String name, float defaultValue) {
-        try { return (float) obj.getJsonNumber(name).doubleValue(); }
-        catch (ClassCastException | NullPointerException e) { return defaultValue; }
+        try { return parseFloat(obj, name); }
+        catch (LevelParseException e) { return defaultValue; }
+    }
+    public static boolean parseBoolean(JsonObject obj, String name) {
+        try { return obj.getBoolean(name); }
+        catch (NullPointerException e) { throw new LevelParseException("\"" + name + "\" does not have a mapping"); }
+        catch (ClassCastException e) { throw new LevelParseException("\"" + name + "\" is not an assignable boolean"); }
+    }
+    public static boolean parseBoolean(JsonObject obj, String name, boolean defaultValue) {
+        try { return parseBoolean(obj, name); }
+        catch (LevelParseException e) { return defaultValue; }
     }
     public static String parseStr(JsonObject obj, String name) {
         String s;
@@ -165,10 +173,7 @@ public final class JParsing {
 
     public static RObject parseGeometryRObj(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
         LColour colour = parseLColour(obj, "colour");
-
         String type = parseStr(obj, "gType");
-
-        //TODO attach LColour and id
 
         pF.initPhysicsProperties(PartFactory.PhysicsPreset.GEOMETRY);
         return switch (type) {
@@ -193,17 +198,19 @@ public final class JParsing {
     public static RObject parseBlock(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
         LColour colour = parseLColour(obj, "colour");
         PVector dimensions = parsePVec(obj, "dimensions");
+        boolean initState = parseBoolean(obj, "initState", false);
 
         pF.initPhysicsProperties(PartFactory.PhysicsPreset.BLOCK);
-        return pF.makeBlock(parent, anchor, dimensions, colour, id);
+        return pF.makeBlock(parent, anchor, dimensions, initState, colour, id);
     }
 
     public static RObject parseDoor(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
         LColour colour = parseLColour(obj, "colour");
         PVector dimensions = parsePVec(obj, "dimensions");
+        boolean initState = parseBoolean(obj, "initState", false);
 
         pF.initPhysicsProperties(PartFactory.PhysicsPreset.GEOMETRY);
-        return pF.makeDoor(parent, anchor, dimensions, colour, id);
+        return pF.makeDoor(parent, anchor, dimensions, initState, colour, id);
     }
 
     public static RObject parseLever(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {

@@ -46,6 +46,14 @@ public class Room {
 
         primaryGeometry.setColour(level.getColourPrimary());
         secondaryGeometry.setColour(level.getColourSecondary());
+        for (RObject rObject : roomObjects) {
+            if (rObject == null) continue; //TODO remove once all object types implemented
+            if (rObject.getLColour() == null) continue;
+            switch (rObject.getLColour()) {
+                case PRIMARY -> rObject.setColour(level.getColourPrimary());
+                case SECONDARY -> rObject.setColour(level.getColourSecondary());
+            }
+        }
     }
 
     private Room(int id, PVector dimensions, PVector spawnPos) {

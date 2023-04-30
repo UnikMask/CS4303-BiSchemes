@@ -92,6 +92,16 @@ public class GObject {
 		}
 	}
 
+	public VisualAttribute getVisualAttribute(int index) {
+		return visualAttributes.get(index);
+	}
+
+	public void removeVisualAttributes(int... indices) {
+		for (int i : indices) {
+			visualAttributes.remove(i);
+		}
+	}
+
 	/////////////////////
 	// Private Methods //
 	/////////////////////

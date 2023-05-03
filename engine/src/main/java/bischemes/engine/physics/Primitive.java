@@ -107,6 +107,18 @@ public class Primitive implements PhysicsMesh {
 		}
 	}
 
+	public Primitive copy() {
+		if (primitiveType == PrimitiveType.POLYGON) {
+			List<PVector> newVertices = new ArrayList<>(vertices.size());
+			for (PVector v : baseVerts) {
+				newVertices.add(v.copy());
+			}
+			return new Primitive(surface, newVertices);
+		} else {
+			return new Primitive(surface, radius);
+		}
+	}
+
 	/////////////////////
 	// Private Methods //
 	/////////////////////

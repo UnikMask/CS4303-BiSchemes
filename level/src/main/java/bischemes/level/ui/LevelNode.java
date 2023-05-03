@@ -7,7 +7,16 @@ import bischemes.level.Level;
 
 public final class LevelNode {
 
-    private static final float SELECT_SIZE_FACTOR = 1.5f;
+    private static final float SELECT_SIZE_FACTOR = 1.5f; // How much bigger a selected node appears
+    private static final int   SELECT_SCALE_TIME  = 15; // How many draw() frames required to scale to full size
+    private static final float SELECT_SCALE_RATE  = (SELECT_SIZE_FACTOR - 1f) / (float) SELECT_SCALE_TIME;
+    private static final int   DEFAULT_TEXT_SIZE  = 30; // How large drawn text (level names) should be
+    private static final float TEXT_SCALE_RATE    = DEFAULT_TEXT_SIZE / (float) SELECT_SCALE_TIME;
+
+    private static final int   RECT_CORNER_ROUND  = 20; // Radius value for corners of drawn nodes
+    private static final int   GREY_OUTER_COLOUR  = 0x4F4F4F; // Colour used for unavailable levels
+    private static final int   GREY_INNER_COLOUR  = 0xB9B9B9; // Colour used for unavailable levels
+
 
     public final Level level;
 
@@ -17,6 +26,9 @@ public final class LevelNode {
 
     private boolean completed = false;
     private boolean selected = false;
+
+    private boolean scaling  = false;
+    private float currentScale = 0;
 
     public LevelNode(Level level, LevelNode[] dependencies, PVector position) {
         this.level = level;
@@ -54,6 +66,7 @@ public final class LevelNode {
     }
 
     public boolean isAvailable() {
+        if (completed) return true;
         boolean available = true;
         for (LevelNode node : dependencies) available &= node.isCompleted();
         return available;
@@ -73,19 +86,38 @@ public final class LevelNode {
         realPosition.x = (slicePosition.x * xTransScale) + offset.x;
         realPosition.y = (slicePosition.y * yTransScale) + offset.y;
         realPosition.z = squareWidth;
-        if (selected) realPosition.z *= SELECT_SIZE_FACTOR;
     }
 
     public void drawNode(PGraphics g) {
-        g.stroke(level.getColourSecondary());
-        g.fill(level.getColourPrimary());
-        g.rect(realPosition.x, realPosition.y, realPosition.z, realPosition.z);
+        if (isAvailable()) {
+            g.stroke(level.getColourSecondary());
+            g.fill(level.getColourPrimary());
+        }
+        else {
+            g.stroke(GREY_OUTER_COLOUR);
+            g.fill(GREY_INNER_COLOUR);
+        }
+
+        float width = realPosition.z;
+        if (scaling) {
+            width *= currentScale;
+            width *= SELECT_SCALE_RATE;
+
+            g.textSize(currentScale * TEXT_SCALE_RATE);
+            g.text(level.getName(), realPosition.x, realPosition.y - width);
+
+            if (selected) { if (currentScale < SELECT_SCALE_TIME) currentScale++; }
+            else scaling = --currentScale < 1;
+        }
+        g.rect(realPosition.x, realPosition.y, width, width, RECT_CORNER_ROUND);
     }
 
     public void drawEdges(PGraphics g) {
         PVector dependencyPos;
         for (LevelNode node : dependencies) {
             dependencyPos = node.getRealPosition();
+            if (node.isCompleted()) g.stroke(node.level.getColourPrimary());
+            else g.stroke(GREY_INNER_COLOUR);
             g.line(dependencyPos.x, dependencyPos.y, realPosition.x, realPosition.y);
         }
     }

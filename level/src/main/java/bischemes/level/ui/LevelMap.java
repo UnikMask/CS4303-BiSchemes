@@ -2,6 +2,7 @@ package bischemes.level.ui;
 
 
 import bischemes.level.Level;
+import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
@@ -81,6 +82,7 @@ public final class LevelMap {
         g.pushMatrix();
         g.scale(scale);
         g.strokeWeight(10);
+        g.textAlign(PConstants.CENTER);
         for (MapSlice slice : mapSlices) slice.calcPositions(offset);
         for (MapSlice slice : mapSlices) slice.drawEdges(g);
         for (MapSlice slice : mapSlices) slice.drawNodes(g);

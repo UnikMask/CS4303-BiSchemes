@@ -14,8 +14,6 @@ import processing.core.PGraphics;
 import processing.core.PVector;
 
 public class EngineRuntime {
-	private double TARGET_SEC_PER_FRAME = 1.0 / 144;
-
 	public static PApplet applet;
 	private PGraphics g;
 	private Set<SceneGridPair> scenes = new HashSet<>();

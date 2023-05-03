@@ -38,6 +38,10 @@ public class PrimitiveAssembly implements PhysicsMesh {
 		return assembly;
 	}
 
+	public int getAssemblySize() {
+		return assembly.size();
+	}
+
 	public RigidBody getParent() {
 		return parent;
 	}

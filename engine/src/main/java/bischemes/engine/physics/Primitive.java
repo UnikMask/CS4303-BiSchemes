@@ -87,6 +87,10 @@ public class Primitive implements PhysicsMesh {
 		}
 	}
 
+	public List<PVector> getVertices() {
+		return vertices;
+	}
+
 	public void enable(RigidBody parent) {
 		if (this.parent == null) {
 			this.parent = parent;

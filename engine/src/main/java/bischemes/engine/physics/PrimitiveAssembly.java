@@ -87,6 +87,9 @@ public class PrimitiveAssembly implements PhysicsMesh {
 		if (this.parent == null) {
 			this.parent = parent;
 		}
+		for (PrimitiveInSet p : assembly) {
+			p.primitive.enable(parent);
+		}
 	}
 
 	//////////////////

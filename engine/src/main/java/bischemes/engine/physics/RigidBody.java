@@ -114,6 +114,12 @@ public class RigidBody {
 	// public Methods //
 	////////////////////
 
+	public void enable(GObject parent) {
+		if (this.parent == null) {
+			this.parent = parent;
+		}
+	}
+
 	/**
 	 * Initialise a game update for a rigid body by resetting accumulators and force
 	 * lists, and deriving derived values.
@@ -191,8 +197,7 @@ public class RigidBody {
 	 * @param parent     The rigid body's parent object.
 	 * @param properties The rigid body's property structure.
 	 */
-	public RigidBody(GObject parent, RigidBodyProperties properties) {
-		this.parent = parent;
+	public RigidBody(RigidBodyProperties properties) {
 		this.properties = properties;
 
 		if (properties.mesh != null) {

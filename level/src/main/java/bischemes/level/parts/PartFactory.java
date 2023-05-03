@@ -115,16 +115,18 @@ public class PartFactory {
 	}
 
 	private void finishPolygon(GObject obj, List<PVector> vertices) {
-		RigidBody rigidBody = new RigidBody(obj, new RigidBodyProperties(RB_PROPERTIES));
+		RigidBody rigidBody = new RigidBody(new RigidBodyProperties(RB_PROPERTIES));
 		Surface surface = new Surface(restitution, staticFriction, dynamicFriction);
 		Primitive primitive = new Primitive(surface, vertices);
+		obj.setRigidBody(rigidBody);
 		// TODO how to assign RigidBody and Primitive to GObject?
 	}
 
 	private void finishCircle(GObject obj, float radius) {
-		RigidBody rigidBody = new RigidBody(obj, new RigidBodyProperties(RB_PROPERTIES));
+		RigidBody rigidBody = new RigidBody(new RigidBodyProperties(RB_PROPERTIES));
 		Surface surface = new Surface(restitution, staticFriction, dynamicFriction);
 		Primitive primitive = new Primitive(surface, radius);
+		obj.setRigidBody(rigidBody);
 		// TODO how to assign RigidBody and Primitive to GObject?
 	}
 

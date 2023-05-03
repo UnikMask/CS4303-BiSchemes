@@ -85,6 +85,11 @@ public class GObject {
 		}
 	}
 
+	public void setRigidBody(RigidBody rb) {
+		this.rigidBody = rb;
+		rb.enable(parent);
+	}
+
 	public VisualAttribute getVisualAttribute(int index) {
 		return visualAttributes.get(index);
 	}

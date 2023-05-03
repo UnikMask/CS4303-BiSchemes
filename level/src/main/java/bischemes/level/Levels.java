@@ -24,6 +24,9 @@ public final class Levels {
         if (idExists(id)) return levels.get(id);
         throw new InvalidIdException("getLevel(id), level with id " + id + " does not exist");
     }
+    public static HashMap<Integer, Level> getLevels() {
+        return levels;
+    }
     public static boolean idExists(int id) {
         return levels.containsKey(id);
     }

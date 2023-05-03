@@ -9,6 +9,8 @@ import processing.core.PMatrix2D;
 import processing.core.PVector;
 
 public class RigidBody {
+	private PVector MOVE_THRESHOLD = new PVector(0.0001f, 0.0001f);
+
 	// Parent values - position, orientation
 	private GObject parent;
 
@@ -27,6 +29,7 @@ public class RigidBody {
 	// Force Bookkeeping
 	private List<PVector> forces = new ArrayList<>();
 	private PVector forceAccumulation;
+	public boolean hasMoved = true;
 	// private double torqueAccumulation;
 
 	/////////////////////////
@@ -125,6 +128,8 @@ public class RigidBody {
 	 * @param duration The duration of the frame.
 	 */
 	public void integrate(double duration) {
+		hasMoved = false;
+
 		// Apply forces to accumulator
 		for (PVector f : forces) {
 			forceAccumulation.add(f);
@@ -132,8 +137,13 @@ public class RigidBody {
 
 		// Apply accumulator to velocity, and velocity to position
 		properties.velocity = PVector.add(properties.velocity, PVector.mult(forceAccumulation, (float) duration));
+		PVector pos = parent.getPosition().copy();
 		parent.setLocalPosition(
 				PVector.add(parent.getLocalPosition(), PVector.mult(properties.velocity, (float) duration)));
+		pos.sub(parent.getPosition());
+		if (Math.abs(pos.x) > MOVE_THRESHOLD.x || Math.abs(pos.y) > MOVE_THRESHOLD.y) {
+			hasMoved = true;
+		}
 	}
 
 	/**

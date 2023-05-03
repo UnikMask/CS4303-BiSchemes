@@ -12,6 +12,7 @@ public class GObject {
 	protected List<GObject> children = new ArrayList<>();
 	protected PVector position;
 	protected double orientation;
+	protected RigidBody rigidBody = null;
 	protected List<VisualAttribute> visualAttributes = new ArrayList<>();
 
 	/////////////////////////
@@ -54,7 +55,6 @@ public class GObject {
 		return orientation;
 	}
 
-
 	////////////////////
 	// Public Methods //
 	////////////////////
@@ -68,21 +68,14 @@ public class GObject {
 		}
 	}
 
-	// recursively set the colour of this GObject's and its children's visualAttributes.
+	// recursively set the colour of this GObject's and its children's
+	// visualAttributes.
 	// TEXTURED visualAttributes become TINTED_TEXTURED
 	public void setColour(int colour) {
 		for (VisualAttribute visAttr : visualAttributes)
 			visAttr.setColour(colour);
 		for (GObject child : children)
 			child.setColour(colour);
-	}
-
-
-	public GObject(GObject parent, PVector position, float rotation) {
-		this.position = position;
-		this.orientation = rotation;
-		if (parent != null)
-			parent.addChild(this);
 	}
 
 	public void addVisualAttributes(VisualAttribute... attributes) {
@@ -102,6 +95,14 @@ public class GObject {
 		}
 	}
 
+	public RigidBody getRigidBody() {
+		return rigidBody;
+	}
+
+	public void update() {
+		// Placeholder
+	}
+
 	/////////////////////
 	// Private Methods //
 	/////////////////////
@@ -111,4 +112,10 @@ public class GObject {
 		children.add(child);
 	}
 
+	public GObject(GObject parent, PVector position, float rotation) {
+		this.position = position;
+		this.orientation = rotation;
+		if (parent != null)
+			parent.addChild(this);
+	}
 }

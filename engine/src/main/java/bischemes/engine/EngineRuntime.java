@@ -1,5 +1,7 @@
 package bischemes.engine;
 
+import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,8 +13,7 @@ import processing.core.PVector;
 public class EngineRuntime {
 	public static PApplet applet;
 	private PGraphics g;
-	private Set<GObject> scenes = new HashSet<>();
-	private HashSet<RigidBody> bodies = new HashSet<>();
+	private Set<SceneGridPair> scenes = new HashSet<>();
 
 	// Camera Variables
 	private PVector cameraPosition = new PVector(16, 9);
@@ -37,21 +38,43 @@ public class EngineRuntime {
 		g.rotate(-cameraRotation);
 		g.scale(scale.x, scale.y);
 		g.translate(-posAnchored.x, -posAnchored.y);
-		for (GObject scene : scenes) {
-			scene.draw(g);
+		for (SceneGridPair scene : scenes) {
+			scene.scene.draw(g);
 		}
 		g.popMatrix();
 	}
 
 	public void update() {
 		// TODO update loop
+
+		// 1. GObject per-frame Update
+		for (SceneGridPair s : scenes) {
+			ArrayDeque<GObject> q = new ArrayDeque<>(Arrays.asList(s.scene));
+			while (!q.isEmpty()) {
+				GObject current = q.pollFirst();
+				current.update();
+				q.addAll(current.children);
+			}
+
+			// 2. Game Update
+			// 3. Movement Integration
+			for (RigidBody rb : s.bodies) {
+				rb.integrate(deltaT);
+				if (rb.hasMoved) {
+				}
+			}
+		}
+		// 4. RigidBody Derivation
+		// 5. Collision Resolution
+		// 6. Collision Events
+		// 7. Draw
 	}
 
-	public void attachScene(GObject scene) {
+	public void attachScene(SceneGridPair scene) {
 		scenes.add(scene);
 	}
 
-	public void removeScene(GObject scene) {
+	public void removeScene(SceneGridPair scene) {
 		scenes.remove(scene);
 	}
 

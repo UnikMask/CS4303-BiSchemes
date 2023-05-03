@@ -194,5 +194,9 @@ public class RigidBody {
 	public RigidBody(GObject parent, RigidBodyProperties properties) {
 		this.parent = parent;
 		this.properties = properties;
+
+		if (properties.mesh != null) {
+			properties.mesh.enable(this);
+		}
 	}
 }

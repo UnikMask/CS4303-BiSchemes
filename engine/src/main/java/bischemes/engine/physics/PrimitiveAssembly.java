@@ -83,11 +83,16 @@ public class PrimitiveAssembly implements PhysicsMesh {
 		return m;
 	}
 
+	public void enable(RigidBody parent) {
+		if (this.parent == null) {
+			this.parent = parent;
+		}
+	}
+
 	//////////////////
 	// Constructors //
 	//////////////////
 
-	public PrimitiveAssembly(RigidBody parent) {
-		this.parent = parent;
+	public PrimitiveAssembly() {
 	}
 }

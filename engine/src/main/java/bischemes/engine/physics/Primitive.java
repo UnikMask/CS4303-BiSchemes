@@ -3,6 +3,7 @@ package bischemes.engine.physics;
 import java.util.ArrayList;
 import java.util.List;
 
+import bischemes.engine.GObject;
 import bischemes.engine.physics.PrimitiveAssembly.PrimitiveInSet;
 import processing.core.PVector;
 
@@ -83,6 +84,12 @@ public class Primitive implements PhysicsMesh {
 			return getCollision((PrimitiveAssembly) b);
 		} else {
 			return null;
+		}
+	}
+
+	public void enable(RigidBody parent) {
+		if (this.parent == null) {
+			this.parent = parent;
 		}
 	}
 
@@ -246,8 +253,7 @@ public class Primitive implements PhysicsMesh {
 	 * @param vertices The list of vertices that define a primitive - the polygon
 	 *                 MUST be flat and convex.
 	 */
-	public Primitive(RigidBody parent, Surface surface, List<PVector> vertices) {
-		this.parent = parent;
+	public Primitive(Surface surface, List<PVector> vertices) {
 		primitiveType = PrimitiveType.POLYGON;
 		this.surface = surface;
 		this.baseVerts = vertices;

@@ -115,6 +115,9 @@ public class GridSector {
 	}
 
 	public void move(RigidBody p) {
+		if (p.properties.mesh == null) {
+			return;
+		}
 		if (p.properties.mesh instanceof Primitive) {
 			move(p);
 		} else {

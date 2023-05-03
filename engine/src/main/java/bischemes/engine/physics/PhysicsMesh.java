@@ -37,6 +37,8 @@ public interface PhysicsMesh {
 	 */
 	Manifold getCollision(PhysicsMesh b);
 
+	void enable(RigidBody parent);
+
 	/**
 	 * Derive the derived values of the primitive for per-frame checks.
 	 */

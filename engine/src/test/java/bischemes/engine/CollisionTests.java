@@ -2,6 +2,7 @@ package bischemes.engine;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -44,5 +45,15 @@ class CollisionTests {
 		Manifold m = rbA.getProperties().mesh.getCollision(rbB.getProperties().mesh);
 		assertNotNull(m);
 		assertFalse(m.isCollision());
+
+		// Case 2 - collision
+		bA.setLocalPosition(new PVector(0.1f, 0));
+		m = rbA.getProperties().mesh.getCollision(rbB.getProperties().mesh);
+		assertTrue(m.isCollision());
+	}
+
+	@Test
+	public void testCircleToPolygonCollision() {
+
 	}
 }

@@ -79,9 +79,9 @@ public class Primitive implements PhysicsMesh {
 
 	public Manifold getCollision(PhysicsMesh b) {
 		if (b instanceof Primitive) {
-			return getCollision((Primitive) b);
+			return getCollision((Primitive) b, new PVector());
 		} else if (b instanceof PrimitiveAssembly) {
-			return getCollision((PrimitiveAssembly) b);
+			return getCollision((PrimitiveAssembly) b, new PVector());
 		} else {
 			return null;
 		}

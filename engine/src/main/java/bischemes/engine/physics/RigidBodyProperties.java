@@ -8,16 +8,16 @@ import processing.core.PVector;
  * Struct containing the real properties of a rigid body.
  */
 public class RigidBodyProperties {
-	double mass;
-	double inertia;
-	double damping;
-	PVector velocity;
-	double rotation;
+	public double mass;
+	public double inertia;
+	public double damping;
+	public PVector velocity;
+	public double rotation;
 
-	boolean isMovable = false;
-	boolean isRotatable = false;
+	public boolean isMovable = false;
+	public boolean isRotatable = false;
 
-	PhysicsMesh mesh;
+	public PhysicsMesh mesh;
 
 	/**
 	 * parse a given property and set its value on the properties.

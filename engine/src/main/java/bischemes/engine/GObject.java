@@ -22,7 +22,7 @@ public class GObject {
 	public PVector getPosition() {
 		PVector globalPosition = new PVector();
 		GObject currentObject = this;
-		while (currentObject.parent != null) {
+		while (currentObject != null) {
 			globalPosition.add(currentObject.position);
 			currentObject = currentObject.parent;
 		}
@@ -87,7 +87,7 @@ public class GObject {
 
 	public void setRigidBody(RigidBody rb) {
 		this.rigidBody = rb;
-		rb.enable(parent);
+		this.rigidBody.enable(this);
 	}
 
 	public VisualAttribute getVisualAttribute(int index) {

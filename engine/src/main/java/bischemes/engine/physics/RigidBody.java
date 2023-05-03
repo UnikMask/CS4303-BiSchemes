@@ -44,6 +44,10 @@ public class RigidBody {
 		return properties.mass;
 	}
 
+	public RigidBodyProperties getProperties() {
+		return properties;
+	}
+
 	/**
 	 * Get the inverse mass of the rigid body, derived from its mass.
 	 *

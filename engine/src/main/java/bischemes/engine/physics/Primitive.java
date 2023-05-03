@@ -270,8 +270,7 @@ public class Primitive implements PhysicsMesh {
 	 * @param parent The rigid body parent of the primitive.
 	 * @param radius The radius of the circle.
 	 */
-	public Primitive(RigidBody parent, Surface surface, double radius) {
-		this.parent = parent;
+	public Primitive(Surface surface, double radius) {
 		primitiveType = PrimitiveType.CIRCLE;
 		this.radius = radius;
 		this.surface = surface;

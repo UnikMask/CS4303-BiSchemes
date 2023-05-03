@@ -95,6 +95,10 @@ public class GObject {
 		}
 	}
 
+	public void onHit(GObject hit) {
+		// Placeholder
+	}
+
 	public RigidBody getRigidBody() {
 		return rigidBody;
 	}

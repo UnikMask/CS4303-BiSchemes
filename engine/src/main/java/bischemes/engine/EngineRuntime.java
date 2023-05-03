@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import bischemes.engine.physics.Manifold;
 import bischemes.engine.physics.RigidBody;
@@ -47,8 +49,6 @@ public class EngineRuntime {
 	}
 
 	public void update() {
-		// TODO update loop
-
 		// 1. GObject per-frame Update
 		for (SceneGridPair s : scenes) {
 			ArrayDeque<GObject> q = new ArrayDeque<>(Arrays.asList(s.scene));
@@ -64,9 +64,7 @@ public class EngineRuntime {
 				if (rb.hasMoved) {
 					s.grid.move(rb);
 				}
-
 				rb.initUpdate();
-				// 3. RigidBody Derivation
 			}
 
 			// 4. Collision Resolution
@@ -76,7 +74,12 @@ public class EngineRuntime {
 			}
 
 			// 5. Collision Events
+			for (Pair<RigidBody> rp : collisions.keySet()) {
+				rp.a.getParent().onHit(rp.b.getParent());
+				rp.b.getParent().onHit(rp.a.getParent());
+			}
 		}
+
 		// 6. Draw
 		draw();
 	}

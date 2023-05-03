@@ -36,6 +36,10 @@ public class RigidBody {
 	// Getters and Setters //
 	/////////////////////////
 
+	public GObject getParent() {
+		return parent;
+	}
+
 	public double getMass() {
 		return properties.mass;
 	}

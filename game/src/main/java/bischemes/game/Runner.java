@@ -3,11 +3,35 @@
  */
 package bischemes.game;
 
-import org.apache.commons.text.WordUtils;
 import processing.core.PApplet;
-import java.util.LinkedList;
 
 public class Runner extends PApplet {
+	public RunnerState state = RunnerState.MENU;
+
+	enum RunnerState {
+		MENU, HELP, PLAY, PAUSE
+	}
+
+	public void settings() {
+		size(1920, 1080, PApplet.P2D);
+		fullScreen();
+	}
+
+	public void setup() {
+
+	}
+
+	public void draw() {
+		background(0);
+		switch (state) {
+		case PLAY:
+			break;
+		default:
+			break;
+		}
+	}
+
 	public static void main(String[] args) {
+		PApplet.main(new String[] { "bischemes.game.Runner" });
 	}
 }

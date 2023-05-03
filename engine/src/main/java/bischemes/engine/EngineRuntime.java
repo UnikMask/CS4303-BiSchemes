@@ -2,11 +2,10 @@ package bischemes.engine;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import bischemes.engine.physics.Manifold;
 import bischemes.engine.physics.RigidBody;
@@ -15,6 +14,8 @@ import processing.core.PGraphics;
 import processing.core.PVector;
 
 public class EngineRuntime {
+	private double TARGET_SEC_PER_FRAME = 1.0 / 144;
+
 	public static PApplet applet;
 	private PGraphics g;
 	private Set<SceneGridPair> scenes = new HashSet<>();
@@ -27,6 +28,8 @@ public class EngineRuntime {
 	// Time Variables
 	private boolean paused = true;
 	private long deltaT = 0;
+	private long lastTimeStamp = new Date().getTime();
+	public boolean pause = false;
 
 	public void setPause(boolean pause) {
 		if (this.paused != pause) {
@@ -49,6 +52,14 @@ public class EngineRuntime {
 	}
 
 	public void update() {
+		long currentTime = new Date().getTime();
+		deltaT -= ((float) (currentTime - lastTimeStamp)) / 1000.0;
+		lastTimeStamp = currentTime;
+
+		if (pause) {
+			return;
+		}
+
 		// 1. GObject per-frame Update
 		for (SceneGridPair s : scenes) {
 			ArrayDeque<GObject> q = new ArrayDeque<>(Arrays.asList(s.scene));

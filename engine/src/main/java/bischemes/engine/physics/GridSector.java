@@ -3,8 +3,8 @@ package bischemes.engine.physics;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
+import bischemes.engine.Pair;
 import bischemes.engine.physics.PrimitiveAssembly.PrimitiveInSet;
 import processing.core.PVector;
 
@@ -68,29 +68,6 @@ public class GridSector {
 		}
 	}
 
-	class Pair<T> {
-		T a;
-		T b;
-
-		public int hashCode() {
-			return a.hashCode() + 97 * b.hashCode();
-		}
-
-		public boolean equals(Object o) {
-			if (o instanceof Pair<?>) {
-				Pair<?> ot = (Pair<?>) o;
-				return (ot.a == a && ot.b == b) || (ot.b == a && ot.a == b);
-			} else {
-				return false;
-			}
-		}
-
-		public Pair(T a, T b) {
-			this.a = a;
-			this.b = b;
-		}
-	}
-
 	// Lists making up grid storage
 	private ArrayList<GridCell> sector;
 	private HashSet<GridCell> overlaps = new HashSet<>();
@@ -135,6 +112,16 @@ public class GridSector {
 	public void move(PrimitiveInSet p) {
 		remove(p);
 		add(p);
+	}
+
+	public void move(RigidBody p) {
+		if (p.properties.mesh instanceof Primitive) {
+			move(p);
+		} else {
+			for (PrimitiveInSet ps : ((PrimitiveAssembly) p.properties.mesh).getAssembly()) {
+				move(ps);
+			}
+		}
 	}
 
 	public void remove(Primitive p) {

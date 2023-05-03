@@ -2,9 +2,11 @@ package bischemes.engine;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import bischemes.engine.physics.Manifold;
 import bischemes.engine.physics.RigidBody;
 import processing.core.PApplet;
 import processing.core.PGraphics;
@@ -56,18 +58,27 @@ public class EngineRuntime {
 				q.addAll(current.children);
 			}
 
-			// 2. Game Update
-			// 3. Movement Integration
+			// 2. Movement Integration
 			for (RigidBody rb : s.bodies) {
 				rb.integrate(deltaT);
 				if (rb.hasMoved) {
+					s.grid.move(rb);
 				}
+
+				rb.initUpdate();
+				// 3. RigidBody Derivation
 			}
+
+			// 4. Collision Resolution
+			HashMap<Pair<RigidBody>, Manifold> collisions = s.grid.getCollisions();
+			for (var entry : collisions.entrySet()) {
+				entry.getValue().applyImpulse();
+			}
+
+			// 5. Collision Events
 		}
-		// 4. RigidBody Derivation
-		// 5. Collision Resolution
-		// 6. Collision Events
-		// 7. Draw
+		// 6. Draw
+		draw();
 	}
 
 	public void attachScene(SceneGridPair scene) {

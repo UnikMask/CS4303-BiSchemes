@@ -1,4 +1,4 @@
 package bischemes.level.parts.behaviour;
 
-public class OnHitRoomSwitch {
+public class OnHitRoomChange {
 }

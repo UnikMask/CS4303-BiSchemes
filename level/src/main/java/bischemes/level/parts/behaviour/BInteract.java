@@ -7,7 +7,7 @@ import bischemes.level.parts.RObject;
 import bischemes.level.util.SpriteLoader;
 import processing.core.PVector;
 
-public abstract class BInteract implements BUpdate {
+public abstract class BInteract extends BUpdate {
 
     protected final RObject interactable;
     private final boolean useCircleProx;

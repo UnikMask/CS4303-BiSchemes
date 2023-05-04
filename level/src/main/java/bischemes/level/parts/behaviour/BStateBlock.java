@@ -8,7 +8,7 @@ import processing.core.PVector;
 
 import static java.lang.Math.min;
 
-public class BStateBlock implements BState {
+public class BStateBlock extends BState {
 
     private final VisualAttribute blockSymbol;
     private final VisualAttribute lockSymbol;

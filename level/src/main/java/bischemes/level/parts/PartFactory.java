@@ -3,11 +3,9 @@ package bischemes.level.parts;
 import bischemes.engine.GObject;
 import bischemes.engine.VisualUtils;
 import bischemes.engine.physics.*;
-import bischemes.level.parts.behaviour.OnStateChangeBlock;
-import bischemes.level.parts.behaviour.OnStateChangeDoor;
-import bischemes.level.parts.behaviour.OnStateChangeLever;
-import bischemes.level.parts.behaviour.OnUpdateInteractable;
+import bischemes.level.parts.behaviour.*;
 import bischemes.level.util.LColour;
+import bischemes.level.util.SpriteLoader;
 import processing.core.PVector;
 
 import java.util.ArrayList;
@@ -239,7 +237,7 @@ public class PartFactory {
 	public RObject makeBlock(GObject parent, PVector anchor, PVector dimensions, boolean initState, LColour colour,
 			int id) {
 		RObject block = createRect(parent, anchor, dimensions, 0f, colour, id);
-		OnStateChangeBlock.assignOnStateChange(block, initState, dimensions);
+		OnStateChangeBlock.assign(block, initState, dimensions);
 		return block;
 	}
 
@@ -247,7 +245,7 @@ public class PartFactory {
 	public RObject makeDoor(GObject parent, PVector anchor, PVector dimensions, boolean initState, LColour colour,
 			int id) {
 		RObject rect = createRect(parent, anchor, dimensions, 0f, colour, id);
-		OnStateChangeDoor.assignOnStateChange(rect, initState, dimensions);
+		OnStateChangeHide.assign(rect, initState).addLockIcon(dimensions);
 		return rect;
 	}
 
@@ -260,9 +258,10 @@ public class PartFactory {
 	public RObject makeLever(GObject parent, PVector anchor, float orientation, int[] linkedIDs, LColour colour,
 			int id) {
 		RObject lever = new RObject(parent, anchor, orientation, id, colour);
-		OnStateChangeLever.assignOnStateChange(lever, false, linkedIDs);
-		OnUpdateInteractable b = OnUpdateInteractable.assignOnUpdate(lever, 1, 1);
-		b.addIndicator(new PVector(1, 1));
+		lever.addVisualAttributes(VisualUtils.makeRect(new PVector(1, 1), SpriteLoader.getLever()));
+		OnStateChangeFlip.assign(lever, false);
+		OnStateChangeStateSwitch.assign(lever, linkedIDs);
+		OnUpdateInteractable.assign(lever, 1, 1).addIndicator(new PVector(1, 1));
 		return null;
 	}
 

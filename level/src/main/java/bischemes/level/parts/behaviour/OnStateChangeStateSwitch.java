@@ -1,37 +1,29 @@
 package bischemes.level.parts.behaviour;
 
-import bischemes.engine.VisualAttribute;
 import bischemes.level.Room;
 import bischemes.level.parts.RObject;
 
-public class OnStateChangeLever implements OnStateChange {
+public class OnStateChangeStateSwitch implements OnStateChange {
 
-    private final VisualAttribute leverVAttr;
-    private final RObject lever;
+    private final RObject switcher;
 
     private final int[] linkedIDs;
     private final RObject[] linkedObjs;
 
-    private OnStateChangeLever(RObject lever, int[] linkedIDs) {
-        this.lever = lever;
-        leverVAttr = lever.getVisualAttribute(0);
+    private OnStateChangeStateSwitch(RObject switcher, int[] linkedIDs) {
+        this.switcher = switcher;
         this.linkedIDs = linkedIDs;
         linkedObjs = new RObject[linkedIDs.length];
+        switcher.addOnStateChange(this);
     }
 
-    public static OnStateChangeLever assignOnStateChange(RObject lever, boolean initState, int[] linkedIDs) {
-        OnStateChangeLever l = new OnStateChangeLever(lever, linkedIDs);
-
-        lever.setState(initState);
-        lever.addOnStateChange(l);
-
-        if (initState) l.leverVAttr.mirrorVerticesV();
-        return l;
+    public static OnStateChangeStateSwitch assign(RObject switcher, int[] linkedIDs) {
+        return new OnStateChangeStateSwitch(switcher, linkedIDs);
     }
 
     private void initLinkedObjs() {
         if (linkedObjs[0] != null) return;
-        Room room = Room.getRoom(lever);
+        Room room = Room.getRoom(switcher);
         for (int i = 0; i < linkedIDs.length; i++) {
             int id = linkedIDs[i];
             for (RObject rO : room.getObjects()) {
@@ -40,7 +32,7 @@ public class OnStateChangeLever implements OnStateChange {
                 break;
             }
             if (linkedObjs[i] == null)
-                throw new RuntimeException("initLinkedObjs() error for Lever(id = " + lever.getId() + "), " +
+                throw new RuntimeException("initLinkedObjs() error for RObject(id = " + switcher.getId() + "), " +
                         "of Room(id = " + room.getId() + "), of Level(id = " + room.getLevel().getId() +"). " +
                         "Cannot link lever to ID " + id + ", no RObject with the ID can be found.");
         }
@@ -51,7 +43,6 @@ public class OnStateChangeLever implements OnStateChange {
         initLinkedObjs();
         for (RObject rO : linkedObjs)
             rO.switchState();
-        leverVAttr.mirrorVerticesV();
     }
 
     @Override

@@ -16,6 +16,7 @@ public final class SpriteLoader {
     private static PImage lockSymbol = null;
 
     private static PImage interactSymbol = null;
+    private static PImage switchSymbol = null;
 
     private static PImage loadImage(String file) {
         try {
@@ -55,6 +56,13 @@ public final class SpriteLoader {
             interactSymbol = loadImage("sprites/InteractSymbol.tga");
         }
         return interactSymbol;
+    }
+
+    public static PImage getSwitchSymbol() {
+        if (switchSymbol == null) {
+            switchSymbol = loadImage("sprites/SwitchSymbol.tga");
+        }
+        return switchSymbol;
     }
 
 

@@ -117,4 +117,8 @@ public class RObject extends GObject {
         return colour;
     }
 
+    public void setLColour(LColour colour) {
+        this.colour = colour;
+    }
+
 }

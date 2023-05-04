@@ -24,7 +24,7 @@ public class OnStateChangeBlock implements OnStateChange {
         lockSymbol = VisualUtils.makeRect(dimension, SpriteLoader.getBlockSymbol());
     }
 
-    public static OnStateChangeBlock assignOnStateChange(RObject block, boolean initState, PVector maxDimension) {
+    public static OnStateChangeBlock assign(RObject block, boolean initState, PVector maxDimension) {
         OnStateChangeBlock b = new OnStateChangeBlock(block, initState, maxDimension);
 
         block.setState(initState);

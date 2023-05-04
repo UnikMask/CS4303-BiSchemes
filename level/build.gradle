@@ -17,7 +17,6 @@ dependencies {
     implementation files("jar_deps/core.jar", "jar_deps/gluegen-rt.jar", "jar_deps/jogl-all.jar")
     implementation "org.glassfish:javax.json:1.1.4"
     implementation project(':engine')
-    implementation project(':game')
 }
 
 test {

@@ -11,7 +11,7 @@ import processing.core.PVector;
 
 import static java.lang.Math.min;
 
-public class OnStateChangeColourSwap implements OnStateChange {
+public class BStateSwapColour extends BState {
 
     private final RObject swapper;
 
@@ -20,7 +20,7 @@ public class OnStateChangeColourSwap implements OnStateChange {
 
     private VisualAttribute switchSymbol = null;
 
-    private OnStateChangeColourSwap(RObject swapper) {
+    private BStateSwapColour(RObject swapper) {
         this.swapper = swapper;
         swapper.addOnStateChange(this);
         Level l = Room.getRoom(swapper).getLevel();
@@ -28,8 +28,8 @@ public class OnStateChangeColourSwap implements OnStateChange {
         colourSecondary = l.getColourSecondary();
     }
 
-    public static OnStateChangeColourSwap assign(RObject swapper) {
-        return new OnStateChangeColourSwap(swapper);
+    public static BStateSwapColour assign(RObject swapper) {
+        return new BStateSwapColour(swapper);
     }
 
     public void addSwitchIcon(PVector maxDimension) {

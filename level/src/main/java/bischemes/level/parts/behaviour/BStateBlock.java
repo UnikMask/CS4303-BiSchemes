@@ -8,13 +8,13 @@ import processing.core.PVector;
 
 import static java.lang.Math.min;
 
-public class OnStateChangeBlock implements OnStateChange {
+public class BStateBlock implements BState {
 
     private final VisualAttribute blockSymbol;
     private final VisualAttribute lockSymbol;
     private final RObject block;
 
-    private OnStateChangeBlock(RObject block, boolean initState, PVector maxDimension) {
+    private BStateBlock(RObject block, boolean initState, PVector maxDimension) {
         this.block = block;
 
         PVector dimension = new PVector(
@@ -24,8 +24,8 @@ public class OnStateChangeBlock implements OnStateChange {
         lockSymbol = VisualUtils.makeRect(dimension, SpriteLoader.getBlockSymbol());
     }
 
-    public static OnStateChangeBlock assign(RObject block, boolean initState, PVector maxDimension) {
-        OnStateChangeBlock b = new OnStateChangeBlock(block, initState, maxDimension);
+    public static BStateBlock assign(RObject block, boolean initState, PVector maxDimension) {
+        BStateBlock b = new BStateBlock(block, initState, maxDimension);
 
         block.setState(initState);
         block.addOnStateChange(b);

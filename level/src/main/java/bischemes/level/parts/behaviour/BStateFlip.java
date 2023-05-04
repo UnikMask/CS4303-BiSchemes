@@ -3,18 +3,18 @@ package bischemes.level.parts.behaviour;
 import bischemes.engine.VisualAttribute;
 import bischemes.level.parts.RObject;
 
-public class OnStateChangeFlip implements OnStateChange {
+public class BStateFlip extends BState {
 
     private final VisualAttribute leverVAttr;
     private final RObject flipable;
 
-    private OnStateChangeFlip(RObject flipable) {
+    private BStateFlip(RObject flipable) {
         this.flipable = flipable;
         leverVAttr = flipable.getVisualAttribute(0);
     }
 
-    public static OnStateChangeFlip assign(RObject flipable, boolean initState) {
-        OnStateChangeFlip o = new OnStateChangeFlip(flipable);
+    public static BStateFlip assign(RObject flipable, boolean initState) {
+        BStateFlip o = new BStateFlip(flipable);
         if (initState) o.leverVAttr.mirrorVerticesV();
         flipable.addOnStateChange(o);
         return o;

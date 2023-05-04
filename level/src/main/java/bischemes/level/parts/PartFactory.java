@@ -237,7 +237,7 @@ public class PartFactory {
 	public RObject makeBlock(GObject parent, PVector anchor, PVector dimensions, boolean initState, LColour colour,
 			int id) {
 		RObject block = createRect(parent, anchor, dimensions, 0f, colour, id);
-		OnStateChangeBlock.assign(block, initState, dimensions);
+		BStateBlock.assign(block, initState, dimensions);
 		return block;
 	}
 
@@ -245,7 +245,7 @@ public class PartFactory {
 	public RObject makeDoor(GObject parent, PVector anchor, PVector dimensions, boolean initState, LColour colour,
 			int id) {
 		RObject rect = createRect(parent, anchor, dimensions, 0f, colour, id);
-		OnStateChangeHide.assign(rect, initState).addLockIcon(dimensions);
+		BStateHide.assign(rect, initState).addLockIcon(dimensions);
 		return rect;
 	}
 
@@ -259,9 +259,9 @@ public class PartFactory {
 			int id) {
 		RObject lever = new RObject(parent, anchor, orientation, id, colour);
 		lever.addVisualAttributes(VisualUtils.makeRect(new PVector(1, 1), SpriteLoader.getLever()));
-		OnStateChangeFlip.assign(lever, false);
-		OnStateChangeStateSwitch.assign(lever, linkedIDs);
-		OnUpdateInteractable.assign(lever, 1, 1).addIndicator(new PVector(1, 1));
+		BStateFlip.assign(lever, false);
+		BStateSwitchStates.assign(lever, linkedIDs);
+		BInteractStateSwitch.assign(lever, 1, 1).addIndicator(new PVector(1, 1));
 		return null;
 	}
 

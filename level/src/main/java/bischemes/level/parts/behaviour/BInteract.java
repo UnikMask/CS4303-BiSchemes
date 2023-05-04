@@ -5,28 +5,22 @@ import bischemes.engine.VisualAttribute;
 import bischemes.engine.VisualUtils;
 import bischemes.level.parts.RObject;
 import bischemes.level.util.SpriteLoader;
-
-import bischemes.game.InputHandler;
-
 import processing.core.PVector;
 
-public class OnUpdateInteractable implements OnUpdate {
+public abstract class BInteract implements BUpdate {
 
-    private final RObject interactable;
+    protected final RObject interactable;
     private final boolean useCircleProx;
     private float xRange;
     private float yRange;
     private float radius;
 
-    private boolean isInteracting = false;
-
-
     private static final float INDICATOR_SCALE_RATE = 0.05f;
-    private VisualAttribute indicator = null;
+    protected VisualAttribute indicator = null;
     private boolean showingIndicator = false;
     private float indicatorScale = 0f;
 
-    private OnUpdateInteractable(RObject interactable, float x, float y) {
+    protected BInteract(RObject interactable, float x, float y) {
         this.interactable = interactable;
         useCircleProx = false;
         xRange = x;
@@ -34,19 +28,11 @@ public class OnUpdateInteractable implements OnUpdate {
         interactable.addOnUpdate(this);
     }
 
-    private OnUpdateInteractable(RObject interactable, float r) {
+    protected BInteract(RObject interactable, float r) {
         this.interactable = interactable;
         useCircleProx = true;
         radius = r;
         interactable.addOnUpdate(this);
-    }
-
-    public static OnUpdateInteractable assign(RObject interactable, float x, float y) {
-        return new OnUpdateInteractable(interactable, x, y);
-    }
-
-    public static OnUpdateInteractable assign(RObject interactable, float r) {
-        return new OnUpdateInteractable(interactable, r);
     }
 
     public void addIndicator(PVector indicatorOffset) {
@@ -55,7 +41,7 @@ public class OnUpdateInteractable implements OnUpdate {
     }
 
     // Checks whether a position is close enough to the interactable to interact
-    private boolean canInteract(PVector position) {
+    protected boolean canInteract(PVector position) {
         if (useCircleProx) {
             float distance = position.dist(interactable.getPosition());
             return distance < radius;
@@ -69,20 +55,8 @@ public class OnUpdateInteractable implements OnUpdate {
     }
 
     // Checks whether the InputHandler currently holds the InputCommand INTERACT
-    private boolean interactHeld() {
-        return InputHandler.getInstance().getHeldCommands().contains(InputHandler.InputCommand.INTERACT);
-
-    }
-
-    // Detects once the InputHandler no longer holds the InputCommand INTERACT
-    private boolean hasInteracted() {
-        boolean interactHeld = interactHeld();
-        if (isInteracting) {
-             if (interactHeld) return false;
-             isInteracting = false;
-             return true;
-        }
-        isInteracting = interactHeld();
+    private boolean isInteraction() {
+        // TODO need to get interaction from room
         return false;
     }
 
@@ -109,6 +83,7 @@ public class OnUpdateInteractable implements OnUpdate {
                 interactable.removeVisualAttributes(indicator);
         }
     }
+    public abstract void onInteraction();
 
     @Override
     public void run() {
@@ -116,17 +91,15 @@ public class OnUpdateInteractable implements OnUpdate {
         // TODO need a way to actually get the player's GObject
         PVector playerPos = player.getPosition();
         boolean canInteract = canInteract(playerPos);
-        if (canInteract) {
-            if (hasInteracted()) interactable.switchState();
-        }
-        else isInteracting = false;
+        if (canInteract && isInteraction()) onInteraction();
         if (indicator != null) updateIndicator(canInteract);
     }
 
     @Override
     public void setColour(int colour) {
-        if (indicator == null) return;
-        if (showingIndicator) return;
+        if (indicator == null || showingIndicator) return;
         indicator.makeTintedTexture(colour);
     }
+
+
 }

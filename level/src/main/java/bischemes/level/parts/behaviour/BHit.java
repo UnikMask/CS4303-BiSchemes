@@ -2,9 +2,9 @@ package bischemes.level.parts.behaviour;
 
 import bischemes.engine.GObject;
 
-public interface OnHit {
+public abstract class BHit {
 
-    void run(GObject hit);
+    abstract void run(GObject hit);
 
 
 }

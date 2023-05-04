@@ -44,6 +44,27 @@ public class Room extends GObject {
     public GObject getSecondaryGeometry() { return secondaryGeometry; }
     public List<RObject> getObjects() { return roomObjects; }
 
+    private boolean interaction;
+    /**
+     * Flags that an INTERACT command has occurred within the last update() frame
+     */
+    public void interact() {
+        interaction = true;
+    }
+
+    public boolean isInteraction() {
+        if (!interaction) return false;
+        interaction = false;
+        return true;
+    }
+
+    @Override
+    public void update() {
+        super.update();
+        // TODO might need to change when interaction is set to false, the idea is its set to false after all RObjects have been updated
+        interaction = false;
+    }
+
     public void setParentLevel(Level level) {
         this.parent = level;
 

@@ -3,22 +3,22 @@ package bischemes.level.parts.behaviour;
 import bischemes.level.Room;
 import bischemes.level.parts.RObject;
 
-public class OnStateChangeStateSwitch implements OnStateChange {
+public class BStateSwitchStates extends BState {
 
     private final RObject switcher;
 
     private final int[] linkedIDs;
     private final RObject[] linkedObjs;
 
-    private OnStateChangeStateSwitch(RObject switcher, int[] linkedIDs) {
+    private BStateSwitchStates(RObject switcher, int[] linkedIDs) {
         this.switcher = switcher;
         this.linkedIDs = linkedIDs;
         linkedObjs = new RObject[linkedIDs.length];
         switcher.addOnStateChange(this);
     }
 
-    public static OnStateChangeStateSwitch assign(RObject switcher, int[] linkedIDs) {
-        return new OnStateChangeStateSwitch(switcher, linkedIDs);
+    public static BStateSwitchStates assign(RObject switcher, int[] linkedIDs) {
+        return new BStateSwitchStates(switcher, linkedIDs);
     }
 
     private void initLinkedObjs() {

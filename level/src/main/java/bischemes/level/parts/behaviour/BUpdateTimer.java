@@ -2,7 +2,7 @@ package bischemes.level.parts.behaviour;
 
 import bischemes.level.parts.RObject;
 
-public class OnUpdateTimer implements OnUpdate {
+public class BUpdateTimer extends BUpdate {
 
     private final RObject timeable;
     private final int[] periods;
@@ -14,25 +14,25 @@ public class OnUpdateTimer implements OnUpdate {
     private boolean activeOnState;
 
 
-    private OnUpdateTimer(RObject timeable, int[] periods) {
+    private BUpdateTimer(RObject timeable, int[] periods) {
         this.timeable = timeable;
         this.periods = periods;
         timeable.addOnUpdate(this);
     }
 
-    public static OnUpdateTimer assign(RObject timeable, int[] periods) {
-        return new OnUpdateTimer(timeable, periods);
+    public static BUpdateTimer assign(RObject timeable, int[] periods) {
+        return new BUpdateTimer(timeable, periods);
     }
-    public static OnUpdateTimer assign(RObject timeable, int[] periods, int offset) {
-        OnUpdateTimer u = assign(timeable, periods);
+    public static BUpdateTimer assign(RObject timeable, int[] periods, int offset) {
+        BUpdateTimer u = assign(timeable, periods);
         u.time = offset;
         while (u.updateTime());
         return u;
     }
-    public static OnUpdateTimer assign(RObject timeable, int period) {
+    public static BUpdateTimer assign(RObject timeable, int period) {
         return assign(timeable, new int[]{period});
     }
-    public static OnUpdateTimer assign(RObject timeable, int period, int offset) {
+    public static BUpdateTimer assign(RObject timeable, int period, int offset) {
         return assign(timeable, new int[]{period}, offset);
     }
 

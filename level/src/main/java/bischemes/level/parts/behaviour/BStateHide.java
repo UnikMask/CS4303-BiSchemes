@@ -8,20 +8,20 @@ import processing.core.PVector;
 
 import static java.lang.Math.min;
 
-public class OnStateChangeHide implements OnStateChange {
+public class BStateHide extends BState {
 
     private final VisualAttribute doorVAttr;
     private final RObject hideable;
     private VisualAttribute lockSymbol = null;
 
 
-    private OnStateChangeHide(RObject hideable) {
+    private BStateHide(RObject hideable) {
         this.hideable = hideable;
         doorVAttr = hideable.getVisualAttribute(0);
     }
 
-    public static OnStateChangeHide assign(RObject hideable, boolean initState) {
-        OnStateChangeHide d = new OnStateChangeHide(hideable);
+    public static BStateHide assign(RObject hideable, boolean initState) {
+        BStateHide d = new BStateHide(hideable);
 
         hideable.setState(initState);
         hideable.addOnStateChange(d);

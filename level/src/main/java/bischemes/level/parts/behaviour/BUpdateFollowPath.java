@@ -1,6 +1,6 @@
 package bischemes.level.parts.behaviour;
 
-public class OnUpdateFollowPath implements OnUpdate{
+public class BUpdateFollowPath extends BUpdate {
     @Override
     public void run() {
 

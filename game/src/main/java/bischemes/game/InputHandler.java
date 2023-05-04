@@ -3,6 +3,7 @@ package bischemes.game;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.ArrayList;
 import java.util.TreeSet;
 
 public class InputHandler {
@@ -12,9 +13,14 @@ public class InputHandler {
 	private HashMap<Character, InputCommand> onPressCommands = new HashMap<>(
 			Map.of('p', InputCommand.PAUSE, 'e', InputCommand.INTERACT));
 	private TreeSet<Character> heldKeys = new TreeSet<>();
+	private TreeSet<Character> pressedKeys = new TreeSet<>();
 
 	public enum InputCommand {
 		UP, DOWN, LEFT, RIGHT, INTERACT, PAUSE, NONE
+	}
+
+	public void initFrame() {
+		pressedKeys = new TreeSet<>();
 	}
 
 	public InputCommand keyPressed(Character c) {
@@ -40,6 +46,17 @@ public class InputHandler {
 			}
 		}
 		return ret;
+	}
+
+	public Set<InputCommand> getPressedCommands() {
+		TreeSet<InputCommand> ret = new TreeSet<>();
+		for (Character c : pressedKeys) {
+			if (onPressCommands.containsKey(c)) {
+				ret.add(onPressCommands.get(c));
+			}
+		}
+		return ret;
+
 	}
 
 	public static InputHandler getInstance() {

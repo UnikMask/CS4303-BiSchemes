@@ -52,7 +52,6 @@ public class Primitive implements PhysicsMesh {
 				vn.rotate((float) getParent().getOrientation());
 				vertices.add(vn);
 			}
-
 		}
 	}
 
@@ -109,7 +108,7 @@ public class Primitive implements PhysicsMesh {
 
 	public Primitive copy() {
 		if (primitiveType == PrimitiveType.POLYGON) {
-			List<PVector> newVertices = new ArrayList<>(vertices.size());
+			List<PVector> newVertices = new ArrayList<>(baseVerts.size());
 			for (PVector v : baseVerts) {
 				newVertices.add(v.copy());
 			}
@@ -127,7 +126,9 @@ public class Primitive implements PhysicsMesh {
 	private Manifold polygonToPolygonCollision(Primitive b, PVector offset) {
 		Manifold m = new Manifold(this.parent, b.getParent());
 		m.combine(queryFaceDistance(b, offset));
-		m.combine(b.queryFaceDistance(this, PVector.mult(offset, -1)));
+		if (!m.isCollision()) {
+			m.combine(b.queryFaceDistance(this, PVector.mult(offset, -1)));
+		}
 		return m;
 	}
 
@@ -161,9 +162,9 @@ public class Primitive implements PhysicsMesh {
 		for (PVector p1 : this.vertices) {
 			PVector v1 = PVector.add(p1, this.parent.getPosition());
 
-			PVector v1v2 = PVector.sub(v2, v1);
-			PVector normal = new PVector(v1v2.y, -v1v2.x).mult(reverseFactor).normalize();
-			PVector support = PVector.add(b.getSupportPoint(PVector.mult(v1v2, -1)), offset);
+			PVector v1v2 = PVector.sub(v1, v2);
+			PVector normal = new PVector(-v1v2.y, v1v2.x).mult(reverseFactor).normalize();
+			PVector support = PVector.add(b.getSupportPoint(PVector.mult(normal, -1)), offset);
 			double dist = PVector.dot(PVector.sub(support, v1), normal);
 
 			if (calibrating && dist > 0) {
@@ -171,7 +172,7 @@ public class Primitive implements PhysicsMesh {
 				reverseFactor = -1.0f;
 			}
 			if (dist > minPenetration) {
-				if (minPenetration > 0) {
+				if (dist > 0) {
 					return null;
 				}
 				v1min = v1;
@@ -182,6 +183,7 @@ public class Primitive implements PhysicsMesh {
 				bestSupport = support;
 			}
 			v2 = v1;
+			calibrating = false;
 		}
 		return new BestDist(minPenetration, bestNormal, bestSupport, v1min, v2min);
 	}
@@ -223,13 +225,13 @@ public class Primitive implements PhysicsMesh {
 				maxDot = dot;
 			}
 		}
-		return max;
+		return PVector.add(max, this.parent.getPosition());
 	}
 
 	// Generate a circle-to-polygon collision, where b is the polygon primitive.
 	private Manifold circleToPolygonCollision(Primitive b, PVector offset) {
 		Manifold m = new Manifold(this.parent, b.parent);
-		BestDist bd = getBestDist(b, offset);
+		BestDist bd = b.getBestDist(this, offset);
 		if (bd == null) {
 			return m;
 		}

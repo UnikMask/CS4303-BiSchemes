@@ -9,11 +9,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import bischemes.engine.physics.Manifold;
-import bischemes.engine.physics.Primitive;
-import bischemes.engine.physics.RigidBody;
-import bischemes.engine.physics.RigidBodyProperties;
-import bischemes.engine.physics.Surface;
+import bischemes.engine.physics.*;
 import processing.core.PVector;
 
 class CollisionTests {
@@ -40,8 +36,6 @@ class CollisionTests {
 		assertNotNull(rbB.getProperties().mesh);
 
 		// Case 1 - no collisions
-		System.out.println(bA.getPosition());
-		System.out.println(bB.getPosition());
 		Manifold m = rbA.getProperties().mesh.getCollision(rbB.getProperties().mesh);
 		assertNotNull(m);
 		assertFalse(m.isCollision());
@@ -54,6 +48,64 @@ class CollisionTests {
 
 	@Test
 	public void testCircleToPolygonCollision() {
+		// Set objects
+		GObject bA = new GObject(null, new PVector(-2, 0), 0);
+		GObject bB = new GObject(null, new PVector(2, 0), 0);
+		bA.setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mesh", cube.copy()))));
+		bB.setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mesh", circle.copy()))));
 
+		// Case 1 - no collisions
+		PhysicsMesh mA = bA.getRigidBody().getProperties().mesh;
+		PhysicsMesh mB = bB.getRigidBody().getProperties().mesh;
+		mA.derive();
+		mB.derive();
+		Manifold m = mA.getCollision(mB);
+		assertFalse(m.isCollision());
+
+		// Case 2 - Direct Collision
+		bA.setLocalPosition(new PVector(0.51f, 0));
+		m = mA.getCollision(mB);
+		assertTrue(m.isCollision());
+
+		// Case 3 - Corner Collision
+		bA.setLocalPosition(new PVector(1, -0.5f));
+		m = mA.getCollision(mB);
+		assertTrue(m.isCollision());
+	}
+
+	@Test
+	public void testPolygonToPolygonCollision() {
+		// Set objects
+		GObject bA = new GObject(null, new PVector(-2, 0), 0);
+		GObject bB = new GObject(null, new PVector(2, 0), 0);
+		bA.setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mesh", cube.copy()))));
+		bB.setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mesh", cube.copy()))));
+
+		// Case 1 - no collisions
+		PhysicsMesh mA = bA.getRigidBody().getProperties().mesh;
+		PhysicsMesh mB = bB.getRigidBody().getProperties().mesh;
+		mA.derive();
+		mB.derive();
+		Manifold m = mA.getCollision(mB);
+		assertFalse(m.isCollision());
+
+		// Case 2 - no collision, very close
+		bA.setLocalPosition(new PVector(0.95f, 0));
+		m = mA.getCollision(mB);
+		assertFalse(m.isCollision());
+
+		// Case 2 - collision, with orientation, edge on A
+		bA.setLocalOrientation(Math.PI / 4);
+		mA.derive();
+		m = mA.getCollision(mB);
+		assertTrue(m.isCollision());
+
+		// Case 3 - collision, with orientation, edge on B
+		bA.setLocalOrientation(0);
+		bB.setLocalOrientation(Math.PI / 4);
+		mA.derive();
+		mB.derive();
+		m = mA.getCollision(mB);
+		assertTrue(m.isCollision());
 	}
 }

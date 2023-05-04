@@ -40,7 +40,7 @@ public class GObject {
 	public double getOrientation() {
 		GObject currentObject = this;
 		float globalRotation = 0;
-		while (currentObject.parent != null) {
+		while (currentObject != null) {
 			globalRotation += currentObject.orientation;
 			currentObject = currentObject.parent;
 		}

@@ -95,7 +95,7 @@ public class GridSector {
 				+ p.AABBbounds.x / 2); i++) {
 			for (int j = (int) (p.position.y - position.y - p.AABBbounds.y / 2); j <= (int) (p.position.y - position.y
 					+ p.AABBbounds.y / 2); j++) {
-				if (i < ncols && j < nrows) {
+				if (i >= 0 && i < ncols && j >= 0 && j < nrows) {
 					int index = j * ncols + i;
 					GridCell c = sector.get(index);
 					c.list.add(p);

@@ -124,8 +124,6 @@ class CollisionTests {
 		g.move(bB.getRigidBody());
 		assertTrue(g.getCollisions().isEmpty());
 
-		System.out.println("Overlap test!");
-
 		// Case 2 - overlap
 		bA.setLocalPosition(new PVector(1.01f, 0));
 		g.move(bA.getRigidBody());

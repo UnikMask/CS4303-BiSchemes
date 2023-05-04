@@ -31,33 +31,26 @@ public class OnUpdateInteractable implements OnUpdate {
         useCircleProx = false;
         xRange = x;
         yRange = y;
-        interactable.setOnUpdate(this);
+        interactable.addOnUpdate(this);
     }
 
     private OnUpdateInteractable(RObject interactable, float r) {
         this.interactable = interactable;
         useCircleProx = true;
         radius = r;
-        interactable.setOnUpdate(this);
+        interactable.addOnUpdate(this);
     }
 
-    public static void newOnUpdate(RObject interactable, float x, float y) {
-        new OnUpdateInteractable(interactable, x, y);
+    public static OnUpdateInteractable assignOnUpdate(RObject interactable, float x, float y) {
+        return new OnUpdateInteractable(interactable, x, y);
     }
 
-    public static void newOnUpdate(RObject interactable, float r) {
-        new OnUpdateInteractable(interactable, r);
+    public static OnUpdateInteractable assignOnUpdate(RObject interactable, float r) {
+        return new OnUpdateInteractable(interactable, r);
     }
 
-    public static void newOnUpdate(RObject interactable, float x, float y, PVector indicatorOffset) {
-        OnUpdateInteractable u = new OnUpdateInteractable(interactable, x, y);
-        u.indicator = VisualUtils.makeTexturedPolygon(
-                new PVector(1, 1), 4, 0, indicatorOffset, SpriteLoader.getInteractSymbol());
-    }
-
-    public static void newOnUpdate(RObject interactable, float r, PVector indicatorOffset) {
-        OnUpdateInteractable u = new OnUpdateInteractable(interactable, r);
-        u.indicator = VisualUtils.makeTexturedPolygon(
+    public void addIndicator(PVector indicatorOffset) {
+        indicator = VisualUtils.makeTexturedPolygon(
                 new PVector(1, 1), 4, 0, indicatorOffset, SpriteLoader.getInteractSymbol());
     }
 

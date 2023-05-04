@@ -7,6 +7,9 @@ import bischemes.level.parts.behaviour.OnUpdate;
 import bischemes.level.util.LColour;
 import processing.core.PVector;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RObject extends GObject {
 
     // Current plan, 6 extensions.
@@ -43,11 +46,11 @@ public class RObject extends GObject {
     protected LColour colour = null;
 
     protected boolean state = false;
-    protected OnStateChange onStateChange = null;
+    protected List<OnStateChange> onStateChange = null;
 
-    protected OnUpdate onUpdate = null;
+    protected List<OnUpdate> onUpdate = null;
 
-    protected OnHit onHit = null;
+    protected List<OnHit> onHit = null;
 
     public int getId() {
         return id;
@@ -63,32 +66,52 @@ public class RObject extends GObject {
     }
     public void switchState() {
         state = !state;
-        if (onStateChange != null) onStateChange.run();
+        if (onStateChange != null)
+            for (OnStateChange o : onStateChange)
+                o.run();
     }
 
     @Override
     public void update() {
-        if (onUpdate != null) onUpdate.run();
+        if (onUpdate != null)
+            for (OnUpdate o : onUpdate)
+                o.run();
     }
 
     @Override
     public void onHit(GObject hit) {
-        if (onHit != null) onHit.run(hit);
+        if (onHit != null)
+            for (OnHit o : onHit)
+                o.run(hit);
     }
 
-    public void setOnStateChange(OnStateChange onStateChange) {
-        this.onStateChange = onStateChange;
+    public void addOnStateChange(OnStateChange onStateChange) {
+        if (this.onStateChange == null)
+            this.onStateChange = new ArrayList<>();
+        this.onStateChange.add(onStateChange);
     }
 
-    public void setOnUpdate(OnUpdate onUpdate) {
-        this.onUpdate = onUpdate;
+    public void addOnUpdate(OnUpdate onUpdate) {
+        if (this.onUpdate == null)
+            this.onUpdate = new ArrayList<>();
+        this.onUpdate.add(onUpdate);
+    }
+
+    public void addOnHit(OnHit onHit) {
+        if (this.onHit == null)
+            this.onHit = new ArrayList<>();
+        this.onHit.add(onHit);
     }
 
     @Override
     public void setColour(int colour) {
         super.setColour(colour);
-        if (onStateChange != null) onStateChange.setColour(colour);
-        if (onUpdate != null) onUpdate.setColour(colour);
+        if (onStateChange != null)
+            for (OnStateChange o : onStateChange)
+                o.setColour(colour);
+        if (onUpdate != null)
+            for (OnUpdate o : onUpdate)
+                o.setColour(colour);
     }
     public LColour getLColour() {
         return colour;

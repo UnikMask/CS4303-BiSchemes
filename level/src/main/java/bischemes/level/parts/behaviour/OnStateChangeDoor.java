@@ -25,11 +25,11 @@ public class OnStateChangeDoor implements OnStateChange {
         doorVAttr = door.getVisualAttribute(0);
     }
 
-    public static void newOnStateChange(RObject door, boolean initState, PVector maxDimension) {
+    public static OnStateChangeDoor assignOnStateChange(RObject door, boolean initState, PVector maxDimension) {
         OnStateChangeDoor d = new OnStateChangeDoor(door, maxDimension);
 
         door.setState(initState);
-        door.setOnStateChange(d);
+        door.addOnStateChange(d);
 
         if (initState) {
             door.addVisualAttributes(d.lockSymbol);
@@ -39,6 +39,7 @@ public class OnStateChangeDoor implements OnStateChange {
             door.removeVisualAttributes(0);
             d.closeDoor();
         }
+        return d;
     }
 
 
@@ -50,12 +51,12 @@ public class OnStateChangeDoor implements OnStateChange {
 
     private void openDoor() {
         door.removeVisualAttributes(1, 0);
-        // Alter RigidBody properties of door to make passable
+        // TODO Alter RigidBody properties of door to make passable
     }
 
     private void closeDoor() {
         door.addVisualAttributes(doorVAttr, lockSymbol);
-        // Alter RigidBody properties of door to make impassable
+        // TODO Alter RigidBody properties of door to make impassable
     }
 
     @Override

@@ -239,7 +239,7 @@ public class PartFactory {
 	public RObject makeBlock(GObject parent, PVector anchor, PVector dimensions, boolean initState, LColour colour,
 			int id) {
 		RObject block = createRect(parent, anchor, dimensions, 0f, colour, id);
-		OnStateChangeBlock.newOnStateChange(block, initState, dimensions);
+		OnStateChangeBlock.assignOnStateChange(block, initState, dimensions);
 		return block;
 	}
 
@@ -247,7 +247,7 @@ public class PartFactory {
 	public RObject makeDoor(GObject parent, PVector anchor, PVector dimensions, boolean initState, LColour colour,
 			int id) {
 		RObject rect = createRect(parent, anchor, dimensions, 0f, colour, id);
-		OnStateChangeDoor.newOnStateChange(rect, initState, dimensions);
+		OnStateChangeDoor.assignOnStateChange(rect, initState, dimensions);
 		return rect;
 	}
 
@@ -260,8 +260,9 @@ public class PartFactory {
 	public RObject makeLever(GObject parent, PVector anchor, float orientation, int[] linkedIDs, LColour colour,
 			int id) {
 		RObject lever = new RObject(parent, anchor, orientation, id, colour);
-		OnStateChangeLever.newOnStateChange(lever, false, linkedIDs);
-		OnUpdateInteractable.newOnUpdate(lever, 1, 1, new PVector(1, 1));
+		OnStateChangeLever.assignOnStateChange(lever, false, linkedIDs);
+		OnUpdateInteractable b = OnUpdateInteractable.assignOnUpdate(lever, 1, 1);
+		b.addIndicator(new PVector(1, 1));
 		return null;
 	}
 

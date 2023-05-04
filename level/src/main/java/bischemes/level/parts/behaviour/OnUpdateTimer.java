@@ -17,9 +17,8 @@ public class OnUpdateTimer implements OnUpdate {
     private OnUpdateTimer(RObject timeable, int[] periods) {
         this.timeable = timeable;
         this.periods = periods;
-        timeable.setOnUpdate(this);
+        timeable.addOnUpdate(this);
     }
-
 
     public static OnUpdateTimer assignOnUpdate(RObject timeable, int[] periods) {
         return new OnUpdateTimer(timeable, periods);

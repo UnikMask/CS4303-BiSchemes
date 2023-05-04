@@ -19,13 +19,14 @@ public class OnStateChangeLever implements OnStateChange {
         linkedObjs = new RObject[linkedIDs.length];
     }
 
-    public static void newOnStateChange(RObject lever, boolean initState, int[] linkedIDs) {
+    public static OnStateChangeLever assignOnStateChange(RObject lever, boolean initState, int[] linkedIDs) {
         OnStateChangeLever l = new OnStateChangeLever(lever, linkedIDs);
 
         lever.setState(initState);
-        lever.setOnStateChange(l);
+        lever.addOnStateChange(l);
 
         if (initState) l.leverVAttr.mirrorVerticesV();
+        return l;
     }
 
     private void initLinkedObjs() {

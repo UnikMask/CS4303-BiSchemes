@@ -1,7 +1,9 @@
 package bischemes.level.parts;
 
 import bischemes.engine.GObject;
+import bischemes.level.parts.behaviour.OnHit;
 import bischemes.level.parts.behaviour.OnStateChange;
+import bischemes.level.parts.behaviour.OnUpdate;
 import bischemes.level.util.LColour;
 import processing.core.PVector;
 
@@ -43,31 +45,50 @@ public class RObject extends GObject {
     protected boolean state = false;
     protected OnStateChange onStateChange = null;
 
+    protected OnUpdate onUpdate = null;
+
+    protected OnHit onHit = null;
+
     public int getId() {
         return id;
     }
+
 
     public boolean getState() {
         return state;
     }
     public void setState(boolean state) {
         if (!state ^ this.state) return;
-        this.state = state;
-        if (onStateChange != null) onStateChange.run();
+        switchState();
     }
     public void switchState() {
         state = !state;
         if (onStateChange != null) onStateChange.run();
     }
 
+    @Override
+    public void update() {
+        if (onUpdate != null) onUpdate.run();
+    }
+
+    @Override
+    public void onHit(GObject hit) {
+        if (onHit != null) onHit.run(hit);
+    }
+
     public void setOnStateChange(OnStateChange onStateChange) {
         this.onStateChange = onStateChange;
+    }
+
+    public void setOnUpdate(OnUpdate onUpdate) {
+        this.onUpdate = onUpdate;
     }
 
     @Override
     public void setColour(int colour) {
         super.setColour(colour);
         if (onStateChange != null) onStateChange.setColour(colour);
+        if (onUpdate != null) onUpdate.setColour(colour);
     }
     public LColour getLColour() {
         return colour;

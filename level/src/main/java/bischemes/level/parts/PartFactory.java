@@ -5,6 +5,8 @@ import bischemes.engine.VisualUtils;
 import bischemes.engine.physics.*;
 import bischemes.level.parts.behaviour.OnStateChangeBlock;
 import bischemes.level.parts.behaviour.OnStateChangeDoor;
+import bischemes.level.parts.behaviour.OnStateChangeLever;
+import bischemes.level.parts.behaviour.OnUpdateInteractable;
 import bischemes.level.util.LColour;
 import processing.core.PVector;
 
@@ -257,6 +259,9 @@ public class PartFactory {
 	// TODO
 	public RObject makeLever(GObject parent, PVector anchor, float orientation, int[] linkedIDs, LColour colour,
 			int id) {
+		RObject lever = new RObject(parent, anchor, orientation, id, colour);
+		OnStateChangeLever.newOnStateChange(lever, false, linkedIDs);
+		OnUpdateInteractable.newOnUpdate(lever, 1, 1, new PVector(1, 1));
 		return null;
 	}
 

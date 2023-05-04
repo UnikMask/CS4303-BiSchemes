@@ -14,7 +14,7 @@ public class OnStateChangeDoor implements OnStateChange {
     private final VisualAttribute lockSymbol;
     private final RObject door;
 
-    private OnStateChangeDoor(RObject door, boolean initState, PVector maxDimension) {
+    private OnStateChangeDoor(RObject door, PVector maxDimension) {
         this.door = door;
 
         PVector dimension = new PVector(
@@ -26,7 +26,7 @@ public class OnStateChangeDoor implements OnStateChange {
     }
 
     public static void newOnStateChange(RObject door, boolean initState, PVector maxDimension) {
-        OnStateChangeDoor d = new OnStateChangeDoor(door, initState, maxDimension);
+        OnStateChangeDoor d = new OnStateChangeDoor(door, maxDimension);
 
         door.setState(initState);
         door.setOnStateChange(d);
@@ -60,10 +60,9 @@ public class OnStateChangeDoor implements OnStateChange {
 
     @Override
     public void setColour(int colour) {
-        if (!door.getState()) {
-            doorVAttr.setColour(colour);
-            lockSymbol.makeTintedTexture(colour);
-        }
+        if (!door.getState()) return;
+        doorVAttr.setColour(colour);
+        lockSymbol.makeTintedTexture(colour);
     }
 
 }

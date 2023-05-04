@@ -17,6 +17,8 @@ public class VisualAttribute {
 	private PImage texture;
 	private List<PVector> texCoords;
 
+	private PVector scaling = null;
+
 	enum VisualKind {
 		TEXTURED, UNTEXTURED, TINTED_TEXTURED
 	}
@@ -59,6 +61,7 @@ public class VisualAttribute {
 		PVector pos = obj.getPosition();
 		g.translate(pos.x, pos.y);
 		g.translate(offset.x, offset.y);
+		if (scaling != null) g.scale(scaling.x, scaling.y);
 		g.shape(shape);
 		g.popMatrix();
 	}
@@ -104,6 +107,29 @@ public class VisualAttribute {
 	public void setColour(int colour) {
 		if (this.visualKind == VisualKind.UNTEXTURED) makeUntextured(colour);
 		else makeTintedTexture(colour);
+	}
+
+	public void mirrorVerticesV() {
+		for (PVector v : vertices)
+			if (v.x > 0) v.x *= -1;
+	}
+
+	public void mirrorVerticesH() {
+		for (PVector v : vertices)
+			if (v.y > 0) v.y *= -1;
+	}
+
+	public void setScaling(PVector scaling) {
+		this.scaling = scaling;
+	}
+
+	public void setScaling(float scaling) {
+		if (this.scaling == null)
+			this.scaling = new PVector(scaling, scaling);
+		else {
+			this.scaling.x = scaling;
+			this.scaling.y = scaling;
+		}
 	}
 
 	public VisualAttribute(List<PVector> vertices, List<PVector> texCoords, String texturePath) {

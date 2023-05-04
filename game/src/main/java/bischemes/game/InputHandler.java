@@ -13,7 +13,7 @@ public class InputHandler {
 			Map.of('p', InputCommand.PAUSE, 'e', InputCommand.INTERACT));
 	private TreeSet<Character> heldKeys = new TreeSet<>();
 
-	enum InputCommand {
+	public enum InputCommand {
 		UP, DOWN, LEFT, RIGHT, INTERACT, PAUSE, NONE
 	}
 

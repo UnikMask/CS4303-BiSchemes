@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Room {
+public class Room extends GObject {
 
     private Level parent;
 
@@ -20,20 +20,23 @@ public class Room {
     private final PVector dimensions; // Dimension (width/height) of the room
     private final PVector spawnPos; // Position the player spawns at in the room (x,y)
 
-
-    private final GObject coreGObject;
     private final GObject primaryGeometry;
     private final GObject secondaryGeometry;
     private final List<RObject> roomObjects;
 
     //TODO private final ??? adjacent; // to make points of adjacency between rooms
 
+    public static Room getRoom(GObject child) {
+        if (child instanceof Room) return (Room) child;
+        return getRoom(child.getParent());
+    }
 
     public static Room getRoom(Room[] rooms, int id) {
         for (Room room : rooms) if (room.id == id) return room;
         throw new InvalidIdException("getRoom(id), room with id " + id + " does not exist");
     }
 
+    public Level getLevel() { return parent; }
     public int getId() { return id; }
     public PVector getDimensions() { return dimensions; }
     public PVector getSpawnPosition() { return spawnPos; }
@@ -57,12 +60,12 @@ public class Room {
     }
 
     private Room(int id, PVector dimensions, PVector spawnPos) {
+        super(null, new PVector(), 0f);
         this.id = id;
         this.dimensions = dimensions;
         this.spawnPos = spawnPos;
-        coreGObject = new GObject(null, new PVector(), 0);
-        primaryGeometry = new GObject(coreGObject, new PVector(), 0);
-        secondaryGeometry = new GObject(coreGObject, new PVector(), 0);
+        primaryGeometry = new GObject(this, new PVector(), 0);
+        secondaryGeometry = new GObject(this, new PVector(), 0);
         roomObjects = new ArrayList<>();
     }
 
@@ -80,7 +83,7 @@ public class Room {
              JParsing.parseGeometryArr(geometry, "primary", room.primaryGeometry);
              JParsing.parseGeometryArr(geometry, "secondary", room.secondaryGeometry);
 
-            JParsing.parseRObjectAr(roomJson, "objects", room.coreGObject, room.roomObjects);
+             JParsing.parseRObjectAr(roomJson, "objects", room, room.roomObjects);
              // TODO room object parsing
              // TODO adjacency parsing
 

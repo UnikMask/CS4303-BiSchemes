@@ -63,6 +63,11 @@ public class GridSector {
 	class GridCell {
 		HashSet<PrimitiveStore> list = new HashSet<>();
 
+		@Override
+		public String toString() {
+			return list.toString();
+		}
+
 		public boolean hasOverlap() {
 			return list.size() > 1;
 		}
@@ -88,8 +93,8 @@ public class GridSector {
 		primitives.put(p, new ArrayList<>());
 		for (int i = (int) (p.position.x - position.x - p.AABBbounds.x / 2); i <= (int) (p.position.x - position.x
 				+ p.AABBbounds.x / 2); i++) {
-			for (int j = (int) (p.position.y - position.y - p.AABBbounds.y / 2); i <= (int) (p.position.y - position.y
-					+ p.AABBbounds.y / 2); i++) {
+			for (int j = (int) (p.position.y - position.y - p.AABBbounds.y / 2); j <= (int) (p.position.y - position.y
+					+ p.AABBbounds.y / 2); j++) {
 				if (i < ncols && j < nrows) {
 					int index = j * ncols + i;
 					GridCell c = sector.get(index);
@@ -119,7 +124,7 @@ public class GridSector {
 			return;
 		}
 		if (p.properties.mesh instanceof Primitive) {
-			move(p);
+			move((Primitive) p.properties.mesh);
 		} else {
 			for (PrimitiveInSet ps : ((PrimitiveAssembly) p.properties.mesh).getAssembly()) {
 				move(ps);
@@ -155,6 +160,7 @@ public class GridSector {
 	 * @return A map of rigid body pairs to their corresponding manifolds.
 	 */
 	public HashMap<Pair<RigidBody>, Manifold> getCollisions() {
+		System.out.println(sector);
 		HashMap<Pair<RigidBody>, Manifold> pairs = new HashMap<>();
 		HashSet<Pair<PrimitiveStore>> donePrimitives = new HashSet<>();
 		for (GridCell c : overlaps) {
@@ -185,10 +191,11 @@ public class GridSector {
 	 * @param nrows      The number of rows in the sector.
 	 * @param ncols      The number of columns in the sector.
 	 */
-	public GridSector(PVector dimensions, int nrows, int ncols) {
+	public GridSector(PVector dimensions, PVector position, int nrows, int ncols) {
 		this.dimensions = dimensions;
 		this.nrows = nrows;
 		this.ncols = ncols;
+		this.position = position;
 		sector = new ArrayList<>(nrows * ncols);
 		for (int i = 0; i < nrows * ncols; i++) {
 			sector.add(new GridCell());

@@ -108,4 +108,27 @@ class CollisionTests {
 		m = mA.getCollision(mB);
 		assertTrue(m.isCollision());
 	}
+
+	@Test
+	public void testGridSector() {
+		GridSector g = new GridSector(new PVector(16, 9), new PVector(-8, -4.5f), 9, 16);
+		GObject bA = new GObject(null, new PVector(-2, 0), 0);
+		GObject bB = new GObject(null, new PVector(2, 0), 0);
+		bA.setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mesh", cube.copy()))));
+		bB.setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mesh", cube.copy()))));
+		bA.getRigidBody().getProperties().mesh.derive();
+		bB.getRigidBody().getProperties().mesh.derive();
+
+		// Case 1 - no overlap
+		g.move(bA.getRigidBody());
+		g.move(bB.getRigidBody());
+		assertTrue(g.getCollisions().isEmpty());
+
+		System.out.println("Overlap test!");
+
+		// Case 2 - overlap
+		bA.setLocalPosition(new PVector(1.01f, 0));
+		g.move(bA.getRigidBody());
+		assertFalse(g.getCollisions().isEmpty());
+	}
 }

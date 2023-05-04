@@ -15,7 +15,7 @@ public class Primitive implements PhysicsMesh {
 	// Reals
 	private List<PVector> baseVerts;
 	private double radius;
-	private PVector AABBBounds;
+	private PVector AABBBounds = new PVector();
 
 	// Derived
 	private List<PVector> vertices;
@@ -296,6 +296,11 @@ public class Primitive implements PhysicsMesh {
 		}
 		AABBBounds = PVector.sub(max, min);
 
+	}
+
+	public Primitive(Surface surface, List<PVector> vertices, PVector AABBbounds) {
+		this(surface, vertices);
+		this.AABBBounds = AABBbounds;
 	}
 
 	/**

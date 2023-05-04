@@ -41,11 +41,11 @@ public class OnUpdateInteractable implements OnUpdate {
         interactable.addOnUpdate(this);
     }
 
-    public static OnUpdateInteractable assignOnUpdate(RObject interactable, float x, float y) {
+    public static OnUpdateInteractable assign(RObject interactable, float x, float y) {
         return new OnUpdateInteractable(interactable, x, y);
     }
 
-    public static OnUpdateInteractable assignOnUpdate(RObject interactable, float r) {
+    public static OnUpdateInteractable assign(RObject interactable, float r) {
         return new OnUpdateInteractable(interactable, r);
     }
 

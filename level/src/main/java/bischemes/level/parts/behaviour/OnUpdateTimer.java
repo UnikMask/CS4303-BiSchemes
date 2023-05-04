@@ -20,20 +20,20 @@ public class OnUpdateTimer implements OnUpdate {
         timeable.addOnUpdate(this);
     }
 
-    public static OnUpdateTimer assignOnUpdate(RObject timeable, int[] periods) {
+    public static OnUpdateTimer assign(RObject timeable, int[] periods) {
         return new OnUpdateTimer(timeable, periods);
     }
-    public static OnUpdateTimer assignOnUpdate(RObject timeable, int[] periods, int offset) {
-        OnUpdateTimer u = assignOnUpdate(timeable, periods);
+    public static OnUpdateTimer assign(RObject timeable, int[] periods, int offset) {
+        OnUpdateTimer u = assign(timeable, periods);
         u.time = offset;
         while (u.updateTime());
         return u;
     }
-    public static OnUpdateTimer assignOnUpdate(RObject timeable, int period) {
-        return assignOnUpdate(timeable, new int[]{period});
+    public static OnUpdateTimer assign(RObject timeable, int period) {
+        return assign(timeable, new int[]{period});
     }
-    public static OnUpdateTimer assignOnUpdate(RObject timeable, int period, int offset) {
-        return assignOnUpdate(timeable, new int[]{period}, offset);
+    public static OnUpdateTimer assign(RObject timeable, int period, int offset) {
+        return assign(timeable, new int[]{period}, offset);
     }
 
     public void setActiveOnState(boolean activeOnState) {

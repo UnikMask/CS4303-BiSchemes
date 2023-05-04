@@ -15,6 +15,9 @@ public final class SpriteLoader {
     private static PImage lever = null;
     private static PImage lockSymbol = null;
 
+    private static PImage interactSymbol = null;
+    private static PImage switchSymbol = null;
+
     private static PImage loadImage(String file) {
         try {
             InputStream i = new FileInputStream(file);
@@ -48,6 +51,19 @@ public final class SpriteLoader {
         return lever;
     }
 
+    public static PImage getInteractSymbol() {
+        if (interactSymbol == null) {
+            interactSymbol = loadImage("sprites/InteractSymbol.tga");
+        }
+        return interactSymbol;
+    }
+
+    public static PImage getSwitchSymbol() {
+        if (switchSymbol == null) {
+            switchSymbol = loadImage("sprites/SwitchSymbol.tga");
+        }
+        return switchSymbol;
+    }
 
 
     private SpriteLoader() {}

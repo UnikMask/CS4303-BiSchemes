@@ -85,20 +85,25 @@ public class GObject {
 		}
 	}
 
-	public void setRigidBody(RigidBody rb) {
-		this.rigidBody = rb;
-		this.rigidBody.enable(this);
-	}
-
 	public VisualAttribute getVisualAttribute(int index) {
 		return visualAttributes.get(index);
 	}
 
 	public void removeVisualAttributes(int... indices) {
-		for (int i : indices) {
+		for (int i : indices)
 			visualAttributes.remove(i);
-		}
 	}
+
+	public void removeVisualAttributes(VisualAttribute... attributes) {
+		visualAttributes.removeAll(List.of(attributes));
+	}
+
+	public void setRigidBody(RigidBody rb) {
+		this.rigidBody = rb;
+		this.rigidBody.enable(this);
+	}
+
+
 
 	public void onHit(GObject hit) {
 		// Placeholder
@@ -110,6 +115,10 @@ public class GObject {
 
 	public void update() {
 		// Placeholder
+	}
+
+	public GObject getParent() {
+		return parent;
 	}
 
 	/////////////////////

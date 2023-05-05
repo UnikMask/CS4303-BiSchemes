@@ -121,7 +121,7 @@ public final class JParsing {
 
     public static void parseGeometryArr(JsonObject obj, String name, GObject parent) {
         JsonArray arr = parseArr(obj, name);
-        PartFactory partFactory = new PartFactory(PartFactory.PhysicsPreset.GEOMETRY);
+        PartFactory partFactory = new PartFactory();
         int i = 0;
         try { for (; i < arr.size(); i++) parseGeometry(arr.getJsonObject(i), parent, partFactory); }
         catch (ClassCastException e) { throw new LevelParseException("parseGeometryArr(obj, " + name + ", parent), encountered an exception:\n\t\"" + name + "\" array does not contain assignable JsonObjects at index " + i); }
@@ -138,7 +138,7 @@ public final class JParsing {
             case "RECT" ->
                 pF.createRect(parent, anchor, parsePVec(obj, "dimensions"), parseFloat(obj, "orientation", 0f));
             case "TRIANGLE" ->
-                pF.createTriangle(parent, anchor, parsePVec(obj, "vertex1"), parsePVec(obj, "vertex2"));
+                pF.createTriangle(parent, anchor, parsePVec(obj, "vertex1"), parsePVec(obj, "vertex2"), parsePVec(obj, "vertex3"));
             default ->
                 throw new LevelParseException("\"type\" of \"" + type + "\" is unknown");
         }
@@ -146,7 +146,7 @@ public final class JParsing {
 
     public static void parseRObjectAr(JsonObject obj, String name, GObject parent, List<RObject> roomObjects) {
         JsonArray arr = parseArr(obj, name);
-        PartFactory partFactory = new PartFactory(PartFactory.PhysicsPreset.GEOMETRY);
+        PartFactory partFactory = new PartFactory();
         int i = 0;
         try { for (; i < arr.size(); i++)
             roomObjects.add(parseRObject(arr.getJsonObject(i), parent, partFactory));
@@ -175,14 +175,14 @@ public final class JParsing {
         LColour colour = parseLColour(obj, "colour");
         String type = parseStr(obj, "gType");
 
-        pF.initPhysicsProperties(PartFactory.PhysicsPreset.GEOMETRY);
+        pF.initRBGeometry();
         return switch (type) {
             case "RECT" ->
                 pF.createRect(parent, anchor, parsePVec(obj, "dimensions"),
                         parseFloat(obj, "orientation", 0f), colour, id);
             case "TRIANGLE" ->
                 pF.createTriangle(parent, anchor, parsePVec(obj, "vertex1"),
-                        parsePVec(obj, "vertex2"), colour, id);
+                        parsePVec(obj, "vertex2"), parsePVec(obj, "vertex3"), colour, id);
             case "POLYGON" ->
                 pF.createPolygon(parent, anchor, parsePVec(obj, "dimensions"),
                         parseInt(obj, "sides"), parseFloat(obj, "orientation", 0f), colour, id);
@@ -199,17 +199,14 @@ public final class JParsing {
         LColour colour = parseLColour(obj, "colour");
         PVector dimensions = parsePVec(obj, "dimensions");
         boolean initState = parseBoolean(obj, "initState", false);
-
-        pF.initPhysicsProperties(PartFactory.PhysicsPreset.BLOCK);
-        return pF.makeBlock(parent, anchor, dimensions, initState, colour, id);
+        float mass = parseFloat(obj, "mass", 1f);
+        return pF.makeBlock(parent, anchor, dimensions, initState, mass, colour, id);
     }
 
     public static RObject parseDoor(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
         LColour colour = parseLColour(obj, "colour");
         PVector dimensions = parsePVec(obj, "dimensions");
         boolean initState = parseBoolean(obj, "initState", false);
-
-        pF.initPhysicsProperties(PartFactory.PhysicsPreset.GEOMETRY);
         return pF.makeDoor(parent, anchor, dimensions, initState, colour, id);
     }
 
@@ -217,30 +214,23 @@ public final class JParsing {
         LColour colour = parseLColour(obj, "colour");
         float orientation = parseFloat(obj, "orientation", 0f);
         int[] linkedTo = parseInts(obj, "linkedTo");
-
-        pF.initPhysicsProperties(PartFactory.PhysicsPreset.CONTACT_ONLY);
         return pF.makeLever(parent, anchor, orientation, linkedTo, colour, id);
     }
 
     public static RObject parseSpike(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
         LColour colour = parseLColour(obj, "colour");
         float orientation = parseFloat(obj, "orientation", 0f);
-
-        pF.initPhysicsProperties(PartFactory.PhysicsPreset.CONTACT_ONLY);
-        return pF.makeSpike(parent, anchor, orientation, colour, id);
+        int length = parseInt(obj, "length", 1);
+        return pF.makeSpike(parent, anchor, orientation, length, colour, id);
     }
 
     public static RObject parsePortal(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
-        float width = parseFloat(obj, "width");
+        int width = parseInt(obj, "width", 1);
         float orientation = parseFloat(obj, "orientation", 0f);
-
-
-        pF.initPhysicsProperties(PartFactory.PhysicsPreset.CONTACT_ONLY);
         return pF.makePortal(parent, anchor, width, orientation, id);
     }
 
     public static RObject parseExit(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
-        pF.initPhysicsProperties(PartFactory.PhysicsPreset.CONTACT_ONLY);
         return pF.makeExit(parent);
     }
 

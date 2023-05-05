@@ -15,119 +15,105 @@ import java.util.Map;
 
 public class PartFactory {
 
-	public enum PhysicsPreset {
-		RESET, GEOMETRY, BLOCK, CONTACT_ONLY
-	}
-
 	private final int ELLIPSE_VERTICES = 20;
 	private final int DEFAULT_COLOUR = 0x000000ff;
 
 	private double restitution;
 	private double staticFriction;
 	private double dynamicFriction;
-	private final Map<String, Object> RB_PROPERTIES = new HashMap<>(8);
+	private final Map<String, Object> rbProperties = new HashMap<>(10);
 
-	private PhysicsPreset preset = null;
+	private boolean hasMesh;
+	private boolean hasInertia;
 
 	public PartFactory() {
-		resetSurfaceProperties();
-		resetRigidBodyProperties();
+		initSurface();
+		initRBGeometry();
 	}
 
-	public PartFactory(PhysicsPreset preset) {
-		initPhysicsProperties(preset);
-	}
-
-	public void resetSurfaceProperties() {
-		preset = null;
+	public void initSurface() {
 		restitution = 0;
 		staticFriction = 0;
 		dynamicFriction = 0;
 	}
 
 	public void setSurfaceProperties(double restitution, double staticFriction, double dynamicFriction) {
-		preset = null;
 		this.restitution = restitution;
 		this.staticFriction = staticFriction;
 		this.dynamicFriction = dynamicFriction;
 	}
 
 	public void setSurfaceRestitution(double restitution) {
-		preset = null;
 		this.restitution = restitution;
 	}
 
 	public void setSurfaceStaticFriction(double staticFriction) {
-		preset = null;
 		this.staticFriction = staticFriction;
 	}
 
 	public void setSurfaceDynamicFriction(double dynamicFriction) {
-		preset = null;
 		this.dynamicFriction = dynamicFriction;
 	}
 
-	public void resetRigidBodyProperties() {
-		preset = null;
-		RB_PROPERTIES.clear();
-		RB_PROPERTIES.put("mass", 0.0);
-		RB_PROPERTIES.put("inertia", 0.0);
-		RB_PROPERTIES.put("damping", 0.0);
-		RB_PROPERTIES.put("velocity", new PVector());
-		RB_PROPERTIES.put("rotation", 0.0);
-		RB_PROPERTIES.put("move", false);
-		RB_PROPERTIES.put("rotate", false);
-		RB_PROPERTIES.put("mesh", null);
+	private void resetRB() {
+		rbProperties.clear();
+		rbProperties.put("move", false);
+		rbProperties.put("rotate", false);
+		hasInertia = false;
 	}
 
-	public void setRigidBodyProperty(String key, Object value) {
-		if (!RB_PROPERTIES.containsKey(key))
-			throw new IllegalArgumentException("RigidBodyProperty " + key + " does not exist");
-		else if (key.equals("mesh") && !(value instanceof PhysicsMesh))
-			throw new IllegalArgumentException(
-					"Invalid RigidBodyProperty value for mesh, " + value + " is not of type PhysicsMesh");
-		else if (!RB_PROPERTIES.get(key).getClass().equals(value.getClass()))
-			throw new IllegalArgumentException("Invalid RigidBodyProperty value for" + key + ", " + value
-					+ " is not of type " + RB_PROPERTIES.get(key).getClass());
-		preset = null;
-		RB_PROPERTIES.replace(key, value);
+	public void initRBGeometry() {
+		resetRB();
+		hasMesh = true;
 	}
 
-	public void initPhysicsProperties(PhysicsPreset preset) {
-		if (this.preset == preset)
-			return;
-		else
-			this.preset = preset;
-		resetSurfaceProperties();
-		resetRigidBodyProperties();
-		// TODO assign correct default properties here
-		switch (preset) {
-		case GEOMETRY:
-			break;
-		case BLOCK:
-			RB_PROPERTIES.replace("move", true);
-			break;
-		case CONTACT_ONLY:
-			break;
-		case RESET:
-			break;
+	public void initRBNoCollision() {
+		resetRB();
+		hasMesh = false;
+	}
+
+	public void initRBMoveable(float mass) {
+		initRBGeometry();
+		rbProperties.put("move", true);
+		rbProperties.put("mass", mass);
+	}
+
+	public void initRBRotateable(float mass) {
+		initRBGeometry();
+		rbProperties.put("rotate", true);
+		rbProperties.put("mass", mass);
+		hasInertia = true;
+	}
+
+	public void initRBBlock(float mass) {
+		initRBRotateable(mass);
+		rbProperties.put("move", true);
+	}
+
+	private void finishRigidBody(GObject obj, Primitive p) {
+		if (hasMesh) {
+			rbProperties.put("mesh", p);
+			if (hasInertia) {
+				float mass = (float) rbProperties.get("mass");
+				rbProperties.put("inertia", PrimitiveUtils.getPrimitiveInertia(p, mass, null));
+			}
+			else rbProperties.remove("inertia");
 		}
+		else {
+			rbProperties.remove("mesh");
+			rbProperties.remove("inertia");
+		}
+		obj.setRigidBody(new RigidBody(new RigidBodyProperties(rbProperties)));
 	}
 
 	private void finishPolygon(GObject obj, List<PVector> vertices) {
-		RigidBody rigidBody = new RigidBody(new RigidBodyProperties(RB_PROPERTIES));
 		Surface surface = new Surface(restitution, staticFriction, dynamicFriction);
-		Primitive primitive = new Primitive(surface, vertices);
-		obj.setRigidBody(rigidBody);
-		// TODO how to assign RigidBody and Primitive to GObject?
+		finishRigidBody(obj, new Primitive(surface, vertices));
 	}
 
 	private void finishCircle(GObject obj, float radius) {
-		RigidBody rigidBody = new RigidBody(new RigidBodyProperties(RB_PROPERTIES));
 		Surface surface = new Surface(restitution, staticFriction, dynamicFriction);
-		Primitive primitive = new Primitive(surface, radius);
-		obj.setRigidBody(rigidBody);
-		// TODO how to assign RigidBody and Primitive to GObject?
+		finishRigidBody(obj, new Primitive(surface, radius));
 	}
 
 	public RObject createRect(GObject parent, PVector anchor, PVector dimensions, float orientation, LColour colour,
@@ -152,23 +138,23 @@ public class PartFactory {
 		return obj;
 	}
 
-	public RObject createTriangle(GObject parent, PVector anchor, PVector vertex1, PVector vertex2, LColour colour,
-			int id) {
-		return (RObject) createTriangle(new RObject(parent, anchor, 0, id, colour), vertex1, vertex2);
+	public RObject createTriangle(GObject parent, PVector anchor, PVector vertex1, PVector vertex2, PVector vertex3,
+								  LColour colour, int id) {
+		return (RObject) createTriangle(new RObject(parent, anchor, 0, id, colour), vertex1, vertex2, vertex3);
 	}
 
-	public GObject createTriangle(GObject parent, PVector anchor, PVector vertex1, PVector vertex2) {
-		return createTriangle(new GObject(parent, anchor, 0), vertex1, vertex2);
+	public GObject createTriangle(GObject parent, PVector anchor, PVector vertex1, PVector vertex2, PVector vertex3) {
+		return createTriangle(new GObject(parent, anchor, 0), vertex1, vertex2, vertex3);
 	}
 
-	private GObject createTriangle(GObject obj, PVector vertex1, PVector vertex2) {
+	private GObject createTriangle(GObject obj, PVector vertex1, PVector vertex2, PVector vertex3) {
 		obj.addVisualAttributes(
-				VisualUtils.makeTriangle(new PVector(), vertex1.copy(), vertex2.copy(), DEFAULT_COLOUR));
+				VisualUtils.makeTriangle(vertex1.copy(), vertex2.copy(), vertex3.copy(), DEFAULT_COLOUR));
 
 		List<PVector> vertices = new ArrayList<>(3);
-		vertices.add(new PVector());
 		vertices.add(vertex1.copy());
 		vertices.add(vertex2.copy());
+		vertices.add(vertex3.copy());
 
 		finishPolygon(obj, vertices);
 		return obj;
@@ -226,16 +212,17 @@ public class PartFactory {
 	}
 
 	private GObject createCircle(GObject obj, float radius) {
-		obj.addVisualAttributes(VisualUtils.makeUntexturedPolygon(new PVector(radius, radius), ELLIPSE_VERTICES, 0f,
-				new PVector(), DEFAULT_COLOUR));
+		obj.addVisualAttributes(VisualUtils.makeUntexturedPolygon(new PVector(radius, radius), ELLIPSE_VERTICES,
+				0f, new PVector(), DEFAULT_COLOUR));
 
 		finishCircle(obj, radius);
 		return obj;
 	}
 
 	// TODO
-	public RObject makeBlock(GObject parent, PVector anchor, PVector dimensions, boolean initState, LColour colour,
-			int id) {
+	public RObject makeBlock(GObject parent, PVector anchor, PVector dimensions, boolean initState, float mass,
+							 LColour colour, int id) {
+		initRBBlock(mass);
 		RObject block = createRect(parent, anchor, dimensions, 0f, colour, id);
 		BStateBlock.assign(block, initState, dimensions);
 		return block;
@@ -244,19 +231,21 @@ public class PartFactory {
 	// TODO
 	public RObject makeDoor(GObject parent, PVector anchor, PVector dimensions, boolean initState, LColour colour,
 			int id) {
+		initRBGeometry();
 		RObject rect = createRect(parent, anchor, dimensions, 0f, colour, id);
 		BStateHide.assign(rect, initState).addLockIcon(dimensions);
 		return rect;
 	}
 
 	// TODO
-	public RObject makeSpike(GObject parent, PVector anchor, float orientation, LColour colour, int id) {
+	public RObject makeSpike(GObject parent, PVector anchor, float orientation, int length, LColour colour, int id) {
 		return null;
 	}
 
 	// TODO
 	public RObject makeLever(GObject parent, PVector anchor, float orientation, int[] linkedIDs, LColour colour,
 			int id) {
+		initRBNoCollision();
 		RObject lever = new RObject(parent, anchor, orientation, id, colour);
 		lever.addVisualAttributes(VisualUtils.makeRect(new PVector(1, 1), SpriteLoader.getLever()));
 		BStateFlip.assign(lever, false);
@@ -266,7 +255,7 @@ public class PartFactory {
 	}
 
 	// TODO
-	public RObject makePortal(GObject parent, PVector anchor, float width, float orientation, int id) {
+	public RObject makePortal(GObject parent, PVector anchor, int width, float orientation, int id) {
 		return null;
 	}
 

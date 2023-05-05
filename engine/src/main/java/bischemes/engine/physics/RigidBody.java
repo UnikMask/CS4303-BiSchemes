@@ -198,7 +198,6 @@ public class RigidBody {
 	/**
 	 * Constructor for a rigid body.
 	 *
-	 * @param parent     The rigid body's parent object.
 	 * @param properties The rigid body's property structure.
 	 */
 	public RigidBody(RigidBodyProperties properties) {

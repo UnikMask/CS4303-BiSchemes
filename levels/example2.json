@@ -25,9 +25,10 @@
           },
           {
             "type": "TRIANGLE",
-            "anchor": [3, 9],
-            "vertex1": [1, 0],
-            "vertex2": [1, -1]
+            "anchor": [3.5, 9.5],
+            "vertex1": [0.5, 0.5],
+            "vertex2": [0.5, -0.5],
+            "vertex3": [-0.5, -0.5]
           }
         ],
         "secondary": [
@@ -48,9 +49,10 @@
           },
           {
             "type": "TRIANGLE",
-            "anchor": [3, 9],
-            "vertex1": [1, -1],
-            "vertex2": [1, 0]
+            "anchor": [3.5, 9.5],
+            "vertex1": [0.5, -0.5],
+            "vertex2": [0.5, -0.5],
+            "vertex3": [-0.5, -0.5]
           }
         ]
       },

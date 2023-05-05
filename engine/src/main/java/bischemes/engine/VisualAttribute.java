@@ -37,12 +37,14 @@ public class VisualAttribute {
 		}
 		shape = EngineRuntime.applet.createShape();
 		shape.beginShape();
+		shape.noStroke();
 
 		if (visualKind == VisualKind.UNTEXTURED) {
+			System.out.println(vertices);
+			shape.fill(color);
 			for (PVector v : vertices) {
 				shape.vertex(v.x, v.y);
 			}
-			shape.fill(color);
 		} else {
 			for (int i = 0; i < vertices.size(); i++) {
 				shape.vertex(vertices.get(i).x, vertices.get(i).y, texCoords.get(i).x, texCoords.get(i).y);
@@ -51,7 +53,6 @@ public class VisualAttribute {
 				shape.tint(color);
 			shape.texture(texture);
 		}
-
 		shape.endShape();
 	}
 
@@ -61,7 +62,8 @@ public class VisualAttribute {
 		PVector pos = obj.getPosition();
 		g.translate(pos.x, pos.y);
 		g.translate(offset.x, offset.y);
-		if (scaling != null) g.scale(scaling.x, scaling.y);
+		if (scaling != null)
+			g.scale(scaling.x, scaling.y);
 		g.shape(shape);
 		g.popMatrix();
 	}
@@ -99,24 +101,29 @@ public class VisualAttribute {
 
 	public void makeTintedTexture(int colour) {
 		if (this.visualKind == VisualKind.UNTEXTURED)
-			throw new IllegalStateException("Cannot set a TINTED_TEXTURE tint unless VisualAttribute is in TEXTURED or TINTED_TEXTURE state");
+			throw new IllegalStateException(
+					"Cannot set a TINTED_TEXTURE tint unless VisualAttribute is in TEXTURED or TINTED_TEXTURE state");
 		this.color = colour;
 		this.shape = null;
 	}
 
 	public void setColour(int colour) {
-		if (this.visualKind == VisualKind.UNTEXTURED) makeUntextured(colour);
-		else makeTintedTexture(colour);
+		if (this.visualKind == VisualKind.UNTEXTURED)
+			makeUntextured(colour);
+		else
+			makeTintedTexture(colour);
 	}
 
 	public void mirrorVerticesV() {
 		for (PVector v : vertices)
-			if (v.x > 0) v.x *= -1;
+			if (v.x > 0)
+				v.x *= -1;
 	}
 
 	public void mirrorVerticesH() {
 		for (PVector v : vertices)
-			if (v.y > 0) v.y *= -1;
+			if (v.y > 0)
+				v.y *= -1;
 	}
 
 	public void setScaling(PVector scaling) {
@@ -137,17 +144,18 @@ public class VisualAttribute {
 		this.makeTextured(texCoords, texturePath);
 	}
 
-	// ch315 - Added a constructor which takes a PImage so that we that a loaded PImage texture can be
-	//		   re-used and to try to reduce unnecessary calls of loadImage()
+	// ch315 - Added a constructor which takes a PImage so that we that a loaded
+	// PImage texture can be
+	// re-used and to try to reduce unnecessary calls of loadImage()
 	public VisualAttribute(List<PVector> vertices, List<PVector> texCoords, PImage texture) {
 		this.vertices = vertices;
 		this.makeTextured(texCoords, texture);
 	}
 
-
 	public VisualAttribute(List<PVector> vertices) {
 		this(vertices, 0x000000ff);
 	}
+
 	public VisualAttribute(List<PVector> vertices, int color) {
 		this.vertices = vertices;
 		this.makeUntextured(color);

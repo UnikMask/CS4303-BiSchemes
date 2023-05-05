@@ -19,7 +19,7 @@ public class EngineRuntime {
 	private Set<SceneGridPair> scenes = new HashSet<>();
 
 	// Camera Variables
-	private PVector cameraPosition = new PVector(16, 9);
+	private PVector cameraPosition = new PVector(0, 0);
 	private PVector cameraBounds = new PVector();
 	private float cameraRotation = 0;
 
@@ -37,11 +37,11 @@ public class EngineRuntime {
 	}
 
 	public void draw() {
-		g.pushMatrix();
-		PVector scale = new PVector(((float) applet.width) / cameraBounds.x, ((float) applet.height) / cameraBounds.y);
+		PVector scale = new PVector(applet.width / cameraBounds.x, applet.height / cameraBounds.y);
 		PVector posAnchored = PVector.sub(cameraPosition, PVector.div(cameraBounds, 2));
+		g.pushMatrix();
 		g.rotate(-cameraRotation);
-		g.scale(scale.x, scale.y);
+		g.scale(scale.x, -scale.y);
 		g.translate(-posAnchored.x, -posAnchored.y);
 		for (SceneGridPair scene : scenes) {
 			scene.scene.draw(g);
@@ -55,6 +55,7 @@ public class EngineRuntime {
 		lastTimeStamp = currentTime;
 
 		if (pause) {
+			draw();
 			return;
 		}
 
@@ -105,6 +106,10 @@ public class EngineRuntime {
 		this.cameraPosition = position;
 	}
 
+	public PVector getCameraPosition() {
+		return this.cameraPosition;
+	}
+
 	public void setCameraBounds(PVector bounds) {
 		this.cameraBounds = bounds;
 	}
@@ -114,9 +119,7 @@ public class EngineRuntime {
 	}
 
 	public EngineRuntime(PApplet applet, PGraphics g) {
-		if (EngineRuntime.applet != null) {
-			EngineRuntime.applet = applet;
-		}
+		EngineRuntime.applet = applet;
 		this.g = g;
 	}
 }

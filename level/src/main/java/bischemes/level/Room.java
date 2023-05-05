@@ -3,7 +3,7 @@ package bischemes.level;
 import bischemes.engine.GObject;
 import bischemes.level.parts.RObject;
 import bischemes.level.util.InvalidIdException;
-import bischemes.level.util.JParsing;
+import bischemes.level.util.JParser;
 import bischemes.level.util.LevelParseException;
 import processing.core.PVector;
 
@@ -95,16 +95,16 @@ public class Room extends GObject {
         Room room;
         int id = -1;
         try {
-             id = JParsing.parseInt(roomJson, "id");
-             PVector dims = JParsing.parsePVec(roomJson, "dimensions");
-             PVector spawnPos = JParsing.parsePVec(roomJson, "spawnPosition");
+             id = JParser.parseInt(roomJson, "id");
+             PVector dims = JParser.parsePVec(roomJson, "dimensions");
+             PVector spawnPos = JParser.parsePVec(roomJson, "spawnPosition");
              room = new Room(id, dims, spawnPos);
 
-             JsonObject geometry = JParsing.parseObj(roomJson, "geometry");
-             JParsing.parseGeometryArr(geometry, "primary", room.primaryGeometry);
-             JParsing.parseGeometryArr(geometry, "secondary", room.secondaryGeometry);
+             JsonObject geometry = JParser.parseObj(roomJson, "geometry");
+             JParser.parseGeometryArr(geometry, "primary", room.primaryGeometry);
+             JParser.parseGeometryArr(geometry, "secondary", room.secondaryGeometry);
 
-             JParsing.parseRObjectAr(roomJson, "objects", room, room.roomObjects);
+             JParser.parseRObjectArr(roomJson, "objects", room, room.roomObjects);
              // TODO room object parsing
              // TODO adjacency parsing
 

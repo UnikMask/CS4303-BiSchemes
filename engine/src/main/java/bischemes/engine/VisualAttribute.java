@@ -40,7 +40,6 @@ public class VisualAttribute {
 		shape.noStroke();
 
 		if (visualKind == VisualKind.UNTEXTURED) {
-			System.out.println(vertices);
 			shape.fill(color);
 			for (PVector v : vertices) {
 				shape.vertex(v.x, v.y);

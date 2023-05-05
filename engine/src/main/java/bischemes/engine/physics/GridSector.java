@@ -206,7 +206,6 @@ public class GridSector {
 				+ p.AABBbounds.x / 2 - NEXT_CELL_THRESHOLD); i++) {
 			for (int j = (int) (p.position.y - position.y - p.AABBbounds.y / 2); j <= (int) (p.position.y - position.y
 					+ p.AABBbounds.y / 2 - NEXT_CELL_THRESHOLD); j++) {
-				System.out.println("x: " + i + ", y: " + j);
 				if (i >= 0 && i < ncols && j >= 0 && j < nrows) {
 					int index = j * ncols + i;
 					GridCell c = sector.get(index);

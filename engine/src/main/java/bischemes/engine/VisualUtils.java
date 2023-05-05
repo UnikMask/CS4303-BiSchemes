@@ -2,6 +2,7 @@ package bischemes.engine;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 import processing.core.PImage;
 import processing.core.PVector;
@@ -36,11 +37,11 @@ public final class VisualUtils {
 			int color) {
 		List<PVector> vertices = new ArrayList<>();
 
-		float increment = (float) (2 * Math.PI / sides);
+		double increment = 2 * Math.PI / sides;
 		for (int i = 0; i < sides; i++) {
-			float angle = baseAngle + i * increment;
-			vertices.add(new PVector((float) (anchor.x + size.x / 2 * Math.cos(angle)),
-					(float) (anchor.y + size.y / 2 * Math.sin(angle))));
+			double angle = baseAngle + i * increment;
+			vertices.add(new PVector((float) (anchor.x + (size.x / 2) * Math.cos(angle)),
+					(float) (anchor.y + (size.y / 2) * Math.sin(angle))));
 		}
 		return new VisualAttribute(vertices, color);
 	}
@@ -50,14 +51,17 @@ public final class VisualUtils {
 		float increment = (float) (2 * Math.PI / sides);
 		for (int i = 0; i < sides; i++) {
 			float angle = baseAngle + i * increment;
-			vertices.add(new PVector((float) (anchor.x + size.x / 2 * Math.cos(angle)),
-					(float) (anchor.y + size.y / 2 * Math.sin(angle))));
+			vertices.add(new PVector(anchor.x + (size.x / 2) * (float) Math.cos(angle),
+					anchor.y + (size.y / 2) * (float) Math.sin(angle)));
 			uvMap.add(new PVector(1 / 2 + 1 / 2 * (float) Math.cos(angle), 1 / 2 + 1 / 2 * (float) Math.sin(angle)));
 		}
 	}
 
 	public static VisualAttribute makeRect(PVector size, int color) {
-		return makeUntexturedPolygon(size, 4, 0, new PVector(0, 0), color);
+		return new VisualAttribute(
+				Arrays.asList(new PVector(-size.x / 2, -size.y / 2), new PVector(-size.x / 2, size.y / 2),
+						new PVector(size.x / 2, size.y / 2), new PVector(size.x / 2, -size.y / 2)),
+				color);
 	}
 
 	public static VisualAttribute makeRect(PVector size, String texture) {

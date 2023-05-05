@@ -28,7 +28,7 @@ public class RigidBody {
 
 	// Force Bookkeeping
 	private List<PVector> forces = new ArrayList<>();
-	private PVector forceAccumulation;
+	private PVector forceAccumulation = new PVector();
 	public boolean hasMoved = true;
 	// private double torqueAccumulation;
 

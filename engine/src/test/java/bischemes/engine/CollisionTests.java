@@ -57,8 +57,6 @@ class CollisionTests {
 		// Case 1 - no collisions
 		PhysicsMesh mA = bA.getRigidBody().getProperties().mesh;
 		PhysicsMesh mB = bB.getRigidBody().getProperties().mesh;
-		mA.derive();
-		mB.derive();
 		Manifold m = mA.getCollision(mB);
 		assertFalse(m.isCollision());
 
@@ -84,8 +82,6 @@ class CollisionTests {
 		// Case 1 - no collisions
 		PhysicsMesh mA = bA.getRigidBody().getProperties().mesh;
 		PhysicsMesh mB = bB.getRigidBody().getProperties().mesh;
-		mA.derive();
-		mB.derive();
 		Manifold m = mA.getCollision(mB);
 		assertFalse(m.isCollision());
 
@@ -116,8 +112,6 @@ class CollisionTests {
 		GObject bB = new GObject(null, new PVector(2, 0), 0);
 		bA.setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mesh", cube.copy()))));
 		bB.setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mesh", cube.copy()))));
-		bA.getRigidBody().getProperties().mesh.derive();
-		bB.getRigidBody().getProperties().mesh.derive();
 
 		// Case 1 - no overlap
 		g.move(bA.getRigidBody());

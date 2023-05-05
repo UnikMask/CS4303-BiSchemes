@@ -13,6 +13,8 @@ import bischemes.engine.physics.PrimitiveUtils;
 import bischemes.engine.physics.RigidBody;
 import bischemes.engine.physics.RigidBodyProperties;
 import bischemes.engine.physics.Surface;
+import bischemes.engine.physics.ForceGenerators.DirectionalGravity;
+import bischemes.engine.physics.ForceGenerators.ForceGenerator;
 import bischemes.game.Game.GameState;
 import bischemes.game.InputHandler.InputCommand;
 import processing.core.PApplet;
@@ -25,6 +27,9 @@ public class Game {
 
 	SceneGridPair mainScene;
 
+	GObject demoGravItem;
+	ForceGenerator gravity = new DirectionalGravity(0.1, new PVector(0, -1, 0));
+
 	// States of a level/game - feel free to modify
 	enum GameState {
 		PAUSE, PLAY, INTRO, FINISH, END
@@ -36,6 +41,8 @@ public class Game {
 		case PAUSE:
 			break;
 		case PLAY:
+			// Update forces on grav item
+			gravity.updateForce(demoGravItem.getRigidBody());
 			engine.update();
 			break;
 		case INTRO:
@@ -49,7 +56,7 @@ public class Game {
 	public void setup() {
 		engine.setCameraBounds(new PVector(16, 9));
 		mainScene = new SceneGridPair(new GObject(null, new PVector(), 0),
-				new GridSector(new PVector(16, 9), new PVector(), 16, 9));
+				new GridSector(new PVector(16, 9), new PVector(-8, -4.5f), 16, 9));
 		mainScene.scene.addVisualAttributes(VisualUtils.makeRect(new PVector(16, 9), 0xffffc857));
 
 		// Create an obstacle
@@ -59,7 +66,15 @@ public class Game {
 		obstacles.addVisualAttributes(VisualUtils.makeRect(new PVector(16, 2), 0xff54494b));
 		mainScene.attachToGObject(mainScene.scene, obstacles);
 
+		// Create an item that will fall down on the floor
+		demoGravItem = new GObject(null, new PVector(0, 0), 0);
+		demoGravItem.setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mass", 15.0, "isMovable", true, "mesh",
+				new Primitive(new Surface(0.5, 0.05, 0.05), PrimitiveUtils.makeRect(new PVector(1, 1)))))));
+		demoGravItem.addVisualAttributes(VisualUtils.makeRect(new PVector(1, 1), 0xff54494b));
+		mainScene.attachToGObject(mainScene.scene, demoGravItem);
+
 		engine.attachScene(mainScene);
+		System.out.println(mainScene.grid);
 	}
 
 	public Game(PApplet applet, PGraphics g) {

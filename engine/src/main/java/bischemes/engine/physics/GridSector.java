@@ -160,7 +160,6 @@ public class GridSector {
 	 * @return A map of rigid body pairs to their corresponding manifolds.
 	 */
 	public HashMap<Pair<RigidBody>, Manifold> getCollisions() {
-		System.out.println(sector);
 		HashMap<Pair<RigidBody>, Manifold> pairs = new HashMap<>();
 		HashSet<Pair<PrimitiveStore>> donePrimitives = new HashSet<>();
 		for (GridCell c : overlaps) {

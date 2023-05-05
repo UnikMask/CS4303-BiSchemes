@@ -49,7 +49,7 @@ public class Primitive implements PhysicsMesh {
 			vertices = new ArrayList<>(baseVerts.size());
 			for (PVector v : baseVerts) {
 				PVector vn = v.copy();
-				vn.rotate((float) getParent().getOrientation());
+				vn.rotate((float) parent.getOrientation());
 				vertices.add(vn);
 			}
 		}

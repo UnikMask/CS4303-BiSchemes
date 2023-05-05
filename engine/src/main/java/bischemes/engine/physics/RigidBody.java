@@ -121,6 +121,7 @@ public class RigidBody {
 	public void enable(GObject parent) {
 		if (this.parent == null) {
 			this.parent = parent;
+			derive();
 		}
 	}
 
@@ -189,6 +190,11 @@ public class RigidBody {
 		transformMatrix = new PMatrix2D(1, 0, 0, 0, 1, 0);
 		transformMatrix.translate(pos.x, pos.y);
 		transformMatrix.rotate((float) parent.getOrientation());
+
+		// Derive mesh if it exists
+		if (properties.mesh != null) {
+			properties.mesh.derive();
+		}
 	}
 
 	//////////////////

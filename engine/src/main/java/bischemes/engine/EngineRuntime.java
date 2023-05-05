@@ -38,7 +38,7 @@ public class EngineRuntime {
 
 	public void draw() {
 		PVector scale = new PVector(applet.width / cameraBounds.x, applet.height / cameraBounds.y);
-		PVector posAnchored = PVector.sub(cameraPosition, PVector.div(cameraBounds, 2));
+		PVector posAnchored = new PVector(cameraPosition.x - cameraBounds.x / 2, cameraPosition.y + cameraBounds.y / 2);
 		g.pushMatrix();
 		g.rotate(-cameraRotation);
 		g.scale(scale.x, -scale.y);

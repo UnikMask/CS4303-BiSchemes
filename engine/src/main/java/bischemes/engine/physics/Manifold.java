@@ -8,6 +8,14 @@ import java.util.ArrayList;
  * Details on a collision between 2 rigid bodies.
  */
 public class Manifold {
+	// Physics Hyperparameters
+	public static final double CORRECTION_THRESHOLD = 0.01;
+	public static final double CORRECTION_PERCENTAGE = 0.4;
+	public static final double SAME_EDGE_THRESHOLD = 0.01;
+	public static final double ROTATIONAL_VELOCITY_THRESHOLD = 0.0;
+	public static final double INERTIA_THRESHOLD = 0.0f;
+
+	// Manifold properties
 	private List<Interpenetration> contactPoints = new ArrayList<>();
 	private RigidBody objectA;
 	private RigidBody objectB;
@@ -25,6 +33,11 @@ public class Manifold {
 		double staticFriction;
 		double dynamicFriction;
 
+		Interpenetration copy() {
+			return new Interpenetration(contactPoint, surfaceNormal, penetration, restitution, staticFriction,
+					dynamicFriction);
+		}
+
 		Interpenetration(PVector contactPoint, PVector surfaceNormal, double penetration, Primitive a, Primitive b) {
 			this.contactPoint = contactPoint;
 			this.surfaceNormal = surfaceNormal;
@@ -36,6 +49,16 @@ public class Manifold {
 					.sqrt(Math.pow(a.surface.staticFriction, 2) + Math.pow(b.surface.staticFriction, 2));
 			this.dynamicFriction = Math
 					.sqrt(Math.pow(a.surface.dynamicFriction, 2) + Math.pow(b.surface.dynamicFriction, 2));
+		}
+
+		Interpenetration(PVector contactPoint, PVector surfaceNormal, double penetration, double restitution,
+				double staticFriction, double dynamicFriction) {
+			this.contactPoint = contactPoint;
+			this.surfaceNormal = surfaceNormal;
+			this.penetration = penetration;
+			this.restitution = restitution;
+			this.staticFriction = staticFriction;
+			this.dynamicFriction = dynamicFriction;
 		}
 	}
 
@@ -56,7 +79,14 @@ public class Manifold {
 	public void applyImpulse() {
 		System.out.println("Object A - movable? " + objectA.properties.isMovable);
 		System.out.println("Object B - movable? " + objectB.properties.isMovable);
+		double maxPenetration = 0;
+		PVector maxNormal = new PVector();
 		for (Interpenetration contact : contactPoints) {
+			if (-contact.penetration > maxPenetration) {
+				maxPenetration = -contact.penetration;
+				maxNormal = contact.surfaceNormal;
+			}
+
 			PVector radA = PVector.sub(contact.contactPoint, objectA.getPosition());
 			PVector radB = PVector.sub(contact.contactPoint, objectB.getPosition());
 
@@ -67,11 +97,9 @@ public class Manifold {
 					.add(new PVector(-radB.y, radB.x).mult((float) objectB.properties.rotation));
 
 			double velocityProjectionOnNormal = PVector.dot(relVelocity, contact.surfaceNormal);
-			System.out.println("velocity projection along normal: " + relVelocity);
 			if (velocityProjectionOnNormal > 0) {
 				continue;
 			}
-			System.out.println("Collision happened!");
 
 			// Calculate impulse resolution
 			double radACrossNormal = Math.pow(radA.cross(contact.surfaceNormal).z, 2),
@@ -80,13 +108,6 @@ public class Manifold {
 					+ radACrossNormal * objectA.getInverseInertia() + radBCrossNormal * objectB.getInverseInertia()));
 			double j = -(1 + contact.restitution) * velocityProjectionOnNormal * factorDiv;
 			PVector impulse = PVector.mult(contact.surfaceNormal, (float) j);
-			System.out.println("Object A mass: " + objectA.getMass());
-			System.out.println("Object A inverse mass: " + objectA.getInverseMass());
-			System.out.println("Object B mass: " + objectB.getMass());
-			System.out.println("Object B inverse mass: " + objectB.getInverseMass());
-			System.out.println("Number of contacts: " + contactPoints.size());
-			System.out.println("Factor div: " + factorDiv);
-			System.out.println("Impulse: " + impulse);
 
 			objectA.applyImpulse(PVector.mult(impulse, -1), contact.contactPoint);
 			objectB.applyImpulse(impulse, contact.contactPoint);
@@ -105,6 +126,15 @@ public class Manifold {
 			objectA.applyImpulse(PVector.mult(frictionImpulse, -1), contact.contactPoint);
 			objectB.applyImpulse(frictionImpulse, contact.contactPoint);
 		}
+
+		// Apply sinking correction
+		double inverseTotalMass = 1 / (objectA.getInverseMass() + objectB.getInverseMass());
+		if (maxPenetration > CORRECTION_THRESHOLD) {
+			objectA.setPosition(PVector.add(objectA.getPosition(), PVector.mult(maxNormal,
+					(float) (-maxPenetration * CORRECTION_PERCENTAGE * objectA.getInverseMass() * inverseTotalMass))));
+			objectB.setPosition(PVector.sub(objectB.getPosition(), PVector.mult(maxNormal,
+					(float) (-maxPenetration * CORRECTION_PERCENTAGE * objectB.getInverseMass() * inverseTotalMass))));
+		}
 	}
 
 	/**
@@ -119,7 +149,17 @@ public class Manifold {
 				&& (m.objectA != this.objectB || m.objectB != this.objectA)) {
 			return;
 		}
-		contactPoints.addAll(m.contactPoints);
+		// Reverse contact points
+		if (m.objectA == this.objectB) {
+			for (Interpenetration i : m.contactPoints) {
+				Interpenetration ci = i.copy();
+				ci.surfaceNormal.mult(-1);
+				contactPoints.add(ci);
+
+			}
+		} else {
+			contactPoints.addAll(m.contactPoints);
+		}
 	}
 
 	/**

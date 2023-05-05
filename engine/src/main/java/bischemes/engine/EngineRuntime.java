@@ -27,12 +27,14 @@ public class EngineRuntime {
 	private boolean paused = true;
 	private double deltaT = 0;
 	private long lastTimeStamp = new Date().getTime();
-	public boolean pause = false;
 
 	public void setPause(boolean pause) {
 		if (this.paused != pause) {
-			deltaT = 0;
 			this.paused = pause;
+			if (pause = false) {
+				System.out.println("Unpaused!");
+				lastTimeStamp = new Date().getTime();
+			}
 		}
 	}
 
@@ -54,7 +56,7 @@ public class EngineRuntime {
 		deltaT = (double) (currentTime - lastTimeStamp) / 1000.0;
 		lastTimeStamp = currentTime;
 
-		if (pause) {
+		if (paused) {
 			draw();
 			return;
 		}

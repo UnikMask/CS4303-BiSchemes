@@ -149,11 +149,12 @@ public class RigidBody {
 			forceAccumulation.add(f);
 		}
 
-		// Apply accumulator to velocity, and velocity to position
+		// Apply accumulator to velocity, velocity to position, and rotation to orientation
 		properties.velocity = PVector.add(properties.velocity, PVector.mult(forceAccumulation, (float) duration));
 		PVector pos = parent.getPosition().copy();
 		parent.setLocalPosition(
 				PVector.add(parent.getLocalPosition(), PVector.mult(properties.velocity, (float) duration)));
+		parent.setLocalOrientation(parent.getLocalOrientation() + properties.rotation * duration);
 		pos.sub(parent.getPosition());
 		if (Math.abs(properties.velocity.x) > MOVE_THRESHOLD.x || Math.abs(properties.velocity.y) > MOVE_THRESHOLD.y) {
 			hasMoved = true;

@@ -61,6 +61,7 @@ public class VisualAttribute {
 		PVector pos = obj.getPosition();
 		g.translate(pos.x, pos.y);
 		g.translate(offset.x, offset.y);
+		g.rotate((float) obj.getOrientation());
 		if (scaling != null)
 			g.scale(scaling.x, scaling.y);
 		g.shape(shape);

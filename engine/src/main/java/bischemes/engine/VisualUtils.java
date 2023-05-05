@@ -72,11 +72,11 @@ public final class VisualUtils {
 		return makeTexturedPolygon(size, 4, 0, new PVector(), texture);
 	}
 
-	public static VisualAttribute makeTriangle(PVector anchor, PVector vertex1, PVector vertex2, int colour) {
+	public static VisualAttribute makeTriangle(PVector vertex1, PVector vertex2, PVector vertex3, int colour) {
 		List<PVector> vertices = new ArrayList<>(3);
-		vertices.add(anchor);
 		vertices.add(vertex1);
 		vertices.add(vertex2);
+		vertices.add(vertex3);
 		return new VisualAttribute(vertices, colour);
 	}
 

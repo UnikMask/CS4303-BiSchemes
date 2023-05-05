@@ -83,7 +83,7 @@ public abstract class BInteract extends BUpdate {
                 interactable.removeVisualAttributes(indicator);
         }
     }
-    public abstract void onInteraction();
+    protected abstract void onInteraction();
 
     @Override
     public void run() {

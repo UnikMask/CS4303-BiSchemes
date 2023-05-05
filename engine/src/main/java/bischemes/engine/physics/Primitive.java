@@ -89,8 +89,11 @@ public class Primitive implements PhysicsMesh {
 	public List<PVector> getVertices() {
 		if (primitiveType == PrimitiveType.CIRCLE) {
 			return null;
+		} else if (vertices != null) {
+			return vertices;
+		} else {
+			return baseVerts;
 		}
-		return vertices;
 	}
 
 	public double getRadius() {

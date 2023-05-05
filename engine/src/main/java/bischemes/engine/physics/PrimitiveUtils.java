@@ -2,6 +2,7 @@ package bischemes.engine.physics;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 import bischemes.engine.physics.Primitive.PrimitiveType;
 import bischemes.engine.physics.PrimitiveAssembly.PrimitiveInSet;
@@ -45,5 +46,10 @@ public class PrimitiveUtils {
 			vertices.add(new PVector(((float) (size / 2 * Math.cos(angle))), ((float) (size / 2 * Math.sin(angle)))));
 		}
 		return vertices;
+	}
+
+	public static List<PVector> makeRect(PVector size) {
+		return Arrays.asList(new PVector(-size.x / 2, -size.y / 2), new PVector(-size.x / 2, size.y / 2),
+				new PVector(size.x / 2, size.y / 2), new PVector(size.x / 2, -size.y / 2));
 	}
 }

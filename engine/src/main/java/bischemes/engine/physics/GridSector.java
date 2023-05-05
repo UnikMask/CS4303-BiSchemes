@@ -78,6 +78,21 @@ public class GridSector {
 	private HashSet<GridCell> overlaps = new HashSet<>();
 	private HashMap<PrimitiveStore, ArrayList<GridCell>> primitives = new HashMap<>();
 
+	///////////////
+	// Overrides //
+	///////////////
+
+	@Override
+	public String toString() {
+		return sector.toString();
+	}
+
+	////////////////////
+	// Public Methods //
+	////////////////////
+
+	// Add //
+
 	public void add(Primitive p) {
 		add(new PrimitiveStore(p));
 	}
@@ -86,28 +101,7 @@ public class GridSector {
 		add(new PrimitiveStore(p));
 	}
 
-	private void add(PrimitiveStore p) {
-		if (primitives.containsKey(p)) {
-			return;
-		}
-		primitives.put(p, new ArrayList<>());
-		for (int i = (int) (p.position.x - position.x - p.AABBbounds.x / 2); i <= (int) (p.position.x - position.x
-				+ p.AABBbounds.x / 2); i++) {
-			for (int j = (int) (p.position.y - position.y - p.AABBbounds.y / 2); j <= (int) (p.position.y - position.y
-					+ p.AABBbounds.y / 2); j++) {
-				if (i >= 0 && i < ncols && j >= 0 && j < nrows) {
-					int index = j * ncols + i;
-					GridCell c = sector.get(index);
-					c.list.add(p);
-					primitives.get(p).add(c);
-					if (c.hasOverlap() && !overlaps.contains(c)) {
-						overlaps.add(c);
-					}
-				}
-			}
-
-		}
-	}
+	// Move //
 
 	public void move(Primitive p) {
 		remove(p);
@@ -132,6 +126,8 @@ public class GridSector {
 		}
 	}
 
+	// Remove //
+
 	public void remove(Primitive p) {
 		remove(new PrimitiveStore(p));
 	}
@@ -141,18 +137,7 @@ public class GridSector {
 
 	}
 
-	private void remove(PrimitiveStore p) {
-		if (!primitives.containsKey(p)) {
-			return;
-		}
-		for (GridCell c : primitives.get(p)) {
-			c.list.remove(p);
-			if (overlaps.contains(c) && !c.hasOverlap()) {
-				overlaps.remove(c);
-			}
-		}
-		primitives.remove(p);
-	}
+	// Collisions //
 
 	/**
 	 * Get all actual collisions happening in the grid sector.
@@ -181,6 +166,46 @@ public class GridSector {
 			}
 		}
 		return pairs;
+	}
+
+	/////////////////////
+	// Private Methods //
+	/////////////////////
+
+	private void remove(PrimitiveStore p) {
+		if (!primitives.containsKey(p)) {
+			return;
+		}
+		for (GridCell c : primitives.get(p)) {
+			c.list.remove(p);
+			if (overlaps.contains(c) && !c.hasOverlap()) {
+				overlaps.remove(c);
+			}
+		}
+		primitives.remove(p);
+	}
+
+	private void add(PrimitiveStore p) {
+		if (primitives.containsKey(p)) {
+			return;
+		}
+		primitives.put(p, new ArrayList<>());
+		for (int i = (int) (p.position.x - position.x - p.AABBbounds.x / 2); i <= (int) (p.position.x - position.x
+				+ p.AABBbounds.x / 2); i++) {
+			for (int j = (int) (p.position.y - position.y - p.AABBbounds.y / 2); j <= (int) (p.position.y - position.y
+					+ p.AABBbounds.y / 2); j++) {
+				if (i >= 0 && i < ncols && j >= 0 && j < nrows) {
+					int index = j * ncols + i;
+					GridCell c = sector.get(index);
+					c.list.add(p);
+					primitives.get(p).add(c);
+					if (c.hasOverlap() && !overlaps.contains(c)) {
+						overlaps.add(c);
+					}
+				}
+			}
+
+		}
 	}
 
 	/**

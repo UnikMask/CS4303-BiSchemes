@@ -25,6 +25,7 @@ public class SceneGridPair {
 			GObject current = q.pollFirst();
 			if (current.getRigidBody() != null) {
 				bodies.add(current.getRigidBody());
+				grid.move(current.getRigidBody());
 			} else {
 				q.addAll(current.children);
 			}

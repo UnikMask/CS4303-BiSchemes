@@ -16,7 +16,11 @@ public class SceneGridPair {
 		object.children.add(child);
 		child.parent = object;
 
-		ArrayDeque<GObject> q = new ArrayDeque<>(Arrays.asList(child));
+		addRigidBodiesFromTree(child);
+	}
+
+	public void addRigidBodiesFromTree(GObject root) {
+		ArrayDeque<GObject> q = new ArrayDeque<>(Arrays.asList(root));
 		while (!q.isEmpty()) {
 			GObject current = q.pollFirst();
 			if (current.getRigidBody() != null) {
@@ -32,14 +36,6 @@ public class SceneGridPair {
 		this.grid = grid;
 
 		bodies = new HashSet<>();
-		ArrayDeque<GObject> q = new ArrayDeque<>();
-		while (!q.isEmpty()) {
-			GObject current = q.pollFirst();
-			if (current.getRigidBody() != null) {
-				bodies.add(current.getRigidBody());
-			} else {
-				q.addAll(current.children);
-			}
-		}
+		addRigidBodiesFromTree(scene);
 	}
 }

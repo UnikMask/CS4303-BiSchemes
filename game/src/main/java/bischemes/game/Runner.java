@@ -23,6 +23,7 @@ public class Runner extends PApplet {
 	}
 
 	public void setup() {
+		frameRate(60);
 		g = this.createGraphics(this.width, this.height, PConstants.P2D);
 	}
 

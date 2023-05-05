@@ -8,10 +8,7 @@ import bischemes.level.util.LColour;
 import bischemes.level.util.SpriteLoader;
 import processing.core.PVector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PartFactory {
 
@@ -95,7 +92,7 @@ public class PartFactory {
 			rbProperties.put("mesh", p);
 			if (hasInertia) {
 				float mass = (float) rbProperties.get("mass");
-				rbProperties.put("inertia", PrimitiveUtils.getPrimitiveInertia(p, mass, null));
+				rbProperties.put("inertia", PrimitiveUtils.getPrimitiveInertia(p, mass, new PVector()));
 			}
 			else rbProperties.remove("inertia");
 		}
@@ -118,14 +115,14 @@ public class PartFactory {
 
 	public RObject createRect(GObject parent, PVector anchor, PVector dimensions, float orientation, LColour colour,
 			int id) {
-		return (RObject) createRect(new RObject(parent, anchor, orientation, id, colour), dimensions, orientation);
+		return (RObject) createRect(new RObject(parent, anchor, orientation, id, colour), dimensions);
 	}
 
 	public GObject createRect(GObject parent, PVector anchor, PVector dimensions, float orientation) {
-		return createRect(new GObject(parent, anchor, orientation), dimensions, orientation);
+		return createRect(new GObject(parent, anchor, orientation), dimensions);
 	}
 
-	private GObject createRect(GObject obj, PVector dimensions, float orientation) {
+	private GObject createRect(GObject obj, PVector dimensions) {
 		obj.addVisualAttributes(VisualUtils.makeRect(dimensions, DEFAULT_COLOUR));
 
 		List<PVector> vertices = new ArrayList<>(4);
@@ -239,7 +236,29 @@ public class PartFactory {
 
 	// TODO
 	public RObject makeSpike(GObject parent, PVector anchor, float orientation, int length, LColour colour, int id) {
-		return null;
+		initRBGeometry();
+
+		RObject spikes = new RObject(parent, anchor, orientation, id, colour);
+		PrimitiveAssembly assembly = new PrimitiveAssembly();
+		Surface surface = new Surface(restitution, staticFriction, dynamicFriction);
+
+		PVector v1 = new PVector(-0.5f, 0.5f);
+		PVector v2 = new PVector(0.5f, 0.5f);
+		PVector v3 = new PVector(0f, -0.5f);
+		for (int i = 0; i < length; i++) {
+			spikes.addVisualAttributes(VisualUtils.makeTriangle(
+					v1.copy().add(i, 0), v2.copy().add(i, 0), v3.copy().add(i, 0), DEFAULT_COLOUR));
+			assembly.addPrimitive(new Primitive(surface, Arrays.asList(
+					v1.copy(), v2.copy(), v3.copy())), new PVector(i, 0));
+		}
+
+		rbProperties.put("mesh", assembly);
+		rbProperties.remove("inertia");
+
+		spikes.setRigidBody(new RigidBody(new RigidBodyProperties(rbProperties)));
+		BHitKill.assign(spikes);
+
+		return spikes;
 	}
 
 	// TODO

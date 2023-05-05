@@ -12,6 +12,8 @@ import processing.core.PVector;
  * Uniform grid for coarse-grained collision detection
  */
 public class GridSector {
+	private static double NEXT_CELL_THRESHOLD = 0.0001;
+
 	private PVector dimensions;
 	private PVector sizePerCell;
 	private PVector position;
@@ -65,7 +67,7 @@ public class GridSector {
 
 		@Override
 		public String toString() {
-			return list.toString();
+			return "[" + list.size() + "]";
 		}
 
 		public boolean hasOverlap() {
@@ -84,7 +86,14 @@ public class GridSector {
 
 	@Override
 	public String toString() {
-		return sector.toString();
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < nrows; i++) {
+			for (int j = 0; j < ncols; j++) {
+				sb.append(sector.get(i * ncols + j));
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
 	}
 
 	////////////////////
@@ -191,9 +200,10 @@ public class GridSector {
 		}
 		primitives.put(p, new ArrayList<>());
 		for (int i = (int) (p.position.x - position.x - p.AABBbounds.x / 2); i <= (int) (p.position.x - position.x
-				+ p.AABBbounds.x / 2); i++) {
+				+ p.AABBbounds.x / 2 - NEXT_CELL_THRESHOLD); i++) {
 			for (int j = (int) (p.position.y - position.y - p.AABBbounds.y / 2); j <= (int) (p.position.y - position.y
-					+ p.AABBbounds.y / 2); j++) {
+					+ p.AABBbounds.y / 2 - NEXT_CELL_THRESHOLD); j++) {
+				System.out.println("x: " + i + ", y: " + j);
 				if (i >= 0 && i < ncols && j >= 0 && j < nrows) {
 					int index = j * ncols + i;
 					GridCell c = sector.get(index);
@@ -206,6 +216,7 @@ public class GridSector {
 			}
 
 		}
+		System.out.println(this);
 	}
 
 	/**
@@ -215,7 +226,7 @@ public class GridSector {
 	 * @param nrows      The number of rows in the sector.
 	 * @param ncols      The number of columns in the sector.
 	 */
-	public GridSector(PVector dimensions, PVector position, int nrows, int ncols) {
+	public GridSector(PVector dimensions, PVector position, int ncols, int nrows) {
 		this.dimensions = dimensions;
 		this.nrows = nrows;
 		this.ncols = ncols;

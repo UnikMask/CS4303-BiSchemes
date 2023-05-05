@@ -107,7 +107,7 @@ class CollisionTests {
 
 	@Test
 	public void testGridSector() {
-		GridSector g = new GridSector(new PVector(16, 9), new PVector(-8, -4.5f), 9, 16);
+		GridSector g = new GridSector(new PVector(16, 9), new PVector(-8, -4.5f), 16, 9);
 		GObject bA = new GObject(null, new PVector(-2, 0), 0);
 		GObject bB = new GObject(null, new PVector(2, 0), 0);
 		bA.setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mesh", cube.copy()))));

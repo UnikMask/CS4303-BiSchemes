@@ -158,18 +158,21 @@ public class GridSector {
 		HashSet<Pair<PrimitiveStore>> donePrimitives = new HashSet<>();
 		for (GridCell c : overlaps) {
 			ArrayList<PrimitiveStore> clist = new ArrayList<>(c.list);
-			for (int i = 0; i < clist.size(); i++) {
+			for (int i = 0; i < clist.size() - 1; i++) {
 				PrimitiveStore a = clist.get(i);
-				for (int j = i; j < clist.size(); j++) {
+				for (int j = i + 1; j < clist.size(); j++) {
 					PrimitiveStore b = clist.get(j);
 					Pair<RigidBody> p = new Pair<>(a.p.getParent(), b.p.getParent());
 					Pair<PrimitiveStore> donePair = new Pair<>(a, b);
 					Manifold m = a.p.getCollision(b.p, PVector.sub(b.offset, a.offset));
-					donePrimitives.add(donePair);
-					if (pairs.containsKey(p)) {
-						pairs.get(p).combine(m);
-					} else {
-						pairs.put(p, m);
+
+					if (m.isCollision() && !donePrimitives.contains(donePair)) {
+						donePrimitives.add(donePair);
+						if (pairs.containsKey(p)) {
+							pairs.get(p).combine(m);
+						} else {
+							pairs.put(p, m);
+						}
 					}
 				}
 			}

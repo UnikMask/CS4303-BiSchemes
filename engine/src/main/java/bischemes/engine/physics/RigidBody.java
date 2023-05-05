@@ -22,10 +22,6 @@ public class RigidBody {
 	private double inverseMass;
 	private double inverseInertia;
 
-	// Options
-	private boolean hasMass;
-	private boolean hasInertia;
-
 	// Force Bookkeeping
 	private List<PVector> forces = new ArrayList<>();
 	private PVector forceAccumulation = new PVector();
@@ -54,7 +50,7 @@ public class RigidBody {
 	 * @return The rigid body's inverse mass.
 	 */
 	public double getInverseMass() {
-		return inverseMass;
+		return properties.isMovable ? inverseMass : 0;
 	}
 
 	/**
@@ -64,7 +60,7 @@ public class RigidBody {
 	 * @return the rigid body's inverse inertia.
 	 */
 	public double getInverseInertia() {
-		return inverseInertia;
+		return properties.isRotatable ? inverseInertia : 0;
 	}
 
 	/**
@@ -143,6 +139,9 @@ public class RigidBody {
 	 * @param duration The duration of the frame.
 	 */
 	public void integrate(double duration) {
+		if (!properties.isMovable) {
+			return;
+		}
 		hasMoved = false;
 
 		// Apply forces to accumulator
@@ -156,7 +155,7 @@ public class RigidBody {
 		parent.setLocalPosition(
 				PVector.add(parent.getLocalPosition(), PVector.mult(properties.velocity, (float) duration)));
 		pos.sub(parent.getPosition());
-		if (Math.abs(pos.x) > MOVE_THRESHOLD.x || Math.abs(pos.y) > MOVE_THRESHOLD.y) {
+		if (Math.abs(properties.velocity.x) > MOVE_THRESHOLD.x || Math.abs(properties.velocity.y) > MOVE_THRESHOLD.y) {
 			hasMoved = true;
 		}
 	}
@@ -171,8 +170,12 @@ public class RigidBody {
 	}
 
 	public void applyImpulse(PVector impulse, PVector applicationPoint) {
-		properties.velocity = PVector.add(properties.velocity, PVector.mult(impulse, (float) getInverseMass()));
-		properties.rotation += inverseInertia * applicationPoint.cross(impulse).z;
+		if (properties.isMovable) {
+			properties.velocity = PVector.add(properties.velocity, PVector.mult(impulse, (float) getInverseMass()));
+		}
+		if (properties.isRotatable) {
+			properties.rotation += inverseInertia * applicationPoint.cross(impulse).z;
+		}
 	}
 
 	/////////////////////
@@ -182,8 +185,8 @@ public class RigidBody {
 	// Derivate derived values (mass, transform matrix) from
 	// real values.
 	private void derive() {
-		inverseMass = (hasMass && properties.mass != 0) ? 1 / properties.mass : 0;
-		inverseInertia = (hasInertia && properties.inertia != 0) ? 1 / properties.inertia : 0;
+		inverseMass = (properties.isMovable && properties.mass != 0) ? (1 / properties.mass) : 0;
+		inverseInertia = (properties.isRotatable && properties.inertia != 0) ? (1 / properties.inertia) : 0;
 
 		// Derive transform matrix from position and orientation
 		PVector pos = parent.getPosition();

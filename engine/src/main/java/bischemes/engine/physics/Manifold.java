@@ -54,18 +54,24 @@ public class Manifold {
 	 * Apply the impulse of the manifold to the two rigid bodies.
 	 */
 	public void applyImpulse() {
+		System.out.println("Object A - movable? " + objectA.properties.isMovable);
+		System.out.println("Object B - movable? " + objectB.properties.isMovable);
 		for (Interpenetration contact : contactPoints) {
 			PVector radA = PVector.sub(contact.contactPoint, objectA.getPosition());
 			PVector radB = PVector.sub(contact.contactPoint, objectB.getPosition());
 
+			System.out.println("Object A velocity: " + objectA.properties.velocity);
+			System.out.println("Object B velocity: " + objectB.properties.velocity);
 			PVector relVelocity = PVector.sub(objectB.properties.velocity, objectA.properties.velocity)
 					.sub(new PVector(-radA.y, radA.x).mult((float) objectA.properties.rotation))
 					.add(new PVector(-radB.y, radB.x).mult((float) objectB.properties.rotation));
 
 			double velocityProjectionOnNormal = PVector.dot(relVelocity, contact.surfaceNormal);
+			System.out.println("velocity projection along normal: " + relVelocity);
 			if (velocityProjectionOnNormal > 0) {
 				continue;
 			}
+			System.out.println("Collision happened!");
 
 			// Calculate impulse resolution
 			double radACrossNormal = Math.pow(radA.cross(contact.surfaceNormal).z, 2),
@@ -74,6 +80,13 @@ public class Manifold {
 					+ radACrossNormal * objectA.getInverseInertia() + radBCrossNormal * objectB.getInverseInertia()));
 			double j = -(1 + contact.restitution) * velocityProjectionOnNormal * factorDiv;
 			PVector impulse = PVector.mult(contact.surfaceNormal, (float) j);
+			System.out.println("Object A mass: " + objectA.getMass());
+			System.out.println("Object A inverse mass: " + objectA.getInverseMass());
+			System.out.println("Object B mass: " + objectB.getMass());
+			System.out.println("Object B inverse mass: " + objectB.getInverseMass());
+			System.out.println("Number of contacts: " + contactPoints.size());
+			System.out.println("Factor div: " + factorDiv);
+			System.out.println("Impulse: " + impulse);
 
 			objectA.applyImpulse(PVector.mult(impulse, -1), contact.contactPoint);
 			objectB.applyImpulse(impulse, contact.contactPoint);

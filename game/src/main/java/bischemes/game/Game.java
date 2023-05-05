@@ -28,7 +28,7 @@ public class Game {
 	SceneGridPair mainScene;
 
 	GObject demoGravItem;
-	ForceGenerator gravity = new DirectionalGravity(0.1, new PVector(0, -1, 0));
+	ForceGenerator gravity = new DirectionalGravity(1.0, new PVector(0, -1, 0));
 
 	// States of a level/game - feel free to modify
 	enum GameState {
@@ -68,13 +68,12 @@ public class Game {
 
 		// Create an item that will fall down on the floor
 		demoGravItem = new GObject(null, new PVector(0, 0), 0);
-		demoGravItem.setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mass", 15.0, "isMovable", true, "mesh",
+		demoGravItem.setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mass", 15.0, "move", true, "mesh",
 				new Primitive(new Surface(0.5, 0.05, 0.05), PrimitiveUtils.makeRect(new PVector(1, 1)))))));
 		demoGravItem.addVisualAttributes(VisualUtils.makeRect(new PVector(1, 1), 0xff54494b));
 		mainScene.attachToGObject(mainScene.scene, demoGravItem);
 
 		engine.attachScene(mainScene);
-		System.out.println(mainScene.grid);
 	}
 
 	public Game(PApplet applet, PGraphics g) {

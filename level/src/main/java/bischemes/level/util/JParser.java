@@ -4,15 +4,18 @@ import bischemes.engine.GObject;
 import bischemes.level.parts.PartFactory;
 import bischemes.level.parts.RObjType;
 import bischemes.level.parts.RObject;
+import bischemes.level.parts.behaviour.*;
 import processing.core.PVector;
 
+import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import java.util.ArrayList;
 import java.util.List;
 
-public final class JParsing {
+public final class JParser {
 
-    private JParsing(){}
+    private JParser(){}
     public static JsonObject parseObj(JsonObject obj, String name) {
         try {
             JsonObject obj2 = obj.getJsonObject(name);
@@ -26,6 +29,10 @@ public final class JParsing {
             if (arr == null) throw new LevelParseException("\"" + name + "\" does not have a mapping");
             return arr;
         } catch (ClassCastException e) { throw new LevelParseException("\"" + name + "\" is not a JsonArray"); }
+    }
+    public static JsonArray parseArrOrNull(JsonObject obj, String name) {
+        try { return parseArr(obj, name); }
+        catch (LevelParseException e) { return null; }
     }
     public static int parseInt(JsonObject obj, String name) {
         try { return obj.getInt(name); }
@@ -60,6 +67,10 @@ public final class JParsing {
     public static boolean parseBoolean(JsonObject obj, String name, boolean defaultValue) {
         try { return parseBoolean(obj, name); }
         catch (LevelParseException e) { return defaultValue; }
+    }
+    public static Boolean parseBooleanOrNull(JsonObject obj, String name) {
+        try { return parseBoolean(obj, name); }
+        catch (LevelParseException e) { return null; }
     }
     public static String parseStr(JsonObject obj, String name) {
         String s;
@@ -105,6 +116,16 @@ public final class JParsing {
         return new PVector(x, y, z);
     }
 
+    public static PVector parsePVec(JsonObject obj, String name, PVector defaultValue) {
+        try { return parsePVec(obj, name); }
+        catch (LevelParseException e) { return defaultValue; }
+    }
+
+    public static PVector parsePVecOrNull(JsonObject obj, String name) {
+        try { return parsePVec(obj, name); }
+        catch (LevelParseException e) { return null; }
+    }
+
     public static RObjType parseRObjType(JsonObject obj, String name) {
         String typeStr = parseStr(obj, name);
         RObjType type = RObjType.parse(typeStr);
@@ -144,15 +165,18 @@ public final class JParsing {
         }
     }
 
-    public static void parseRObjectAr(JsonObject obj, String name, GObject parent, List<RObject> roomObjects) {
+    public static void parseRObjectArr(JsonObject obj, String name, GObject parent, List<RObject> roomObjects) {
         JsonArray arr = parseArr(obj, name);
         PartFactory partFactory = new PartFactory();
         int i = 0;
-        try { for (; i < arr.size(); i++)
-            roomObjects.add(parseRObject(arr.getJsonObject(i), parent, partFactory));
-        }
-        catch (ClassCastException e) { throw new LevelParseException("parseGeometryArr(obj, " + name + ", parent), encountered an exception: \n\t\"" + name + "\" array does not contain assignable JsonObjects at index " + i); }
-        catch (LevelParseException e) { throw new LevelParseException("parseGeometryArr(obj, " + name + ", parent), encountered an exception at index " + i + ":\n\t" + e.getLocalizedMessage()); }
+        try { for (; i < arr.size(); i++) {
+            JsonObject rObj = arr.getJsonObject(i);
+            roomObjects.add(parseRObject(rObj, parent, partFactory));
+        } }
+        catch (ClassCastException e) {
+            throw new LevelParseException("parseGeometryArr(obj, " + name + ", parent), encountered an exception: \n\t\"" + name + "\" array does not contain assignable JsonObjects at index " + i); }
+        catch (LevelParseException e) {
+            throw new LevelParseException("parseGeometryArr(obj, " + name + ", parent), encountered an exception at index " + i + ":\n\t" + e.getLocalizedMessage()); }
     }
 
     public static RObject parseRObject(JsonObject obj, GObject parent, PartFactory pF) {
@@ -168,6 +192,7 @@ public final class JParsing {
             case SPIKE -> parseSpike(obj, parent, pF, anchor, id);
             case PORTAL -> parsePortal(obj, parent, pF, anchor, id);
             case EXIT -> parseExit(obj, parent, pF, anchor, id);
+            case CUSTOM -> parseCustom(obj, parent, pF, anchor, id);
         };
     }
 
@@ -176,6 +201,10 @@ public final class JParsing {
         String type = parseStr(obj, "gType");
 
         pF.initRBGeometry();
+
+        //TODO accept additional rigid body parameters here
+
+        //TODO add more geometry (I want to add a trapezium at least)
         return switch (type) {
             case "RECT" ->
                 pF.createRect(parent, anchor, parsePVec(obj, "dimensions"),
@@ -232,6 +261,131 @@ public final class JParsing {
 
     public static RObject parseExit(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
         return pF.makeExit(parent);
+    }
+
+    public static RObject parseCustom(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
+        RObject customObj = parseGeometryRObj(obj, parent, pF, anchor, id);
+        parseBehaviours(obj, "behaviours", customObj);
+
+        //TODO finish derivation of custom objects
+
+        return null;
+    }
+
+    public static List<Behaviour> parseBehaviours(JsonObject obj, String name, RObject customObj) {
+        List<Behaviour> behaviours = new ArrayList<>();
+        JsonArray arr = parseArrOrNull(obj, name);
+        if (arr == null) return new ArrayList<>(behaviours);
+
+        int i = 0;
+        try {
+            for (; i < arr.size(); i++)
+                behaviours.add(parseBehaviour(obj, customObj));
+        }
+        catch (ClassCastException e) { throw new LevelParseException("parseBehaviours(obj, " + name + ", parent), encountered an exception: \n\t\"" + name + "\" array does not contain assignable JsonObjects at index " + i); }
+        catch (LevelParseException e) { throw new LevelParseException("parseBehaviours(obj, " + name + ", parent), encountered an exception at index " + i + ":\n\t" + e.getLocalizedMessage()); }
+        return behaviours;
+    }
+
+    public static Behaviour parseBehaviour(JsonObject obj, RObject customObj) {
+        String type = parseStr(obj, "bType");
+        return switch (type.toUpperCase()) {
+            case "BHITKILL" -> BHitKill.assign(customObj);
+            case "BHITSTATESWITCH" -> BHitStateSwitch.assign(customObj);
+            case "BINTERACTSTATESWITCH" -> parseBInteractStateSwitch(obj, customObj);
+            case "BSTATEBLOCK" -> parseBStateBlock(obj, customObj);
+            case "BSTATEFLIP" -> parseBStateFlip(obj, customObj);
+            case "BSTATEHIDE" -> parseBStateHide(obj, customObj);
+            case "BSTATESWAPCOLOUR" -> parseBStateSwapColour(obj, customObj);
+            case "BSTATESWITCHSTATES" -> parseBStateSwitchStates(obj, customObj);
+            case "BUPDATEFOLLOWPATH" -> parseBUpdateFollowPath(obj, customObj);
+            case "BUPDATETIMER" -> parseBUpdateTimer(obj, customObj);
+            default -> throw new LevelParseException("\"bType\" of \"" + type + "\" is unknown");
+        };
+    }
+
+    public static BInteractStateSwitch parseBInteractStateSwitch(JsonObject obj, RObject customObj) {
+        float r = parseFloat(obj, "radius", -1);
+        PVector indicator = parsePVecOrNull(obj, "indicatorOffset");
+        if (r == -1) {
+            float x = parseFloat(obj, "xDist");
+            float y = parseFloat(obj, "yDist");
+            BInteractStateSwitch b = BInteractStateSwitch.assign(customObj, x, y);
+            if (indicator != null) b.addIndicator(indicator);
+            return b;
+        }
+        if (r > 0) {
+            BInteractStateSwitch b =  BInteractStateSwitch.assign(customObj, r);
+            if (indicator != null) b.addIndicator(indicator);
+            return b;
+        }
+        else
+            throw new LevelParseException("\"radius\" of BInteractStateSwitch cannot be negative");
+    }
+    public static BStateBlock parseBStateBlock(JsonObject obj, RObject customObj) {
+        boolean state = parseBoolean(obj, "initialState", false);
+        float iconSize = parseFloat(obj, "iconSize", 1f);
+        if (iconSize < 0)
+            throw new LevelParseException("\"iconSize\" of parseBStateBlock cannot be negative");
+        return BStateBlock.assign(customObj, state, new PVector(iconSize, iconSize));
+    }
+    public static BStateFlip parseBStateFlip(JsonObject obj, RObject customObj) {
+        boolean state = parseBoolean(obj, "initialState", false);
+        return BStateFlip.assign(customObj, state);
+    }
+    public static BStateHide parseBStateHide(JsonObject obj, RObject customObj) {
+        boolean state = parseBoolean(obj, "initialState", false);
+        return BStateHide.assign(customObj, state);
+    }
+    public static BStateSwapColour parseBStateSwapColour(JsonObject obj, RObject customObj) {
+        float iconSize = parseFloat(obj, "iconSize", -1f);
+        BStateSwapColour b = BStateSwapColour.assign(customObj);
+        if (iconSize != -1) {
+            if (iconSize < 0)
+                throw new LevelParseException("\"iconSize\" of BStateSwapColour cannot be negative");
+            b.addSwitchIcon(new PVector(iconSize, iconSize));
+        }
+        return b;
+
+    }
+    public static BStateSwitchStates parseBStateSwitchStates(JsonObject obj, RObject customObj) {
+        int[] linkedIDs = parseInts(obj, "linkedTo");
+        for (int id : linkedIDs)
+            if (id == customObj.getId())
+                throw new LevelParseException("cannot link a BStateSwitchStates behaviour to the parent RObject");
+        return BStateSwitchStates.assign(customObj, linkedIDs);
+    }
+    public static BUpdateFollowPath parseBUpdateFollowPath(JsonObject obj, RObject customObj) {
+
+        //TODO
+
+        return null;
+    }
+    public static BUpdateTimer parseBUpdateTimer(JsonObject obj, RObject customObj) {
+
+        int period = parseInt(obj, "period", -1);
+        int offset = parseInt(obj, "offset", -1);
+
+        BUpdateTimer b;
+        if (period > 0) {
+            if (offset == -1) b = BUpdateTimer.assign(customObj, period);
+            else if (offset > 0) b = BUpdateTimer.assign(customObj, period, offset);
+            else
+                throw new LevelParseException("\"offset\" of parseBUpdateTimer cannot be negative");
+        }
+        else if (period == -1) {
+            int[] periods = parseInts(obj, "periods");
+            if (offset == -1) b = BUpdateTimer.assign(customObj, periods);
+            else if (offset > 0) b = BUpdateTimer.assign(customObj, periods, offset);
+            else
+                throw new LevelParseException("\"offset\" of parseBUpdateTimer cannot be negative");
+        }
+        else
+            throw new LevelParseException("\"period\" of parseBUpdateTimer cannot be negative");
+
+        Boolean activeState = parseBooleanOrNull(obj, "activeOnState");
+        if (activeState != null) b.setActiveOnState(activeState);
+        return b;
     }
 
 }

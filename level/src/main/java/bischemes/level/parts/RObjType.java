@@ -9,7 +9,8 @@ public enum RObjType {
     BLOCK,
     SPIKE,
     PORTAL,
-    EXIT;
+    EXIT,
+    CUSTOM;
 
     public static RObjType parse(String s) {
         return switch (s.toUpperCase()) {
@@ -19,6 +20,7 @@ public enum RObjType {
             case "SPIKE" -> SPIKE;
             case "PORTAL" -> PORTAL;
             case "EXIT" -> EXIT;
+            case "CUSTOM" -> CUSTOM;
             default -> null;
         };
     }

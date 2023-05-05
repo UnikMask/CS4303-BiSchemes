@@ -1,7 +1,7 @@
 package bischemes.level;
 
 import bischemes.level.util.InvalidIdException;
-import bischemes.level.util.JParsing;
+import bischemes.level.util.JParser;
 import bischemes.level.util.LColour;
 import bischemes.level.util.LevelParseException;
 
@@ -82,16 +82,16 @@ public class Level {
     private static Level parseLevel(JsonReader jsonReader, String roomDir) throws InvalidIdException, LevelParseException {
         JsonObject levelJson = jsonReader.readObject();
 
-        int id = JParsing.parseInt(levelJson, "id");
-        int initId  = JParsing.parseInt(levelJson, "initRoomID");
+        int id = JParser.parseInt(levelJson, "id");
+        int initId  = JParser.parseInt(levelJson, "initRoomID");
 
-        String name = JParsing.parseStr(levelJson, "name");
+        String name = JParser.parseStr(levelJson, "name");
 
-        int cPri = JParsing.parseColour(levelJson, "colourPrimary");
-        int cSec = JParsing.parseColour(levelJson, "colourSecondary");
-        int[] prqs = JParsing.parseInts(levelJson, "prerequisites");
+        int cPri = JParser.parseColour(levelJson, "colourPrimary");
+        int cSec = JParser.parseColour(levelJson, "colourSecondary");
+        int[] prqs = JParser.parseInts(levelJson, "prerequisites");
 
-        JsonArray jRooms = JParsing.parseArr(levelJson, "rooms");
+        JsonArray jRooms = JParser.parseArr(levelJson, "rooms");
         if (jRooms.size() == 0)
             throw new LevelParseException("\"rooms\" is empty (the level has no rooms)");
 
@@ -100,7 +100,7 @@ public class Level {
             for (int i = 0; i < roomObjs.length; i++) roomObjs[i] = jRooms.getJsonObject(i);
         }
         else {
-            String[] rooms = JParsing.parseStrs(jRooms, "rooms");
+            String[] rooms = JParser.parseStrs(jRooms, "rooms");
             for (int i = 0; i < roomObjs.length; i++) {
                 BufferedInputStream in;
                 try { in = new BufferedInputStream(new FileInputStream(roomDir + "\\" + rooms[i])); }

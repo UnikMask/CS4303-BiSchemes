@@ -21,6 +21,7 @@ import processing.core.PVector;
 public class Game {
 	EngineRuntime engine;
 	GameState state = GameState.PLAY;
+	double effect = 0;
 
 	SceneGridPair mainScene;
 
@@ -36,7 +37,9 @@ public class Game {
 			break;
 		case PLAY:
 			engine.update();
+			effect += 1.0 / 60.0;
 			PVector camMovement = new PVector();
+			engine.setCameraBounds(new PVector(16 + 8 * (float) Math.sin(effect), 9 + 4.5f * (float) Math.sin(effect)));
 			for (InputCommand c : InputHandler.getInstance().getHeldCommands()) {
 				camMovement.add(switch (c) {
 				case UP -> new PVector(0, 0.1f);
@@ -60,7 +63,6 @@ public class Game {
 
 	public void setup() {
 		engine.setCameraBounds(new PVector(16, 9));
-		engine.setCameraPosition(new PVector(0, 9));
 		mainScene = new SceneGridPair(new GObject(null, new PVector(), 0),
 				new GridSector(new PVector(16, 9), new PVector(), 16, 9));
 

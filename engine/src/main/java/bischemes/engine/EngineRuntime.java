@@ -25,7 +25,7 @@ public class EngineRuntime {
 
 	// Time Variables
 	private boolean paused = true;
-	private long deltaT = 0;
+	private double deltaT = 0;
 	private long lastTimeStamp = new Date().getTime();
 	public boolean pause = false;
 
@@ -51,7 +51,7 @@ public class EngineRuntime {
 
 	public void update() {
 		long currentTime = new Date().getTime();
-		deltaT -= ((float) (currentTime - lastTimeStamp)) / 1000.0;
+		deltaT = (double) (currentTime - lastTimeStamp) / 1000.0;
 		lastTimeStamp = currentTime;
 
 		if (pause) {
@@ -70,6 +70,7 @@ public class EngineRuntime {
 
 			// 2. Movement Integration
 			for (RigidBody rb : s.bodies) {
+
 				rb.integrate(deltaT);
 				if (rb.hasMoved) {
 					s.grid.move(rb);

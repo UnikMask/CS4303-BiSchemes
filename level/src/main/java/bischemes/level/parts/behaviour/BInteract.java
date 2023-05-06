@@ -45,8 +45,7 @@ public abstract class BInteract extends BUpdate {
         if (useCircleProx) {
             float distance = position.dist(interactable.getPosition());
             return distance < radius;
-        }
-        else {
+        } else {
             PVector distance = position.copy().sub(interactable.getPosition());
             if (distance.x < 0) distance.x *= -1;
             if (distance.y < 0) distance.y *= -1;
@@ -66,15 +65,13 @@ public abstract class BInteract extends BUpdate {
                 interactable.addVisualAttributes(indicator);
                 indicatorScale = INDICATOR_SCALE_RATE;
                 showingIndicator = true;
-            }
-            else if (indicatorScale < 1f) {
+            } else if (indicatorScale < 1f) {
                 indicatorScale += INDICATOR_SCALE_RATE;
                 if (indicatorScale > 1f)
                     indicatorScale = 1f;
             }
             indicator.setScaling(indicatorScale);
-        }
-        else if (showingIndicator){
+        } else if (showingIndicator) {
             indicatorScale -= INDICATOR_SCALE_RATE;
             showingIndicator = indicatorScale >= 0f;
             if (showingIndicator)
@@ -83,6 +80,7 @@ public abstract class BInteract extends BUpdate {
                 interactable.removeVisualAttributes(indicator);
         }
     }
+
     protected abstract void onInteraction();
 
     @Override

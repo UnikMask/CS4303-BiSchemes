@@ -1,6 +1,7 @@
 package bischemes.level;
 
 import bischemes.engine.GObject;
+import bischemes.level.parts.Adjacency;
 import bischemes.level.parts.RObject;
 import bischemes.level.util.InvalidIdException;
 import bischemes.level.util.JParser;
@@ -23,6 +24,7 @@ public class Room extends GObject {
     private final GObject primaryGeometry;
     private final GObject secondaryGeometry;
     private final List<RObject> roomObjects;
+    private final List<Adjacency> adjacencies;
 
     //TODO private final ??? adjacent; // to make points of adjacency between rooms
 
@@ -43,6 +45,17 @@ public class Room extends GObject {
     public GObject getPrimaryGeometry() { return primaryGeometry; }
     public GObject getSecondaryGeometry() { return secondaryGeometry; }
     public List<RObject> getObjects() { return roomObjects; }
+    public List<Adjacency> getAdjacencies() { return adjacencies; }
+
+    public RObject getObject(int id) {
+        for (RObject object : roomObjects) if (object.getId() == id) return object;
+        throw new InvalidIdException("getObject(id), RObject with id " + id + " does not exist");
+    }
+    public Adjacency getAdjacency(int id) {
+        for (Adjacency adjacency : adjacencies) if (adjacency.getId() == id) return adjacency;
+        throw new InvalidIdException("getAdjacency(id), Adjacency with id " + id + " does not exist");
+    }
+
 
     private boolean interaction;
     /**
@@ -88,6 +101,7 @@ public class Room extends GObject {
         primaryGeometry = new GObject(this, new PVector(), 0);
         secondaryGeometry = new GObject(this, new PVector(), 0);
         roomObjects = new ArrayList<>();
+        adjacencies = new ArrayList<>();
     }
 
 
@@ -105,8 +119,10 @@ public class Room extends GObject {
              JParser.parseGeometryArr(geometry, "secondary", room.secondaryGeometry);
 
              JParser.parseRObjectArr(roomJson, "objects", room, room.roomObjects);
-             // TODO room object parsing
-             // TODO adjacency parsing
+
+             JParser.parseAdjacencyArr(roomJson, "adjancencies", room, room.adjacencies);
+
+             // TODO check for ID overlaps and throw InvalidIdExceptions
 
         } catch (LevelParseException e) {
             throw new LevelParseException("parseRoom(" + ((id!=-1) ? id : "") + "), encountered a LevelParseException\n\t"+e.getLocalizedMessage());

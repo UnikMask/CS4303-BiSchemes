@@ -20,4 +20,8 @@ public class BHitStateSwitch extends BHit {
     public void run(GObject hit) {
         switcher.switchState();
     }
+
+    @Override
+    public void setColour(int colour) {
+    }
 }

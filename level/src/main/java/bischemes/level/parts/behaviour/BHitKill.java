@@ -5,7 +5,7 @@ import bischemes.level.parts.RObject;
 
 public class BHitKill extends BHit {
 
-    private RObject killer;
+    private final RObject killer;
 
     private BHitKill(RObject killer) {
         this.killer = killer;
@@ -19,5 +19,9 @@ public class BHitKill extends BHit {
     @Override
     public void run(GObject hit) {
         //TODO
+    }
+
+    @Override
+    public void setColour(int colour) {
     }
 }

@@ -1,6 +1,5 @@
 package bischemes.game;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import bischemes.engine.EngineRuntime;
@@ -15,8 +14,6 @@ import bischemes.engine.physics.RigidBodyProperties;
 import bischemes.engine.physics.Surface;
 import bischemes.engine.physics.ForceGenerators.DirectionalGravity;
 import bischemes.engine.physics.ForceGenerators.ForceGenerator;
-import bischemes.game.Game.GameState;
-import bischemes.game.InputHandler.InputCommand;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
@@ -28,8 +25,7 @@ public class Game {
 	SceneGridPair mainScene;
 
 	GObject demoGravItem;
-	ForceGenerator gravity = new DirectionalGravity(1.0, new PVector(0, -1, 0));
-	// ForceGenerator gravity = new DirectionalGravity();
+	ForceGenerator gravity = new DirectionalGravity();
 
 	// States of a level/game - feel free to modify
 	enum GameState {

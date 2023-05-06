@@ -3,8 +3,10 @@ package bischemes.level.parts;
 import bischemes.engine.GObject;
 import bischemes.engine.VisualUtils;
 import bischemes.engine.physics.*;
+import bischemes.level.Room;
 import bischemes.level.parts.behaviour.*;
 import bischemes.level.util.LColour;
+import bischemes.level.util.LevelParseException;
 import bischemes.level.util.SpriteLoader;
 import processing.core.PVector;
 
@@ -35,9 +37,9 @@ public class PartFactory {
 	}
 
 	public void setSurfaceProperties(double restitution, double staticFriction, double dynamicFriction) {
-		this.restitution = restitution;
-		this.staticFriction = staticFriction;
-		this.dynamicFriction = dynamicFriction;
+		setSurfaceRestitution(restitution);
+		setSurfaceStaticFriction(staticFriction);
+		setSurfaceDynamicFriction(dynamicFriction);
 	}
 
 	public void setSurfaceRestitution(double restitution) {
@@ -114,11 +116,21 @@ public class PartFactory {
 	}
 
 	public RObject createRect(GObject parent, PVector anchor, PVector dimensions, float orientation, LColour colour,
-			int id) {
+							  int id) {
+		return (RObject) createRect(new RObject(parent, anchor, orientation, id, colour), dimensions);
+	}
+	public RObject createCornerRect(GObject parent, PVector corner, PVector dimensions, float orientation,
+									LColour colour, int id) {
+		PVector anchor = dimensions.copy().div(2f).add(corner);
 		return (RObject) createRect(new RObject(parent, anchor, orientation, id, colour), dimensions);
 	}
 
 	public GObject createRect(GObject parent, PVector anchor, PVector dimensions, float orientation) {
+		return createRect(new GObject(parent, anchor, orientation), dimensions);
+	}
+
+	public GObject createCornerRect(GObject parent, PVector corner, PVector dimensions, float orientation) {
+		PVector anchor = dimensions.copy().div(2f).add(corner);
 		return createRect(new GObject(parent, anchor, orientation), dimensions);
 	}
 
@@ -139,8 +151,26 @@ public class PartFactory {
 								  LColour colour, int id) {
 		return (RObject) createTriangle(new RObject(parent, anchor, 0, id, colour), vertex1, vertex2, vertex3);
 	}
-
+	public RObject createCornerTriangle(GObject parent, PVector corner, PVector vertex2, PVector vertex3,
+										LColour colour, int id) {
+		PVector anchor = new PVector(
+				(Math.min(0, Math.min(vertex2.x, vertex3.x)) + Math.max(0, Math.max(vertex2.x, vertex3.x))) / 2f,
+				(Math.min(0, Math.min(vertex2.y, vertex3.y)) + Math.max(0, Math.max(vertex2.y, vertex3.y))) / 2f
+		);
+		PVector vertex1 = new PVector().sub(anchor);
+		anchor = anchor.add(corner);
+		return (RObject) createTriangle(new RObject(parent, anchor, 0, id, colour), vertex1, vertex2, vertex3);
+	}
 	public GObject createTriangle(GObject parent, PVector anchor, PVector vertex1, PVector vertex2, PVector vertex3) {
+		return createTriangle(new GObject(parent, anchor, 0), vertex1, vertex2, vertex3);
+	}
+	public GObject createCornerTriangle(GObject parent, PVector corner, PVector vertex2, PVector vertex3) {
+		PVector anchor = new PVector(
+				(Math.min(0, Math.min(vertex2.x, vertex3.x)) + Math.max(0, Math.max(vertex2.x, vertex3.x))) / 2f,
+				(Math.min(0, Math.min(vertex2.y, vertex3.y)) + Math.max(0, Math.max(vertex2.y, vertex3.y))) / 2f
+		);
+		PVector vertex1 = new PVector().sub(anchor);
+		anchor = anchor.add(corner);
 		return createTriangle(new GObject(parent, anchor, 0), vertex1, vertex2, vertex3);
 	}
 
@@ -216,7 +246,6 @@ public class PartFactory {
 		return obj;
 	}
 
-	// TODO
 	public RObject makeBlock(GObject parent, PVector anchor, PVector dimensions, boolean initState, float mass,
 							 LColour colour, int id) {
 		initRBBlock(mass);
@@ -225,7 +254,14 @@ public class PartFactory {
 		return block;
 	}
 
-	// TODO
+	public RObject makeCornerBlock(GObject parent, PVector corner, PVector dimensions, boolean initState, float mass,
+								   LColour colour, int id) {
+		initRBBlock(mass);
+		RObject block = createCornerRect(parent, corner, dimensions, 0f, colour, id);
+		BStateBlock.assign(block, initState, dimensions);
+		return block;
+	}
+
 	public RObject makeDoor(GObject parent, PVector anchor, PVector dimensions, boolean initState, LColour colour,
 			int id) {
 		initRBGeometry();
@@ -233,8 +269,14 @@ public class PartFactory {
 		BStateHide.assign(rect, initState).addLockIcon(dimensions);
 		return rect;
 	}
+	public RObject makeCornerDoor(GObject parent, PVector corner, PVector dimensions, boolean initState, LColour colour,
+								  int id) {
+		initRBGeometry();
+		RObject rect = createCornerRect(parent, corner, dimensions, 0f, colour, id);
+		BStateHide.assign(rect, initState).addLockIcon(dimensions);
+		return rect;
+	}
 
-	// TODO
 	public RObject makeSpike(GObject parent, PVector anchor, float orientation, int length, LColour colour, int id) {
 		initRBGeometry();
 
@@ -261,30 +303,30 @@ public class PartFactory {
 		return spikes;
 	}
 
-	// TODO
 	public RObject makeLever(GObject parent, PVector anchor, float orientation, int[] linkedIDs, LColour colour,
 			int id) {
 		initRBNoCollision();
 		RObject lever = new RObject(parent, anchor, orientation, id, colour);
+
 		lever.addVisualAttributes(VisualUtils.makeRect(new PVector(1, 1), SpriteLoader.getLever()));
+
 		BStateFlip.assign(lever, false);
 		BStateSwitchStates.assign(lever, linkedIDs);
 		BInteractStateSwitch.assign(lever, 1, 1).addIndicator(new PVector(1, 1));
 		return null;
 	}
 
-	// TODO
+
 	public RObject makePortal(GObject parent, PVector anchor, int width, float orientation, int id) {
+
 		return null;
 	}
 
 	// TODO determine design
-	public RObject makeExit(GObject parent) {
-		return null;
-	}
+	public RObject makeExit(GObject parent, PVector range, boolean isVertical, boolean zeroAxis, int id) {
 
-	// TODO determine design
-	public RObject makeAdjacency(GObject parent) {
+		// need length, anchor,
+
 		return null;
 	}
 

@@ -17,6 +17,7 @@ public final class SpriteLoader {
 
     private static PImage interactSymbol = null;
     private static PImage switchSymbol = null;
+    private static PImage teleportSymbol = null;
 
     private static PImage loadImage(String file) {
         try {
@@ -63,6 +64,13 @@ public final class SpriteLoader {
             switchSymbol = loadImage("sprites/SwitchSymbol.tga");
         }
         return switchSymbol;
+    }
+
+    public static PImage getTeleportSymbol() {
+        if (teleportSymbol == null) {
+            teleportSymbol = loadImage("sprites/TeleportSymbol.tga");
+        }
+        return teleportSymbol;
     }
 
 

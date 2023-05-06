@@ -23,15 +23,18 @@ public class BUpdateTimer extends BUpdate {
     public static BUpdateTimer assign(RObject timeable, int[] periods) {
         return new BUpdateTimer(timeable, periods);
     }
+
     public static BUpdateTimer assign(RObject timeable, int[] periods, int offset) {
         BUpdateTimer u = assign(timeable, periods);
         u.time = offset;
-        while (u.updateTime());
+        while (u.updateTime()) ;
         return u;
     }
+
     public static BUpdateTimer assign(RObject timeable, int period) {
         return assign(timeable, new int[]{period});
     }
+
     public static BUpdateTimer assign(RObject timeable, int period, int offset) {
         return assign(timeable, new int[]{period}, offset);
     }
@@ -60,5 +63,6 @@ public class BUpdateTimer extends BUpdate {
     }
 
     @Override
-    public void setColour(int colour) {}
+    public void setColour(int colour) {
+    }
 }

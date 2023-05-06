@@ -127,7 +127,9 @@ public class Level {
             }
         }
 
-        //TODO check validity of rooms, i.e. room adjacency is valid
+        //TODO check validity of rooms
+
+        //TODO initialise room adjacencies
 
         Room initRoom = Room.getRoom(rooms, initId);
 

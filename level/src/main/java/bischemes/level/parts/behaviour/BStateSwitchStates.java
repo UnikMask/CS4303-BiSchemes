@@ -33,7 +33,7 @@ public class BStateSwitchStates extends BState {
             }
             if (linkedObjs[i] == null)
                 throw new RuntimeException("initLinkedObjs() error for RObject(id = " + switcher.getId() + "), " +
-                        "of Room(id = " + room.getId() + "), of Level(id = " + room.getLevel().getId() +"). " +
+                        "of Room(id = " + room.getId() + "), of Level(id = " + room.getLevel().getId() + "). " +
                         "Cannot link lever to ID " + id + ", no RObject with the ID can be found.");
         }
     }
@@ -46,6 +46,7 @@ public class BStateSwitchStates extends BState {
     }
 
     @Override
-    public void setColour(int colour) {}
+    public void setColour(int colour) {
+    }
 
 }

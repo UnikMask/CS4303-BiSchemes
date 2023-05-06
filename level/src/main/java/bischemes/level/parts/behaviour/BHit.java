@@ -6,5 +6,4 @@ public abstract class BHit implements Behaviour {
 
     public abstract void run(GObject hit);
 
-
 }

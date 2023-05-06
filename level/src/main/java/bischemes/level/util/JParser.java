@@ -1,6 +1,8 @@
 package bischemes.level.util;
 
 import bischemes.engine.GObject;
+import bischemes.level.Room;
+import bischemes.level.parts.Adjacency;
 import bischemes.level.parts.PartFactory;
 import bischemes.level.parts.RObjType;
 import bischemes.level.parts.RObject;
@@ -59,6 +61,15 @@ public final class JParser {
         try { return parseFloat(obj, name); }
         catch (LevelParseException e) { return defaultValue; }
     }
+    public static double parseDouble(JsonObject obj, String name) {
+        try { return obj.getJsonNumber(name).doubleValue(); }
+        catch (NullPointerException e) { throw new LevelParseException("\"" + name + "\" does not have a mapping"); }
+        catch (ClassCastException e) { throw new LevelParseException("\"" + name + "\" is not an assignable double"); }
+    }
+    public static double parseDouble(JsonObject obj, String name, double defaultValue) {
+        try { return parseDouble(obj, name); }
+        catch (LevelParseException e) { return defaultValue; }
+    }
     public static boolean parseBoolean(JsonObject obj, String name) {
         try { return obj.getBoolean(name); }
         catch (NullPointerException e) { throw new LevelParseException("\"" + name + "\" does not have a mapping"); }
@@ -79,6 +90,10 @@ public final class JParser {
         catch (ClassCastException e) { throw new LevelParseException("\"" + name + "\" is not an assignable string"); }
         if (s.length() == 0) throw new LevelParseException("\"" + name + "\" is an empty string");
         return s;
+    }
+    public static String parseStr(JsonObject obj, String name, String defaultValue) {
+        try { return parseStr(obj, name); }
+        catch (LevelParseException e) { return defaultValue; }
     }
     public static String[] parseStrs(JsonObject obj, String name) {
         JsonArray arr = parseArr(obj, name);
@@ -143,36 +158,61 @@ public final class JParser {
     public static void parseGeometryArr(JsonObject obj, String name, GObject parent) {
         JsonArray arr = parseArr(obj, name);
         PartFactory partFactory = new PartFactory();
+
         int i = 0;
         try { for (; i < arr.size(); i++) parseGeometry(arr.getJsonObject(i), parent, partFactory); }
         catch (ClassCastException e) { throw new LevelParseException("parseGeometryArr(obj, " + name + ", parent), encountered an exception:\n\t\"" + name + "\" array does not contain assignable JsonObjects at index " + i); }
         catch (LevelParseException e) { throw new LevelParseException("parseGeometryArr(obj, " + name + ", parent), encountered an exception at index " + i + ":\n\t" + e.getLocalizedMessage()); }
     }
 
-    public static void parseGeometry(JsonObject obj, GObject parent, PartFactory pF) {
+    public static GObject parseGeometry(JsonObject obj, GObject parent, PartFactory pF) {
         String type = parseStr(obj, "type").toUpperCase();
-        PVector anchor = parsePVec(obj, "anchor");
-        switch (type) {
-            // Cannot allow shapes such as QUAD or ARC as they may be concave (not convex)
-            // Cannot allow ELLIPSE/CIRCLE/POLYGON as they cannot (easily) have a primary/secondary counterpart
-            //      ELLIPSE/CIRCLE/POLYGON must be defined as RObjects instead (so that they may utilise masking)
-            case "RECT" ->
-                pF.createRect(parent, anchor, parsePVec(obj, "dimensions"), parseFloat(obj, "orientation", 0f));
-            case "TRIANGLE" ->
-                pF.createTriangle(parent, anchor, parsePVec(obj, "vertex1"), parsePVec(obj, "vertex2"), parsePVec(obj, "vertex3"));
-            default ->
-                throw new LevelParseException("\"type\" of \"" + type + "\" is unknown");
+
+        pF.setSurfaceProperties(
+                parseDouble(obj, "restitution", 1),
+                parseDouble(obj, "staticFriction", 1),
+                parseDouble(obj, "dynamicFriction", 1));
+
+        // Cannot allow shapes such as QUAD or ARC as they may be concave (not convex)
+        // Cannot allow ELLIPSE/CIRCLE/POLYGON as they cannot (easily) have a primary/secondary counterpart
+        //      ELLIPSE/CIRCLE/POLYGON must be defined as RObjects instead (so that they may utilise masking)
+        PVector corner = parsePVecOrNull(obj, "corner");
+        if (corner == null) {
+            PVector anchor = parsePVec(obj, "anchor");
+            return switch (type) {
+                case "RECT" ->
+                        pF.createRect(parent, anchor, parsePVec(obj, "dimensions"),
+                                parseFloat(obj, "orientation", 0f));
+                case "TRIANGLE" ->
+                        pF.createTriangle(parent, anchor, parsePVec(obj, "vertex1"),
+                                parsePVec(obj, "vertex2"), parsePVec(obj, "vertex3"));
+                default ->
+                        throw new LevelParseException("\"type\" of \"" + type + "\" is unknown");
+            };
         }
+        else {
+            return switch (type) {
+                case "RECT" ->
+                        pF.createCornerRect(parent, corner, parsePVec(obj, "dimensions"),
+                                parseFloat(obj, "orientation", 0f));
+                case "TRIANGLE" ->
+                        pF.createCornerTriangle(parent, corner, parsePVec(obj, "vertex1"),
+                                parsePVec(obj, "vertex2"));
+                default ->
+                        throw new LevelParseException("\"type\" of \"" + type + "\" is unknown");
+            };
+        }
+
     }
 
     public static void parseRObjectArr(JsonObject obj, String name, GObject parent, List<RObject> roomObjects) {
         JsonArray arr = parseArr(obj, name);
         PartFactory partFactory = new PartFactory();
         int i = 0;
-        try { for (; i < arr.size(); i++) {
-            JsonObject rObj = arr.getJsonObject(i);
-            roomObjects.add(parseRObject(rObj, parent, partFactory));
-        } }
+        try {
+            for (; i < arr.size(); i++)
+                roomObjects.add(parseRObject(arr.getJsonObject(i), parent, partFactory));
+        }
         catch (ClassCastException e) {
             throw new LevelParseException("parseGeometryArr(obj, " + name + ", parent), encountered an exception: \n\t\"" + name + "\" array does not contain assignable JsonObjects at index " + i); }
         catch (LevelParseException e) {
@@ -181,11 +221,19 @@ public final class JParser {
 
     public static RObject parseRObject(JsonObject obj, GObject parent, PartFactory pF) {
         RObjType type = parseRObjType(obj, "type");
-        PVector anchor = parsePVec(obj, "anchor");
         int id = parseInt(obj, "id");
 
+        PVector anchor = parsePVecOrNull(obj, "corner");
+        if (anchor == null) anchor = parsePVec(obj, "anchor");
+        else anchor.z = 1;
+
+        pF.setSurfaceProperties(
+                parseDouble(obj, "restitution", 1),
+                parseDouble(obj, "staticFriction", 1),
+                parseDouble(obj, "dynamicFriction", 1));
+
         return switch (type) {
-            case GEOMETRY -> parseGeometryRObj(obj, parent, pF, anchor, id);
+            case GEOMETRY -> parseGeometryRObj(obj, parent, pF, anchor, id, true);
             case BLOCK -> parseBlock(obj, parent, pF, anchor, id);
             case DOOR -> parseDoor(obj, parent, pF, anchor, id);
             case LEVER -> parseLever(obj, parent, pF, anchor, id);
@@ -196,50 +244,66 @@ public final class JParser {
         };
     }
 
-    public static RObject parseGeometryRObj(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
+    public static RObject parseGeometryRObj(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id,
+                                            boolean resetRB) {
         LColour colour = parseLColour(obj, "colour");
         String type = parseStr(obj, "gType");
 
-        pF.initRBGeometry();
+        if (resetRB) pF.initRBGeometry();
 
-        //TODO accept additional rigid body parameters here
-
-        //TODO add more geometry (I want to add a trapezium at least)
-        return switch (type) {
-            case "RECT" ->
-                pF.createRect(parent, anchor, parsePVec(obj, "dimensions"),
-                        parseFloat(obj, "orientation", 0f), colour, id);
-            case "TRIANGLE" ->
-                pF.createTriangle(parent, anchor, parsePVec(obj, "vertex1"),
-                        parsePVec(obj, "vertex2"), parsePVec(obj, "vertex3"), colour, id);
-            case "POLYGON" ->
-                pF.createPolygon(parent, anchor, parsePVec(obj, "dimensions"),
-                        parseInt(obj, "sides"), parseFloat(obj, "orientation", 0f), colour, id);
-            case "ELLIPSE" ->
-                pF.createEllipse(parent, anchor, parsePVec(obj, "dimensions"),
-                        parseFloat(obj, "orientation", 0f), colour, id);
-            case "CIRCLE" ->
-                pF.createCircle(parent, anchor, parseFloat(obj, "radius"), colour, id);
-            default ->
-                throw new LevelParseException("\"gType\" of \"" + type + "\" is unknown");
-        };
+        if (anchor.z == 1) {
+            return switch (type) {
+                case "RECT" ->
+                        pF.createCornerRect(parent, anchor, parsePVec(obj, "dimensions"),
+                                parseFloat(obj, "orientation", 0f), colour, id);
+                case "TRIANGLE" ->
+                        pF.createCornerTriangle(parent, anchor, parsePVec(obj, "vertex1"),
+                                parsePVec(obj, "vertex2"), colour, id);
+                default ->
+                        throw new LevelParseException("\"gType\" of \"" + type + "\" is unknown when defining by corner");
+            };
+        }
+        else {
+            //TODO add more geometry (I want to add a trapezium at least)
+            return switch (type) {
+                case "RECT" ->
+                        pF.createRect(parent, anchor, parsePVec(obj, "dimensions"),
+                                parseFloat(obj, "orientation", 0f), colour, id);
+                case "TRIANGLE" ->
+                        pF.createTriangle(parent, anchor, parsePVec(obj, "vertex1"),
+                                parsePVec(obj, "vertex2"), parsePVec(obj, "vertex3"), colour, id);
+                case "POLYGON" ->
+                        pF.createPolygon(parent, anchor, parsePVec(obj, "dimensions"),
+                                parseInt(obj, "sides"), parseFloat(obj, "orientation", 0f), colour, id);
+                case "ELLIPSE" ->
+                        pF.createEllipse(parent, anchor, parsePVec(obj, "dimensions"),
+                                parseFloat(obj, "orientation", 0f), colour, id);
+                case "CIRCLE" ->
+                        pF.createCircle(parent, anchor, parseFloat(obj, "radius"), colour, id);
+                default ->
+                        throw new LevelParseException("\"gType\" of \"" + type + "\" is unknown");
+            };
+        }
     }
     public static RObject parseBlock(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
         LColour colour = parseLColour(obj, "colour");
         PVector dimensions = parsePVec(obj, "dimensions");
         boolean initState = parseBoolean(obj, "initState", false);
         float mass = parseFloat(obj, "mass", 1f);
-        return pF.makeBlock(parent, anchor, dimensions, initState, mass, colour, id);
+        if (anchor.z == 1) return pF.makeCornerBlock(parent, anchor, dimensions, initState, mass, colour, id);
+        else return pF.makeBlock(parent, anchor, dimensions, initState, mass, colour, id);
     }
 
     public static RObject parseDoor(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
         LColour colour = parseLColour(obj, "colour");
         PVector dimensions = parsePVec(obj, "dimensions");
         boolean initState = parseBoolean(obj, "initState", false);
-        return pF.makeDoor(parent, anchor, dimensions, initState, colour, id);
+        if (anchor.z == 1) return pF.makeCornerDoor(parent, anchor, dimensions, initState, colour, id);
+        else return pF.makeDoor(parent, anchor, dimensions, initState, colour, id);
     }
 
     public static RObject parseLever(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
+        if (anchor.z == 1) throw new LevelParseException("cannot use \"corner\" parameter in Lever definition");
         LColour colour = parseLColour(obj, "colour");
         float orientation = parseFloat(obj, "orientation", 0f);
         int[] linkedTo = parseInts(obj, "linkedTo");
@@ -247,6 +311,7 @@ public final class JParser {
     }
 
     public static RObject parseSpike(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
+        if (anchor.z == 1) throw new LevelParseException("cannot use \"corner\" parameter in Spike definition");
         LColour colour = parseLColour(obj, "colour");
         float orientation = parseFloat(obj, "orientation", 0f);
         int length = parseInt(obj, "length", 1);
@@ -254,20 +319,36 @@ public final class JParser {
     }
 
     public static RObject parsePortal(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
+        if (anchor.z == 1) throw new LevelParseException("cannot use \"corner\" parameter in Portal definition");
         int width = parseInt(obj, "width", 1);
         float orientation = parseFloat(obj, "orientation", 0f);
+        // TODO
         return pF.makePortal(parent, anchor, width, orientation, id);
     }
 
     public static RObject parseExit(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
-        return pF.makeExit(parent);
+        if (anchor.z == 1) throw new LevelParseException("cannot use \"corner\" parameter in Exit definition");
+        // TODO
+        //return pF.makeExit(parent);
+        return null;
     }
 
     public static RObject parseCustom(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
-        RObject customObj = parseGeometryRObj(obj, parent, pF, anchor, id);
-        parseBehaviours(obj, "behaviours", customObj);
 
-        //TODO finish derivation of custom objects
+        String rbType = parseStr(obj, "rbType", "GEOMETRY");
+
+        switch (rbType.toUpperCase()) {
+            case "GEOMETRY" -> pF.initRBGeometry();
+            case "NO COLLISION" -> pF.initRBNoCollision();
+            case "ROTATEABLE" -> pF.initRBRotateable(parseFloat(obj, "mass"));
+            case "MOVEABLE" -> pF.initRBMoveable(parseFloat(obj, "mass"));
+            case "BLOCK" -> pF.initRBBlock(parseFloat(obj, "mass"));
+            default ->
+                    throw new LevelParseException("\"rbType\" of \"" + rbType + "\" is unknown");
+        }
+
+        RObject customObj = parseGeometryRObj(obj, parent, pF, anchor, id, false);
+        parseBehaviours(obj, "behaviours", customObj);
 
         return null;
     }
@@ -292,6 +373,8 @@ public final class JParser {
         return switch (type.toUpperCase()) {
             case "BHITKILL" -> BHitKill.assign(customObj);
             case "BHITSTATESWITCH" -> BHitStateSwitch.assign(customObj);
+            case "BHITTELEPORT" -> parseBHitTeleport(obj, customObj);
+            case "BINTERACTTELEPORT" -> parseBInteractTeleport(obj, customObj);
             case "BINTERACTSTATESWITCH" -> parseBInteractStateSwitch(obj, customObj);
             case "BSTATEBLOCK" -> parseBStateBlock(obj, customObj);
             case "BSTATEFLIP" -> parseBStateFlip(obj, customObj);
@@ -302,6 +385,16 @@ public final class JParser {
             case "BUPDATETIMER" -> parseBUpdateTimer(obj, customObj);
             default -> throw new LevelParseException("\"bType\" of \"" + type + "\" is unknown");
         };
+    }
+
+    public static BHitTeleport parseBHitTeleport(JsonObject obj, RObject customObj) {
+        // TODO
+        return null;
+    }
+
+    public static BInteractTeleport parseBInteractTeleport(JsonObject obj, RObject customObj) {
+        // TODO
+        return null;
     }
 
     public static BInteractStateSwitch parseBInteractStateSwitch(JsonObject obj, RObject customObj) {
@@ -356,9 +449,7 @@ public final class JParser {
         return BStateSwitchStates.assign(customObj, linkedIDs);
     }
     public static BUpdateFollowPath parseBUpdateFollowPath(JsonObject obj, RObject customObj) {
-
         //TODO
-
         return null;
     }
     public static BUpdateTimer parseBUpdateTimer(JsonObject obj, RObject customObj) {
@@ -386,6 +477,78 @@ public final class JParser {
         Boolean activeState = parseBooleanOrNull(obj, "activeOnState");
         if (activeState != null) b.setActiveOnState(activeState);
         return b;
+    }
+
+    public static void parseAdjacencyArr(JsonObject obj, String name, GObject parent, List<Adjacency> adjacencies) {
+        JsonArray arr = parseArr(obj, name);
+        PartFactory partFactory = new PartFactory();
+        int i = 0;
+        try {
+            for (; i < arr.size(); i++)
+                adjacencies.add(parseAdjacency(arr.getJsonObject(i), parent, partFactory));
+        }
+        catch (ClassCastException e) {
+            throw new LevelParseException("parseAdjacencyArr(obj, " + name + ", parent), encountered an exception: \n\t\"" + name + "\" array does not contain assignable JsonObjects at index " + i); }
+        catch (LevelParseException e) {
+            throw new LevelParseException("parseAdjacencyArr(obj, " + name + ", parent), encountered an exception at index " + i + ":\n\t" + e.getLocalizedMessage()); }
+    }
+
+    public static Adjacency parseAdjacency(JsonObject obj, GObject parent, PartFactory pF) {
+        int id = parseInt(obj, "id");
+        LColour colour = parseLColour(obj, "colour");
+
+        PVector range = parsePVec(obj, "range");
+
+        if (range.x < 0)
+            throw new LevelParseException("\"range\" start value of [" + range.x + ", " + range.y + "] is invalid. " +
+                    "Range values cannot extend below 0");
+        if (range.x >= range.y)
+            throw new LevelParseException("\"range\" start value of [" + range.x + ", " + range.y + "] is invalid. " +
+                    "Range start values cannot be greater than range end values");
+
+        String side = parseStr(obj, "side");
+
+        boolean isVertical = false;
+        boolean zeroAxis = false;
+
+        switch (side.toUpperCase()) {
+            case "LEFT" :
+                break;
+            case "RIGHT" :
+                zeroAxis = true;
+                break;
+            case "TOP" :
+                isVertical = true;
+                break;
+            case "BOTTOM" :
+                isVertical = true;
+                zeroAxis = true;
+                break;
+            default :
+                throw new LevelParseException("\"side\" of \"" + side + "\" is unknown");
+        }
+
+        float maxBound = (isVertical) ? Room.getRoom(parent).getDimensions().x : Room.getRoom(parent).getDimensions().y;
+        if (range.y > maxBound)
+            throw new LevelParseException("\"range\" start value of [" + range.x + ", " + range.y + "] is invalid. " +
+                    "Range values cannot extend past side length (length = " + maxBound + " for " + side + " of room " +
+                    "(id = " + Room.getRoom(parent).getId() + "))");
+
+        Adjacency adjacency;
+
+        int roomId = parseInt(obj, "destRoomId", -1);
+        if (roomId == -1)
+            adjacency = new Adjacency(parent, range, isVertical, zeroAxis, id, colour);
+        else if (roomId > 0) {
+            int linkId = parseInt(obj, "linkId");
+            if (linkId < 0)
+                throw new InvalidIdException("\"linkId\" of " + id + " is invalid, ids cannot be negative");
+            adjacency = new Adjacency(parent, range, roomId, linkId, isVertical, zeroAxis, id, colour);
+        }
+        else
+            throw new InvalidIdException("\"destRoomId\" of " + id + " is invalid, ids cannot be negative");
+
+        return adjacency;
     }
 
 }

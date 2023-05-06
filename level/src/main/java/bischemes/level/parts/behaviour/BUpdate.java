@@ -4,6 +4,4 @@ public abstract class BUpdate implements Behaviour {
 
     public abstract void run();
 
-    public abstract void setColour(int colour);
-
 }

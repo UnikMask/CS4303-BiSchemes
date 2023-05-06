@@ -26,6 +26,7 @@ public class BStateFlip extends BState {
     }
 
     @Override
-    public void setColour(int colour) {}
+    public void setColour(int colour) {
+    }
 
 }

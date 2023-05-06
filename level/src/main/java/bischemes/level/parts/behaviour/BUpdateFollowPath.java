@@ -7,5 +7,6 @@ public class BUpdateFollowPath extends BUpdate {
     }
 
     @Override
-    public void setColour(int colour) {}
+    public void setColour(int colour) {
+    }
 }

@@ -47,8 +47,7 @@ public class BStateSwapColour extends BState {
             swapper.setColour(colourSecondary);
             if (switchSymbol != null)
                 switchSymbol.setColour(colourPrimary);
-        }
-        else {
+        } else {
             swapper.setLColour(LColour.PRIMARY);
             swapper.setColour(colourPrimary);
             if (switchSymbol != null)
@@ -57,5 +56,6 @@ public class BStateSwapColour extends BState {
     }
 
     @Override
-    public void setColour(int colour) {}
+    public void setColour(int colour) {
+    }
 }

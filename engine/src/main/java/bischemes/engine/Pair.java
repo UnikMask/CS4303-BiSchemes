@@ -1,8 +1,8 @@
 package bischemes.engine;
 
 public class Pair<T> {
-	T a;
-	T b;
+	public T a;
+	public T b;
 
 	public int hashCode() {
 		return a.hashCode() + 97 * b.hashCode();

@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bischemes.engine.GObject;
+import bischemes.engine.Pair;
 import bischemes.engine.physics.PrimitiveAssembly.PrimitiveInSet;
 import processing.core.PVector;
 
 public class Primitive implements PhysicsMesh {
+	private static final double PARRALLEL_THRESHOLD = 0.9999;
+
 	private PrimitiveType primitiveType;
 	private RigidBody parent;
 	Surface surface;
@@ -135,30 +138,19 @@ public class Primitive implements PhysicsMesh {
 		return m;
 	}
 
-	private class BestDist {
-		double minPenetration;
-		PVector bestNormal;
-		PVector bestSupport;
-		PVector v0, v1;
+	// Query face distance between this polygon, from which the faces are checked,
+	// against another polygon's vertices. Returns a collision manifold with a
+	// potential collision point if there is one.
+	private Manifold queryFaceDistance(Primitive b, PVector offset) {
+		Manifold m = new Manifold(this.parent, b.getParent());
 
-		public BestDist(double minPenetration, PVector bestNormal, PVector bestSupport, PVector v0, PVector v1) {
-			this.minPenetration = minPenetration;
-			this.bestNormal = bestNormal;
-			this.bestSupport = bestSupport;
-			this.v0 = v0;
-			this.v1 = v1;
-		}
-	}
-
-	// Get the best penetration distance between 2 polygons - fails early and
-	// returns null if proven not colliding.
-	private BestDist getBestDist(Primitive b, PVector offset) {
 		double minPenetration = -Double.MAX_VALUE;
 		PVector bestNormal = new PVector();
 		PVector bestSupport = new PVector();
+		int bestIndex = 0;
 
+		// Get best support point and add first point
 		PVector v1min = new PVector(), v2min = new PVector();
-
 		float reverseFactor = 1.0f;
 		PVector v2 = PVector.add(this.vertices.get(this.vertices.size() - 1), this.parent.getPosition());
 		boolean calibrating = true;
@@ -167,7 +159,8 @@ public class Primitive implements PhysicsMesh {
 
 			PVector v1v2 = PVector.sub(v1, v2);
 			PVector normal = new PVector(-v1v2.y, v1v2.x).mult(reverseFactor).normalize();
-			PVector support = PVector.add(b.getSupportPoint(PVector.mult(normal, -1)), offset);
+			int supportIndex = b.polygonSupportPoint(PVector.mult(normal, -1));
+			PVector support = PVector.add(b.vertices.get(supportIndex), b.parent.getPosition()).add(offset);
 			double dist = PVector.dot(PVector.sub(support, v1), normal);
 
 			if (calibrating && dist > 0) {
@@ -176,7 +169,122 @@ public class Primitive implements PhysicsMesh {
 			}
 			if (dist > minPenetration) {
 				if (dist > 0) {
-					return null;
+					return m;
+				}
+				v1min = v1;
+				v2min = v2;
+
+				minPenetration = dist;
+				bestNormal = normal;
+				bestSupport = support;
+				bestIndex = supportIndex;
+			}
+			v2 = v1;
+			calibrating = false;
+		}
+
+		// Get incident face
+		PVector adjacent0 = PVector
+				.add(b.vertices.get((b.vertices.size() + bestIndex - 1) % b.vertices.size()), b.parent.getPosition())
+				.add(offset);
+		PVector adjacent1 = PVector.add(b.vertices.get((bestIndex + 1) % b.vertices.size()), b.parent.getPosition())
+				.add(offset);
+		double dot0 = Math.abs(PVector.dot(PVector.sub(adjacent0, bestSupport).normalize(), bestNormal)),
+				dot1 = Math.abs(PVector.dot(PVector.sub(adjacent1, bestSupport).normalize(), bestNormal));
+		PVector adjacent = dot1 > dot0 ? adjacent0 : adjacent1;
+		PVector rayDir = PVector.sub(adjacent, bestSupport);
+
+		// Perform Sutherland Clipping
+		PVector i1 = PVector.add(this.vertices.get(b.vertices.size() - 1), this.parent.getPosition());
+		boolean isEdge = true;
+		PVector clip = clip(rayDir, bestSupport, new Pair<>(v1min, v2min));
+		if (clip != null) {
+			adjacent = clip;
+			isEdge = false;
+			rayDir = PVector.sub(adjacent, bestSupport);
+		}
+		for (PVector v : this.vertices) {
+			PVector i0 = PVector.add(v, this.parent.getPosition());
+			clip = clip(rayDir, bestSupport, new Pair<>(i0, i1));
+			if (clip != null) {
+				adjacent = clip;
+				isEdge = true;
+				rayDir = PVector.sub(adjacent, bestSupport);
+			}
+		}
+		if (isEdge) {
+			PVector avg = PVector.div(PVector.add(bestSupport, adjacent), 2);
+			m.addContactPoint(avg, bestNormal, PVector.dot(PVector.sub(avg, v1min), bestNormal), this, b);
+		} else {
+			m.addContactPoint(bestSupport, bestNormal, minPenetration, this, b);
+		}
+
+		return m;
+	}
+
+	// Clips the incidence's 2nd point
+	private PVector clip(PVector dir, PVector p0, Pair<PVector> incident) {
+		PVector i0i1 = PVector.sub(incident.b, incident.a);
+		if (PVector.dot(i0i1.copy().normalize(), dir.copy().normalize()) > PARRALLEL_THRESHOLD) {
+			return null;
+		}
+
+		PVector normal = new PVector(-i0i1.y, i0i1.x).normalize();
+		double t = (PVector.dot(normal, p0) - PVector.dot(normal, incident.a)) / PVector.dot(normal, dir);
+		if (t < 1 && t >= 0) {
+			return PVector.add(p0, PVector.mult(dir, (float) t));
+		} else {
+			return null;
+		}
+	}
+
+	// Get the support point of a circle primitive in a given direction.
+	private PVector circleSupportPoint(PVector direction) {
+		return PVector.add(this.parent.getPosition(), PVector.mult(direction, (float) this.radius));
+	}
+
+	// Get the support point of a polygon primitive in a given direction.
+	private int polygonSupportPoint(PVector direction) {
+		int max = 0;
+		double maxDot = PVector.dot(vertices.get(0), direction);
+		for (int i = 0; i < vertices.size(); i++) {
+			double dot = vertices.get(i).dot(direction);
+			if (dot > maxDot) {
+				max = i;
+				maxDot = dot;
+			}
+		}
+		return max;
+	}
+
+	// Generate a circle-to-polygon collision, where b is the polygon primitive.
+	private Manifold circleToPolygonCollision(Primitive b, PVector offset) {
+		Manifold m = new Manifold(this.parent, b.parent);
+
+		double minPenetration = -Double.MAX_VALUE;
+		PVector bestNormal = new PVector();
+		PVector bestSupport = new PVector();
+
+		PVector v1min = new PVector(), v2min = new PVector();
+
+		float reverseFactor = 1.0f;
+		PVector v2 = PVector.add(b.vertices.get(b.vertices.size() - 1), b.parent.getPosition());
+		boolean calibrating = true;
+		for (PVector p1 : b.vertices) {
+			PVector v1 = PVector.add(p1, b.parent.getPosition());
+
+			PVector v1v2 = PVector.sub(v1, v2);
+			PVector normal = new PVector(-v1v2.y, v1v2.x).mult(reverseFactor).normalize();
+			PVector support = PVector.add(this.circleSupportPoint(PVector.mult(normal, -1)), offset);
+			double dist = PVector.dot(PVector.sub(support, v1), normal);
+
+			if (calibrating && dist > 0) {
+				dist = -dist;
+				reverseFactor = -1.0f;
+			}
+			if (dist > minPenetration) {
+				if (dist > 0) {
+					return m;
 				}
 				v1min = v1;
 				v2min = v2;
@@ -188,73 +296,23 @@ public class Primitive implements PhysicsMesh {
 			v2 = v1;
 			calibrating = false;
 		}
-		return new BestDist(minPenetration, bestNormal, bestSupport, v1min, v2min);
-	}
-
-	// Query face distance between this polygon, from which the faces are checked,
-	// against another polygon's vertices. Returns a collision manifold with a
-	// potential collision point if there is one.
-	private Manifold queryFaceDistance(Primitive b, PVector offset) {
-		Manifold m = new Manifold(this.parent, b.getParent());
-		BestDist bd = getBestDist(b, offset);
-		if (bd != null) {
-			m.addContactPoint(bd.bestSupport, bd.bestNormal, bd.minPenetration, this, b);
-		}
-
-		return m;
-	}
-
-	// Get the support point of a primitive in a given direction.
-	private PVector getSupportPoint(PVector direction) {
-		return switch (primitiveType) {
-		case CIRCLE -> circleSupportPoint(direction);
-		case POLYGON -> polygonSupportPoint(direction);
-		};
-	}
-
-	// Get the support point of a circle primitive in a given direction.
-	private PVector circleSupportPoint(PVector direction) {
-		return PVector.add(this.parent.getPosition(), PVector.mult(direction, (float) this.radius));
-	}
-
-	// Get the support point of a polygon primitive in a given direction.
-	private PVector polygonSupportPoint(PVector direction) {
-		PVector max = vertices.get(0);
-		double maxDot = PVector.dot(vertices.get(0), direction);
-		for (PVector v : vertices) {
-			double dot = v.dot(direction);
-			if (dot > maxDot) {
-				max = v;
-				maxDot = dot;
-			}
-		}
-		return PVector.add(max, this.parent.getPosition());
-	}
-
-	// Generate a circle-to-polygon collision, where b is the polygon primitive.
-	private Manifold circleToPolygonCollision(Primitive b, PVector offset) {
-		Manifold m = new Manifold(this.parent, b.parent);
-		BestDist bd = b.getBestDist(this, offset);
-		if (bd == null) {
-			return m;
-		}
 
 		// Step 2 - Find the collision point with the edge
-		PVector tan1 = PVector.sub(bd.v0, bd.v1);
-		PVector tan2 = PVector.sub(bd.v1, bd.v0);
+		PVector tan1 = PVector.sub(v1min, v2min);
+		PVector tan2 = PVector.sub(v2min, v1min);
 
 		// If the center of the mass is in the voronoi region of the edge
-		PVector contactPoint = PVector.sub(this.parent.getPosition(), PVector.mult(bd.bestNormal, (float) this.radius));
-		if (PVector.dot(PVector.sub(this.parent.getPosition(), bd.v0), tan1) > 0
-				&& PVector.dot(PVector.sub(this.parent.getPosition(), bd.v1), tan2) > 0) {
+		PVector contactPoint = PVector.sub(this.parent.getPosition(), PVector.mult(bestNormal, (float) this.radius));
+		if (PVector.dot(PVector.sub(this.parent.getPosition(), v1min), tan1) > 0
+				&& PVector.dot(PVector.sub(this.parent.getPosition(), v2min), tan2) > 0) {
 		} else {
-			double distV0 = PVector.sub(this.parent.getPosition(), bd.v0).mag();
-			double distV1 = PVector.sub(this.parent.getPosition(), bd.v1).mag();
-			bd.bestNormal = PVector.sub(this.parent.getPosition(), distV0 < distV1 ? bd.v0 : bd.v1).normalize();
-			contactPoint = PVector.sub(this.parent.getPosition(), PVector.mult(bd.bestNormal, (float) this.radius));
-			bd.minPenetration = PVector.dot(PVector.sub(distV0 < distV1 ? bd.v1 : bd.v0, contactPoint), bd.bestNormal);
+			double distV0 = PVector.sub(this.parent.getPosition(), v1min).mag();
+			double distV1 = PVector.sub(this.parent.getPosition(), v2min).mag();
+			bestNormal = PVector.sub(this.parent.getPosition(), distV0 < distV1 ? v1min : v2min).normalize();
+			contactPoint = PVector.sub(this.parent.getPosition(), PVector.mult(bestNormal, (float) this.radius));
+			minPenetration = PVector.dot(PVector.sub(distV0 < distV1 ? v2min : v1min, contactPoint), bestNormal);
 		}
-		m.addContactPoint(contactPoint, bd.bestNormal, bd.minPenetration, this, b);
+		m.addContactPoint(contactPoint, bestNormal, minPenetration, this, b);
 
 		return m;
 	}

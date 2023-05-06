@@ -149,8 +149,10 @@ public class RigidBody {
 			forceAccumulation.add(f);
 		}
 
-		// Apply accumulator to velocity, velocity to position, and rotation to orientation
-		properties.velocity = PVector.add(properties.velocity, PVector.mult(forceAccumulation, (float) duration));
+		// Apply accumulator to velocity, velocity to position, and rotation to
+		// orientation
+		properties.velocity = PVector.add(properties.velocity,
+				PVector.mult(forceAccumulation, (float) (duration * inverseMass)));
 		PVector pos = parent.getPosition().copy();
 		parent.setLocalPosition(
 				PVector.add(parent.getLocalPosition(), PVector.mult(properties.velocity, (float) duration)));

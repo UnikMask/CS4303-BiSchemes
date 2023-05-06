@@ -11,9 +11,6 @@ public class Manifold {
 	// Physics Hyperparameters
 	public static final double CORRECTION_THRESHOLD = 0.01;
 	public static final double CORRECTION_PERCENTAGE = 0.4;
-	public static final double SAME_EDGE_THRESHOLD = 0.01;
-	public static final double ROTATIONAL_VELOCITY_THRESHOLD = 0.0;
-	public static final double INERTIA_THRESHOLD = 0.0f;
 
 	// Manifold properties
 	private List<Interpenetration> contactPoints = new ArrayList<>();
@@ -77,8 +74,6 @@ public class Manifold {
 	 * Apply the impulse of the manifold to the two rigid bodies.
 	 */
 	public void applyImpulse() {
-		System.out.println("Object A - movable? " + objectA.properties.isMovable);
-		System.out.println("Object B - movable? " + objectB.properties.isMovable);
 		double maxPenetration = 0;
 		PVector maxNormal = new PVector();
 		for (Interpenetration contact : contactPoints) {
@@ -90,8 +85,6 @@ public class Manifold {
 			PVector radA = PVector.sub(contact.contactPoint, objectA.getPosition());
 			PVector radB = PVector.sub(contact.contactPoint, objectB.getPosition());
 
-			System.out.println("Object A velocity: " + objectA.properties.velocity);
-			System.out.println("Object B velocity: " + objectB.properties.velocity);
 			PVector relVelocity = PVector.sub(objectB.properties.velocity, objectA.properties.velocity)
 					.sub(new PVector(-radA.y, radA.x).mult((float) objectA.properties.rotation))
 					.add(new PVector(-radB.y, radB.x).mult((float) objectB.properties.rotation));
@@ -109,8 +102,8 @@ public class Manifold {
 			double j = -(1 + contact.restitution) * velocityProjectionOnNormal * factorDiv;
 			PVector impulse = PVector.mult(contact.surfaceNormal, (float) j);
 
-			objectA.applyImpulse(PVector.mult(impulse, -1), contact.contactPoint);
-			objectB.applyImpulse(impulse, contact.contactPoint);
+			objectA.applyImpulse(PVector.mult(impulse, -1), radA);
+			objectB.applyImpulse(impulse, radB);
 
 			// Calculate friction resolution
 			PVector tan = PVector
@@ -123,8 +116,8 @@ public class Manifold {
 					(float) (Math.abs(frictionFactor) > contact.staticFriction * j ? -j * contact.dynamicFriction
 							: frictionFactor));
 
-			objectA.applyImpulse(PVector.mult(frictionImpulse, -1), contact.contactPoint);
-			objectB.applyImpulse(frictionImpulse, contact.contactPoint);
+			objectA.applyImpulse(PVector.mult(frictionImpulse, -1), radA);
+			objectB.applyImpulse(frictionImpulse, radB);
 		}
 
 		// Apply sinking correction

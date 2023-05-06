@@ -1,6 +1,7 @@
 package bischemes.engine.physics;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import bischemes.engine.GObject;
@@ -9,7 +10,7 @@ import bischemes.engine.physics.PrimitiveAssembly.PrimitiveInSet;
 import processing.core.PVector;
 
 public class Primitive implements PhysicsMesh {
-	private static final double PARRALLEL_THRESHOLD = 0.9999;
+	private static final double PARRALLEL_THRESHOLD = 0.0001;
 
 	private PrimitiveType primitiveType;
 	private RigidBody parent;
@@ -18,10 +19,11 @@ public class Primitive implements PhysicsMesh {
 	// Reals
 	private List<PVector> baseVerts;
 	private double radius;
-	private PVector AABBBounds = new PVector();
+	private PVector baseAABB = new PVector();
 
 	// Derived
 	private List<PVector> vertices;
+	private PVector AABBBounds = new PVector();
 
 	static enum PrimitiveType {
 		POLYGON, CIRCLE
@@ -48,14 +50,31 @@ public class Primitive implements PhysicsMesh {
 	/////////////////////
 
 	public void derive() {
-		if (primitiveType == PrimitiveType.POLYGON) {
-			vertices = new ArrayList<>(baseVerts.size());
-			for (PVector v : baseVerts) {
-				PVector vn = v.copy();
-				vn.rotate((float) parent.getOrientation());
-				vertices.add(vn);
-			}
+		if (primitiveType == PrimitiveType.CIRCLE) {
+			return;
 		}
+
+		vertices = new ArrayList<>(baseVerts.size());
+		for (PVector v : baseVerts) {
+			PVector vn = v.copy();
+			vn.rotate((float) parent.getOrientation());
+			vertices.add(vn);
+		}
+
+		// Recompute AABB bounds
+		List<PVector> aabb = Arrays.asList(new PVector(-baseAABB.x / 2, -baseAABB.y / 2),
+				new PVector(-baseAABB.x / 2, baseAABB.y / 2), new PVector(baseAABB.x / 2, baseAABB.y / 2),
+				new PVector(baseAABB.x / 2, -baseAABB.y / 2));
+		PVector min = new PVector(Float.MAX_VALUE, Float.MAX_VALUE);
+		PVector max = new PVector(-Float.MAX_VALUE, -Float.MAX_VALUE);
+		for (PVector v : aabb) {
+			v.rotate((float) parent.getOrientation());
+			min.x = v.x < min.x ? v.x : min.x;
+			min.y = v.y < min.y ? v.y : min.y;
+			max.x = v.x > max.x ? v.x : max.x;
+			max.y = v.y > max.y ? v.y : max.y;
+		}
+		AABBBounds = PVector.sub(max, min);
 	}
 
 	public Manifold getCollision(Primitive b, PVector offset) {
@@ -192,16 +211,19 @@ public class Primitive implements PhysicsMesh {
 		double dot0 = Math.abs(PVector.dot(PVector.sub(adjacent0, bestSupport).normalize(), bestNormal)),
 				dot1 = Math.abs(PVector.dot(PVector.sub(adjacent1, bestSupport).normalize(), bestNormal));
 		PVector adjacent = dot1 > dot0 ? adjacent0 : adjacent1;
-		PVector rayDir = PVector.sub(adjacent, bestSupport);
+		PVector rayDir = PVector.sub(bestSupport, adjacent);
+
+		m.addContactPoint(bestSupport, bestNormal, minPenetration, this, b);
 
 		// Perform Sutherland Clipping
 		PVector i1 = PVector.add(this.vertices.get(b.vertices.size() - 1), this.parent.getPosition());
 		boolean isEdge = true;
+		System.out.println("Before clip - v0: " + bestSupport + ", v1: " + adjacent);
 		PVector clip = clip(rayDir, bestSupport, new Pair<>(v1min, v2min));
 		if (clip != null) {
 			adjacent = clip;
 			isEdge = false;
-			rayDir = PVector.sub(adjacent, bestSupport);
+			rayDir = PVector.sub(bestSupport, adjacent);
 		}
 		for (PVector v : this.vertices) {
 			PVector i0 = PVector.add(v, this.parent.getPosition());
@@ -209,14 +231,13 @@ public class Primitive implements PhysicsMesh {
 			if (clip != null) {
 				adjacent = clip;
 				isEdge = true;
-				rayDir = PVector.sub(adjacent, bestSupport);
+				rayDir = PVector.sub(bestSupport, adjacent);
 			}
 		}
+		System.out.println("After clip - v0: " + bestSupport + ", v1: " + adjacent);
+		System.out.println("Is edge? " + isEdge);
 		if (isEdge) {
-			PVector avg = PVector.div(PVector.add(bestSupport, adjacent), 2);
-			m.addContactPoint(avg, bestNormal, PVector.dot(PVector.sub(avg, v1min), bestNormal), this, b);
-		} else {
-			m.addContactPoint(bestSupport, bestNormal, minPenetration, this, b);
+			m.addContactPoint(adjacent, bestNormal, PVector.dot(PVector.sub(adjacent, v1min), bestNormal), this, b);
 		}
 
 		return m;
@@ -225,12 +246,13 @@ public class Primitive implements PhysicsMesh {
 	// Clips the incidence's 2nd point
 	private PVector clip(PVector dir, PVector p0, Pair<PVector> incident) {
 		PVector i0i1 = PVector.sub(incident.b, incident.a);
-		if (PVector.dot(i0i1.copy().normalize(), dir.copy().normalize()) > PARRALLEL_THRESHOLD) {
+		PVector normal = new PVector(-i0i1.y, i0i1.x).normalize();
+		if (Math.abs(PVector.dot(normal, dir)) < PARRALLEL_THRESHOLD) {
 			return null;
 		}
 
-		PVector normal = new PVector(-i0i1.y, i0i1.x).normalize();
 		double t = (PVector.dot(normal, p0) - PVector.dot(normal, incident.a)) / PVector.dot(normal, dir);
+		System.out.println("\t Clip: incident - <" + incident.a + ", " + incident.b + ">, t = " + t);
 		if (t < 1 && t >= 0) {
 			return PVector.add(p0, PVector.mult(dir, (float) t));
 		} else {
@@ -355,13 +377,15 @@ public class Primitive implements PhysicsMesh {
 			max.x = v.x > max.x ? v.x : max.x;
 			max.y = v.y > min.y ? v.y : max.y;
 		}
-		AABBBounds = PVector.sub(max, min);
+		baseAABB = PVector.sub(max, min);
+		AABBBounds = baseAABB.copy();
 
 	}
 
 	public Primitive(Surface surface, List<PVector> vertices, PVector AABBbounds) {
 		this(surface, vertices);
-		this.AABBBounds = AABBbounds;
+		this.baseAABB = AABBbounds;
+		this.AABBBounds = AABBbounds.copy();
 	}
 
 	/**
@@ -374,6 +398,7 @@ public class Primitive implements PhysicsMesh {
 		primitiveType = PrimitiveType.CIRCLE;
 		this.radius = radius;
 		this.surface = surface;
-		this.AABBBounds = new PVector(2 * (float) radius, 2 * (float) radius);
+		this.baseAABB = new PVector(2 * (float) radius, 2 * (float) radius);
+		this.AABBBounds = baseAABB;
 	}
 }

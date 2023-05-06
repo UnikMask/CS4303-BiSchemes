@@ -59,18 +59,12 @@ public class Game {
 		// Create an obstacle
 		GObject obstacles = new GObject(null, new PVector(0, -3.5f), 0);
 		obstacles.setRigidBody(new RigidBody(new RigidBodyProperties(
-				Map.of("mesh", new Primitive(new Surface(0, 0.2, 0.2), PrimitiveUtils.makeRect(new PVector(16, 2)))))));
+				Map.of("mesh", new Primitive(new Surface(0, 0.8, 0.8), PrimitiveUtils.makeRect(new PVector(16, 2)))))));
 		obstacles.addVisualAttributes(VisualUtils.makeRect(new PVector(16, 2), 0xff54494b));
 		mainScene.attachToGObject(mainScene.scene, obstacles);
 
 		// Create an item that will fall down on the floor
-		demoGravItem = new GObject(null, new PVector(0, 0), 0);
-		Primitive demoGravPrim = new Primitive(new Surface(0.5, 0.05, 0.05),
-				PrimitiveUtils.makeRect(new PVector(1, 1)));
-		demoGravItem.setRigidBody(new RigidBody(new RigidBodyProperties(
-				Map.of("mass", 15.0, "inertia", PrimitiveUtils.getPrimitiveInertia(demoGravPrim, 15.0, new PVector()),
-						"rotate", true, "move", true, "mesh", demoGravPrim))));
-		demoGravItem.addVisualAttributes(VisualUtils.makeRect(new PVector(1, 1), 0xff54494b));
+		demoGravItem = new Player(new PVector(0, 0), 0);
 		mainScene.attachToGObject(mainScene.scene, demoGravItem);
 
 		// Attach the scene to the engine & start the simulation

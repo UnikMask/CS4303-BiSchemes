@@ -6,8 +6,6 @@ import bischemes.level.parts.RObject;
 public class BHitKill extends BHit {
 
     private final RObject killer;
-    private boolean activeOnState = false;
-    private boolean stateActivity;
 
     private BHitKill(RObject killer) {
         this.killer = killer;

@@ -6,8 +6,6 @@ import bischemes.level.parts.RObject;
 public class BHitStateSwitch extends BHit {
 
     private final RObject switcher;
-    private boolean activeOnState = false;
-    private boolean stateActivity;
 
     private BHitStateSwitch(RObject switcher) {
         this.switcher = switcher;

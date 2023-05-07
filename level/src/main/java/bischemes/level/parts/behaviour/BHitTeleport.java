@@ -10,9 +10,6 @@ public class BHitTeleport extends BHit {
     private final RObject object;
     private final Teleporter teleporter;
 
-    private boolean activeOnState = false;
-    private boolean stateActivity;
-
     private BHitTeleport(RObject object, Room destination, PVector link, boolean swapColour) {
         this.object = object;
         this.teleporter = new Teleporter(object, destination, link, swapColour);

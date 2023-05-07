@@ -4,9 +4,11 @@
   "adjacent" : [
     {
       "id": 0,
-      "anchor" : [16, 0],
-      "vertex" : [0, 10],
-      "visible" : false
+      "colour": "SECONDARY",
+      "range" : [0, 4],
+      "side" : "RIGHT",
+      "destRoomId" : 1,
+      "linkId" : 0
     }
   ],
   "spawnPosition": [1.5, 7.5],
@@ -14,12 +16,12 @@
     "primary": [
       {
         "type" : "RECT",
-        "anchor" : [0, 4],
+        "corner" : [0, 4],
         "dimensions" : [16, 4]
       },
       {
         "type" : "RECT",
-        "anchor" : [0, 8],
+        "corner" : [0, 8],
         "dimensions" : [1, 3]
       },
       {
@@ -33,17 +35,17 @@
     "secondary": [
       {
         "type": "RECT",
-        "anchor": [0, 9],
+        "corner": [0, 9],
         "dimensions": [16, 1]
       },
       {
         "type": "RECT",
-        "anchor": [4, 8],
+        "corner": [4, 8],
         "dimensions": [12, 1]
       },
       {
         "type": "RECT",
-        "anchor": [0, 0],
+        "corner": [0, 0],
         "dimensions": [16, 4]
       },
       {
@@ -59,20 +61,20 @@
     {
       "type": "DOOR",
       "colour": "SECONDARY",
-      "id": 0,
+      "id": 1,
       "anchor": [10, 4],
       "dimensions": [1, 4]
     },
     {
       "type": "LEVER",
       "colour": "PRIMARY",
-      "id": 1,
+      "id": 2,
       "anchor": [0, 8],
-      "linkedTo": [0]
+      "linkedTo": [1]
     },
     {
       "type" : "EXIT",
-      "id" : 2,
+      "id" : 3,
       "anchor" : [16, 0],
       "edge" : [0, 10]
     }

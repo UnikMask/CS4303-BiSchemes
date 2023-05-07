@@ -219,9 +219,11 @@ public final class JParser {
                 roomObjects.add(parseRObject(arr.getJsonObject(i), parent, partFactory));
         }
         catch (ClassCastException e) {
-            throw new LevelParseException("parseGeometryArr(obj, " + name + ", parent), encountered an exception: \n\t\"" + name + "\" array does not contain assignable JsonObjects at index " + i); }
+            System.out.println("_______" + e.getLocalizedMessage());
+            throw new LevelParseException("parseRObjectArr(obj, " + name + ", parent), encountered an exception: \n\t\"" + name + "\" array does not contain assignable JsonObjects at index " + i); }
         catch (LevelParseException e) {
-            throw new LevelParseException("parseGeometryArr(obj, " + name + ", parent), encountered an exception at index " + i + ":\n\t" + e.getLocalizedMessage()); }
+            System.out.println("_______" + e.getLocalizedMessage());
+            throw new LevelParseException("parseRObjectArr(obj, " + name + ", parent), encountered an exception at index " + i + ":\n\t" + e.getLocalizedMessage()); }
     }
 
     public static RObject parseRObject(JsonObject obj, GObject parent, PartFactory pF) {
@@ -299,7 +301,7 @@ public final class JParser {
         LColour colour = parseLColour(obj, "colour");
         PVector dimensions = parsePVec(obj, "dimensions");
         boolean initState = parseBoolean(obj, "initState", false);
-        float mass = parseFloat(obj, "mass", 1f);
+        double mass = parseDouble(obj, "mass", 1);
         if (anchor.z == 1) return pF.makeCornerBlock(parent, anchor, dimensions, initState, mass, colour, id);
         else return pF.makeBlock(parent, anchor, dimensions, initState, mass, colour, id);
     }
@@ -386,9 +388,9 @@ public final class JParser {
         switch (rbType.toUpperCase()) {
             case "GEOMETRY" -> pF.initRBGeometry();
             case "NO COLLISION" -> pF.initRBNoCollision();
-            case "ROTATEABLE" -> pF.initRBRotateable(parseFloat(obj, "mass"));
-            case "MOVEABLE" -> pF.initRBMoveable(parseFloat(obj, "mass"));
-            case "BLOCK" -> pF.initRBBlock(parseFloat(obj, "mass"));
+            case "ROTATEABLE" -> pF.initRBRotateable(parseDouble(obj, "mass"));
+            case "MOVEABLE" -> pF.initRBMoveable(parseDouble(obj, "mass"));
+            case "BLOCK" -> pF.initRBBlock(parseDouble(obj, "mass"));
             default ->
                     throw new LevelParseException("\"rbType\" of \"" + rbType + "\" is unknown");
         }
@@ -585,7 +587,7 @@ public final class JParser {
         int roomId = parseInt(obj, "destRoomId", -1);
         if (roomId == -1)
             adjacency = new Adjacency(parent, range, isVertical, zeroAxis, id, colour);
-        else if (roomId > 0) {
+        else if (roomId >= 0) {
             int linkId = parseInt(obj, "linkId");
             if (linkId < 0)
                 throw new InvalidIdException("\"linkId\" of " + id + " is invalid, ids cannot be negative");

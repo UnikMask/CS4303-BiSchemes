@@ -246,6 +246,51 @@ public class PartFactory {
 		return obj;
 	}
 
+	public RObject createTrapezium(GObject parent, PVector anchor, float orientation, float height, PVector widths,
+								   LColour colour, int id) {
+		return (RObject) createTrapezium(new RObject(parent, anchor, orientation, id, colour), height, widths);
+	}
+	public RObject createCornerTrapezium(GObject parent, PVector corner, float orientation, float height, PVector widths,
+										 LColour colour, int id) {
+		PVector anchor = corner.copy().add(widths.x / 2f, height / 2f);
+		return (RObject) createTrapezium(new RObject(parent, anchor, orientation, id, colour), height, widths);
+	}
+
+	public GObject createTrapezium(GObject parent, PVector anchor, float orientation, float height, PVector widths) {
+		return createTrapezium(new GObject(parent, anchor, orientation), height, widths);
+	}
+
+	public GObject createCornerTrapezium(GObject parent, PVector corner, float orientation, float height, PVector widths) {
+		PVector anchor = corner.copy().add(widths.x / 2f, height / 2f);
+		return createTrapezium(new GObject(parent, anchor, orientation), height, widths);
+	}
+
+	private GObject createTrapezium(GObject obj, float height, PVector widths) {
+		float halfHeight = height / 2f;
+		float rectWidth = Math.min(widths.x, widths.y);
+
+		List<PVector> vertices = new ArrayList<>(4);
+		vertices.add(new PVector(-widths.y / 2f, halfHeight));
+		vertices.add(new PVector(-widths.x / 2f, -halfHeight));
+		vertices.add(new PVector(widths.x / 2f, -halfHeight));
+		vertices.add(new PVector(widths.y / 2f, halfHeight));
+
+
+		PVector t1V3 = new PVector(-rectWidth, (widths.x > widths.y) ? -halfHeight : halfHeight );
+		PVector t2V3 = new PVector(rectWidth, t1V3.y );
+
+		obj.addVisualAttributes(VisualUtils.makeRect(new PVector(rectWidth, height), DEFAULT_COLOUR));
+
+		obj.addVisualAttributes(
+				VisualUtils.makeTriangle(vertices.get(0).copy(), vertices.get(1).copy(), t1V3, DEFAULT_COLOUR));
+		obj.addVisualAttributes(
+				VisualUtils.makeTriangle(vertices.get(2).copy(), vertices.get(3).copy(), t2V3, DEFAULT_COLOUR));
+
+		finishPolygon(obj, vertices);
+
+		return obj;
+	}
+
 	public RObject makeBlock(GObject parent, PVector anchor, PVector dimensions, boolean initState, float mass,
 							 LColour colour, int id) {
 		initRBBlock(mass);

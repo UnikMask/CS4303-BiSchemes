@@ -1,6 +1,7 @@
 package bischemes.level.parts;
 
 import bischemes.engine.GObject;
+import bischemes.engine.physics.Manifold;
 import bischemes.level.parts.behaviour.BHit;
 import bischemes.level.parts.behaviour.BState;
 import bischemes.level.parts.behaviour.BUpdate;
@@ -67,7 +68,7 @@ public class RObject extends GObject {
     }
 
     @Override
-    public void onHit(GObject hit) {
+    public void onHit(GObject hit, Manifold m) {
         if (bHit != null)
             for (BHit o : bHit)
                 o.run(hit);

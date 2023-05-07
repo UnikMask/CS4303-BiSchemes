@@ -30,6 +30,8 @@ public class Teleporter {
     private boolean offsetY = false;
     private boolean playerOnly = false;
 
+    private boolean flipGravity = false;
+
     public Teleporter(RObject base, Room destination, PVector link, boolean swapColour) {
         this.base = base;
         this.destination = destination;
@@ -57,6 +59,10 @@ public class Teleporter {
 
     public void makePlayerOnly() {
         playerOnly = true;
+    }
+
+    public void configureGravityFlip(boolean flipGravity) {
+        this.flipGravity = flipGravity;
     }
 
     public void configureOffset(boolean offsetX, boolean offsetY) {
@@ -99,6 +105,8 @@ public class Teleporter {
         }
 
         //TODO set position of 'hit' as newPosition
+
+        //TODO do stuff with flipGravity
 
     }
 

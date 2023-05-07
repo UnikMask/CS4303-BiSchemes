@@ -44,9 +44,21 @@ public class BInteractTeleport extends BInteract {
                 new PVector(1, 1), 4, 0, indicatorOffset, SpriteLoader.getSwitchSymbol());
     }
 
+    public void addTeleportIndicator(PVector indicatorOffset) {
+        indicator = VisualUtils.makeTexturedPolygon(
+                new PVector(1, 1), 4, 0, indicatorOffset, SpriteLoader.getTeleportSymbol());
+    }
+
+    public void addColourSwitchIndicator(PVector indicatorOffset) {
+        indicator = VisualUtils.makeTexturedPolygon(
+                new PVector(1, 1), 4, 0, indicatorOffset, SpriteLoader.getSwitchSymbol());
+    }
+
     public void addTeleportIcon(PVector maxDimension) {
         teleporter.addTeleportIcon(maxDimension);
     }
+
+    public void configureGravityFlip(boolean flipGravity) { teleporter.configureGravityFlip(flipGravity);}
 
     public void makePlayerOnly() {
         teleporter.makePlayerOnly();

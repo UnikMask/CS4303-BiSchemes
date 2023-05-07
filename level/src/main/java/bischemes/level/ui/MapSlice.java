@@ -4,7 +4,6 @@ package bischemes.level.ui;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
-
 import java.util.ArrayList;
 
 import static java.lang.Math.max;

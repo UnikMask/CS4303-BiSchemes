@@ -8,7 +8,6 @@ import bischemes.engine.physics.Surface;
 import bischemes.level.Level;
 import bischemes.level.Room;
 import bischemes.level.parts.behaviour.BHitTeleport;
-import bischemes.level.parts.behaviour.Teleporter;
 import bischemes.level.util.LColour;
 import bischemes.level.util.LevelParseException;
 import processing.core.PVector;

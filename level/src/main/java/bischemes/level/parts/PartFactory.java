@@ -3,10 +3,8 @@ package bischemes.level.parts;
 import bischemes.engine.GObject;
 import bischemes.engine.VisualUtils;
 import bischemes.engine.physics.*;
-import bischemes.level.Room;
 import bischemes.level.parts.behaviour.*;
 import bischemes.level.util.LColour;
-import bischemes.level.util.LevelParseException;
 import bischemes.level.util.SpriteLoader;
 import processing.core.PVector;
 
@@ -16,6 +14,8 @@ public class PartFactory {
 
 	private final int ELLIPSE_VERTICES = 20;
 	private final int DEFAULT_COLOUR = 0x000000ff;
+	private final float PORTAL_PROTRUDE = 0.2f;
+	private final float PORTAL_SUB_WIDTH = 0.8f;
 
 	private double restitution;
 	private double staticFriction;
@@ -192,14 +192,6 @@ public class PartFactory {
 		return (RObject) createPolygon(new RObject(parent, anchor, 0, id, colour), dimensions, sides, orientation);
 	}
 
-	public GObject createPolygon(GObject parent, PVector anchor, PVector dimensions, int sides) {
-		return createPolygon(parent, anchor, dimensions, sides, 0f);
-	}
-
-	public GObject createPolygon(GObject parent, PVector anchor, PVector dimensions, int sides, float orientation) {
-		return createPolygon(new GObject(parent, anchor, 0), dimensions, sides, orientation);
-	}
-
 	private GObject createPolygon(GObject obj, PVector dimensions, int sides, float orientation) {
 		obj.addVisualAttributes(
 				VisualUtils.makeUntexturedPolygon(dimensions, sides, orientation, new PVector(), DEFAULT_COLOUR));
@@ -222,20 +214,8 @@ public class PartFactory {
 		return createPolygon(parent, anchor, dimensions, ELLIPSE_VERTICES, orientation, colour, id);
 	}
 
-	public GObject createEllipse(GObject parent, PVector anchor, PVector dimensions) {
-		return createPolygon(parent, anchor, dimensions, ELLIPSE_VERTICES);
-	}
-
-	public GObject createEllipse(GObject parent, PVector anchor, PVector dimensions, float orientation) {
-		return createPolygon(parent, anchor, dimensions, ELLIPSE_VERTICES, orientation);
-	}
-
 	public RObject createCircle(GObject parent, PVector anchor, float radius, LColour colour, int id) {
 		return (RObject) createCircle(new RObject(parent, anchor, 0, id, colour), radius);
-	}
-
-	public GObject createCircle(GObject parent, PVector anchor, float radius) {
-		return createCircle(new GObject(parent, anchor, 0f), radius);
 	}
 
 	private GObject createCircle(GObject obj, float radius) {
@@ -362,9 +342,97 @@ public class PartFactory {
 	}
 
 
-	public RObject makePortal(GObject parent, PVector anchor, int width, float orientation, int id) {
+	public RObject makeOnewayPortal(GObject parent, PVector anchor, int width, boolean isVertical, boolean flipFace,
+									boolean initialState, LColour colour, int id) {
+		float orientation = 0f;
+		PVector newAnchor = anchor.copy();
+		PVector link = anchor.copy();
+		PVector offset = new PVector();
 
-		return null;
+		if (isVertical) {
+			offset.y = PORTAL_PROTRUDE;
+			if (flipFace) orientation = (float) (Math.PI / 2f);
+			else offset.y *= -1;
+		}
+		else {
+			orientation = (float) (Math.PI / 4f);
+			offset.x = PORTAL_PROTRUDE;
+			if (!flipFace) {
+				orientation *= 3f;
+				offset.x *= -1;
+			}
+		}
+
+		newAnchor.add(offset);
+		link.sub(offset);
+
+		initRBNoCollision();
+
+		RObject portal = createTrapezium(parent, newAnchor, orientation, PORTAL_PROTRUDE,
+				new PVector(((float) width) * PORTAL_SUB_WIDTH, (float) width), colour, id);
+		portal.setState(initialState);
+
+		BInteractTeleport b = BInteractTeleport.assign(portal, width, PORTAL_PROTRUDE, link, true);
+		/*
+		TODO these following lines my make for better indicator positioning
+		TODO if it does work better, use such offset in makePortal()
+		offset.mult(1f / PORTAL_PROTRUDE);
+		b.addColourSwitchIndicator(offset);
+		*/
+		b.addColourSwitchIndicator(new PVector(0, 1f));
+		b.setActiveOnState(true);
+		b.configureGravityFlip(isVertical);
+
+		return portal;
+	}
+
+	public RObject makePortal(GObject parent, PVector anchor, int width, boolean isVertical, boolean initialState,
+							  LColour colour1, int id) {
+		LColour colour2 = (colour1 == LColour.PRIMARY) ? LColour.SECONDARY : LColour.PRIMARY;
+
+		float orientation1 = 0f;
+		float orientation2 = (float) (Math.PI / 2f);
+
+		PVector anchor1 = anchor.copy();
+		PVector anchor2 = anchor.copy();
+
+		PVector offset = new PVector();
+
+		if (isVertical)
+			offset.y = PORTAL_PROTRUDE;
+		else {
+			orientation1 += (float) (Math.PI / 4f);
+			orientation2+= (float) (Math.PI / 4f);
+			offset.x = PORTAL_PROTRUDE;
+		}
+
+		anchor1.add(offset);
+		anchor2.sub(offset);
+
+		initRBNoCollision();
+
+		RObject portal = new RObject(parent, anchor, 0, id);
+
+		RObject childPortal1 = createTrapezium(portal, anchor1, orientation1, PORTAL_PROTRUDE,
+				new PVector(((float) width) * PORTAL_SUB_WIDTH, (float) width), colour1, id);
+
+		RObject childPortal2 = createTrapezium(portal, anchor2, orientation2, PORTAL_PROTRUDE,
+				new PVector(((float) width) * PORTAL_SUB_WIDTH, (float) width), colour2, id);
+
+		portal.setState(initialState);
+
+		BInteractTeleport b1 = BInteractTeleport.assign(childPortal1, width, PORTAL_PROTRUDE, anchor2,true);
+		BInteractTeleport b2 = BInteractTeleport.assign(childPortal2, width, PORTAL_PROTRUDE, anchor1,true);
+
+		b1.addColourSwitchIndicator(new PVector(0, 1f));
+		b1.setActiveOnState(true);
+		b1.configureGravityFlip(isVertical);
+
+		b2.addColourSwitchIndicator(new PVector(0, 1f));
+		b2.setActiveOnState(true);
+		b2.configureGravityFlip(isVertical);
+
+		return portal;
 	}
 
 	// TODO determine design

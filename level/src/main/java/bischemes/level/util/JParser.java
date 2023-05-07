@@ -9,7 +9,6 @@ import bischemes.level.parts.RObject;
 import bischemes.level.parts.behaviour.*;
 import processing.core.PVector;
 
-import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import java.util.ArrayList;
@@ -332,9 +331,45 @@ public final class JParser {
     public static RObject parsePortal(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
         if (anchor.z == 1) throw new LevelParseException("cannot use \"corner\" parameter in Portal definition");
         int width = parseInt(obj, "width", 1);
-        float orientation = parseFloat(obj, "orientation", 0f);
-        // TODO
-        return pF.makePortal(parent, anchor, width, orientation, id);
+
+        boolean initialState = parseBoolean(obj, "startOpen", true);
+        boolean oneWay = parseBoolean(obj, "isOneWay", false);
+
+        if (oneWay) {
+            LColour colour = parseLColour(obj, "colour");
+            String side = parseStr(obj, "side");
+            boolean isVertical = false;
+            boolean flipFace = false;
+
+            switch (side.toUpperCase()) {
+                case "LEFT" :
+                    break;
+                case "RIGHT" :
+                    flipFace = true;
+                    break;
+                case "TOP" :
+                    isVertical = true;
+                    break;
+                case "BOTTOM" :
+                    isVertical = true;
+                    flipFace = true;
+                    break;
+                default :
+                    throw new LevelParseException("\"side\" of \"" + side + "\" is unknown");
+            }
+
+            return pF.makeOnewayPortal(parent, anchor, width, isVertical, flipFace, initialState, colour, id);
+        }
+        else {
+            boolean isVertical = parseBoolean(obj, "isVertical");
+
+            LColour colour1;
+            if (isVertical) colour1 = parseLColour(obj, "topColour");
+            else colour1 = parseLColour(obj, "leftColour");
+
+            return pF.makePortal(parent, anchor, width, isVertical, initialState, colour1, id);
+
+        }
     }
 
     public static RObject parseExit(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {

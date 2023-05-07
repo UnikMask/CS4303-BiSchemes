@@ -174,11 +174,9 @@ public class RigidBody {
 
 	public void applyImpulse(PVector impulse, PVector applicationPoint) {
 		if (properties.isMovable) {
-			System.out.println("Addition to velocity: " + PVector.mult(impulse, (float) getInverseMass()));
 			properties.velocity = PVector.add(properties.velocity, PVector.mult(impulse, (float) getInverseMass()));
 		}
 		if (properties.isRotatable) {
-			System.out.println("Addition to rotation: " + inverseInertia * applicationPoint.cross(impulse).z);
 			properties.rotation += inverseInertia * applicationPoint.cross(impulse).z;
 		}
 	}

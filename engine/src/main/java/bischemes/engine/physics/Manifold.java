@@ -69,6 +69,14 @@ public class Manifold {
 		return max;
 	}
 
+	public PVector getNormal() {
+		if (isCollision()) {
+			return contactPoints.get(0).surfaceNormal;
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * Add a new contact point to the manifold.
 	 *

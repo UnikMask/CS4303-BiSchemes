@@ -149,14 +149,12 @@ public class Primitive implements PhysicsMesh {
 
 	// Get full collision manifold for contact between 2 polygon primitives.
 	private Manifold polygonToPolygonCollision(Primitive b, PVector offset) {
-		System.out.println("First pass!");
 		Manifold m = new Manifold(this.parent, b.getParent());
 		m.combine(queryFaceDistance(b, offset));
 
 		if (m.isCollision()) {
 			Manifold m2 = new Manifold(b.getParent(), this.parent);
 			m2.combine(b.queryFaceDistance(this, PVector.mult(offset, -1)));
-			System.out.println("Second pass!");
 
 			if (m2.isCollision()) {
 				return m.getMaxPenetration() > m2.getMaxPenetration() ? m : m2;
@@ -173,9 +171,6 @@ public class Primitive implements PhysicsMesh {
 	private Manifold queryFaceDistance(Primitive b, PVector offset) {
 		Manifold m = new Manifold(this.parent, b.getParent());
 
-		System.out.println(
-				"Query face distance: Object A: " + this.parent.getParent() + ", object B: " + b.parent.getParent());
-
 		double minPenetration = -Double.MAX_VALUE;
 		PVector bestNormal = new PVector();
 		PVector bestSupport = new PVector();
@@ -186,7 +181,6 @@ public class Primitive implements PhysicsMesh {
 		float reverseFactor = 1.0f;
 		PVector v2 = PVector.add(this.vertices.get(this.vertices.size() - 1), this.parent.getPosition());
 		boolean calibrating = true;
-		System.out.println("Checking edges...");
 		for (int i = 0; i < this.vertices.size(); i++) {
 			PVector v1 = PVector.add(this.vertices.get(i), this.parent.getPosition());
 
@@ -195,8 +189,6 @@ public class Primitive implements PhysicsMesh {
 			int supportIndex = b.polygonSupportPoint(PVector.mult(normal, -1));
 			PVector support = PVector.add(b.vertices.get(supportIndex), b.parent.getPosition()).add(offset);
 			double dist = PVector.dot(PVector.sub(support, v1), normal);
-			System.out.println("\t v1: " + v1 + ", v2: " + v2 + ", normal: " + normal + ", support: " + support
-					+ ", dist: " + dist);
 
 			if (calibrating && dist > 0) {
 				i--;
@@ -236,15 +228,12 @@ public class Primitive implements PhysicsMesh {
 		// Perform Sutherland Clipping
 		PVector i1 = PVector.add(this.vertices.get(b.vertices.size() - 1), this.parent.getPosition());
 		boolean isEdge = true;
-		System.out.println("Before clip - v0: " + bestSupport + ", v1: " + adjacent);
-		System.out.println("Primary clip -->");
 		PVector clip = clip(rayDir, bestSupport, new Pair<>(v1min, v2min));
 		if (clip != null) {
 			adjacent = clip;
 			isEdge = false;
 			rayDir = PVector.sub(bestSupport, adjacent);
 		}
-		System.out.println("Secondary clip -->");
 		for (PVector v : this.vertices) {
 			PVector i0 = PVector.add(v, this.parent.getPosition());
 			clip = clip(rayDir, bestSupport, new Pair<>(i0, i1));
@@ -254,8 +243,6 @@ public class Primitive implements PhysicsMesh {
 				rayDir = PVector.sub(bestSupport, adjacent);
 			}
 		}
-		System.out.println("After clip - v0: " + bestSupport + ", v1: " + adjacent);
-		System.out.println("Is edge? " + isEdge);
 		if (isEdge) {
 			m.addContactPoint(adjacent, bestNormal, PVector.dot(PVector.sub(adjacent, v1min), bestNormal), this, b);
 		}
@@ -272,7 +259,6 @@ public class Primitive implements PhysicsMesh {
 		}
 
 		double t = (PVector.dot(normal, p0) - PVector.dot(normal, incident.a)) / PVector.dot(normal, dir);
-		System.out.println("\t Clip: incident - <" + incident.a + ", " + incident.b + ">, t = " + t);
 		if (t < 1 && t >= 0) {
 			return PVector.add(p0, PVector.mult(dir, (float) t));
 		} else {

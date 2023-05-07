@@ -224,7 +224,6 @@ public class GridSector {
 			}
 
 		}
-		System.out.println(this);
 	}
 
 	/**

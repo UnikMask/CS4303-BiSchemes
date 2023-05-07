@@ -6,6 +6,8 @@ import bischemes.level.parts.RObject;
 public class BHitStateSwitch extends BHit {
 
     private final RObject switcher;
+    private boolean activeOnState = false;
+    private boolean stateActivity;
 
     private BHitStateSwitch(RObject switcher) {
         this.switcher = switcher;
@@ -16,8 +18,14 @@ public class BHitStateSwitch extends BHit {
         return new BHitStateSwitch(switcher);
     }
 
+    public void setActiveOnState(boolean activeOnState) {
+        this.activeOnState = activeOnState;
+        this.stateActivity = true;
+    }
+
     @Override
     public void run(GObject hit) {
+        if (activeOnState && (stateActivity != switcher.getState())) return;
         switcher.switchState();
     }
 

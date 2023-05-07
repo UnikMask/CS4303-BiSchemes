@@ -10,6 +10,9 @@ public class BHitTeleport extends BHit {
     private final RObject object;
     private final Teleporter teleporter;
 
+    private boolean activeOnState = false;
+    private boolean stateActivity;
+
     private BHitTeleport(RObject object, Room destination, PVector link, boolean swapColour) {
         this.object = object;
         this.teleporter = new Teleporter(object, destination, link, swapColour);
@@ -22,6 +25,11 @@ public class BHitTeleport extends BHit {
 
     public static BHitTeleport assign(RObject object, Room destination, PVector link, boolean swapColour) {
         return new BHitTeleport(object, destination, link, swapColour);
+    }
+
+    public void setActiveOnState(boolean activeOnState) {
+        this.activeOnState = activeOnState;
+        this.stateActivity = true;
     }
 
     public void addTeleportIcon(PVector maxDimension) {
@@ -46,6 +54,7 @@ public class BHitTeleport extends BHit {
 
     @Override
     public void run(GObject hit) {
+        if (activeOnState && (stateActivity != object.getState())) return;
         teleporter.teleport(hit);
     }
 

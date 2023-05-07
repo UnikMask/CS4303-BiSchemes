@@ -3,6 +3,7 @@ package bischemes.engine;
 import java.util.ArrayList;
 import java.util.List;
 
+import bischemes.engine.physics.Manifold;
 import bischemes.engine.physics.RigidBody;
 import processing.core.PGraphics;
 import processing.core.PVector;
@@ -103,9 +104,7 @@ public class GObject {
 		this.rigidBody.enable(this);
 	}
 
-
-
-	public void onHit(GObject hit) {
+	public void onHit(GObject hit, Manifold m) {
 		// Placeholder
 	}
 

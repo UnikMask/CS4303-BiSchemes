@@ -4,6 +4,7 @@ import java.util.Map;
 
 import bischemes.engine.GObject;
 import bischemes.engine.VisualUtils;
+import bischemes.engine.physics.Manifold;
 import bischemes.engine.physics.Primitive;
 import bischemes.engine.physics.PrimitiveUtils;
 import bischemes.engine.physics.RigidBody;
@@ -16,12 +17,25 @@ public class Player extends GObject {
 	private static final PVector mvtForce = new PVector(30, 0);
 	private static final PVector JUMP_FORCE = new PVector(0, 5);
 	private static final double RUN_THRESHOLD = 0.01;
+	private static final double WALL_DOT_THRESHOLD = 0.3;
 
 	enum PlayerState {
 		IDLE, RUN, JUMP, WALL, FALL
 	}
 
 	private PlayerState state = PlayerState.IDLE;
+
+	@Override
+	public void onHit(GObject hit, Manifold m) {
+		if (state == PlayerState.JUMP) {
+			if (Math.abs(PVector.dot(m.getNormal(), new PVector(0, 1))) < WALL_DOT_THRESHOLD) {
+				state = PlayerState.WALL;
+			} else {
+				state = Math.abs(getRigidBody().getProperties().velocity.x) > RUN_THRESHOLD ? PlayerState.RUN
+						: PlayerState.IDLE;
+			}
+		}
+	}
 
 	@Override
 	public void update() {
@@ -54,7 +68,7 @@ public class Player extends GObject {
 	public Player(PVector position, float orientation) {
 		super(null, position, orientation);
 		setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mass", 35.0, "inertia", 20.0, "move", true, "rotate",
-				true, "mesh", new Primitive(new Surface(0, 2.0, 1.0), PrimitiveUtils.makeRect(new PVector(1, 1)))))));
+				false, "mesh", new Primitive(new Surface(0, 2.0, 1.0), PrimitiveUtils.makeRect(new PVector(1, 1)))))));
 		addVisualAttributes(VisualUtils.makeRect(new PVector(1, 1), 0xff54494b));
 	}
 

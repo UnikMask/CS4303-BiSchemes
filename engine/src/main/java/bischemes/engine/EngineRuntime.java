@@ -84,12 +84,8 @@ public class EngineRuntime {
 			HashMap<Pair<RigidBody>, Manifold> collisions = s.grid.getCollisions();
 			for (var entry : collisions.entrySet()) {
 				entry.getValue().applyImpulse();
-			}
-
-			// 5. Collision Events
-			for (Pair<RigidBody> rp : collisions.keySet()) {
-				rp.a.getParent().onHit(rp.b.getParent());
-				rp.b.getParent().onHit(rp.a.getParent());
+				entry.getKey().a.getParent().onHit(entry.getKey().b.getParent(), entry.getValue());
+				entry.getKey().b.getParent().onHit(entry.getKey().a.getParent(), entry.getValue());
 			}
 		}
 
@@ -111,6 +107,10 @@ public class EngineRuntime {
 
 	public PVector getCameraPosition() {
 		return this.cameraPosition;
+	}
+
+	public PVector getCameraBounds() {
+		return this.cameraBounds;
 	}
 
 	public void setCameraBounds(PVector bounds) {

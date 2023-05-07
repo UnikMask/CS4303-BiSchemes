@@ -4,10 +4,12 @@ public class Pair<T> {
 	public T a;
 	public T b;
 
+	@Override
 	public int hashCode() {
 		return a.hashCode() + 97 * b.hashCode();
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Pair<?>) {
 			Pair<?> ot = (Pair<?>) o;

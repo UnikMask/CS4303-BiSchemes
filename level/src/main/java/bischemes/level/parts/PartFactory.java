@@ -219,7 +219,7 @@ public class PartFactory {
 	}
 
 	private GObject createCircle(GObject obj, float radius) {
-		obj.addVisualAttributes(VisualUtils.makeUntexturedPolygon(new PVector(radius, radius), ELLIPSE_VERTICES,
+		obj.addVisualAttributes(VisualUtils.makeUntexturedPolygon(new PVector(radius * 2, radius * 2), ELLIPSE_VERTICES,
 				0f, new PVector(), DEFAULT_COLOUR));
 
 		finishCircle(obj, radius);
@@ -380,6 +380,7 @@ public class PartFactory {
 		b.addColourSwitchIndicator(offset);
 		*/
 		b.addColourSwitchIndicator(new PVector(0, 1f));
+		b.configureOffset(true, true, isVertical, !isVertical);
 		b.setActiveOnState(true);
 		b.configureGravityFlip(isVertical);
 
@@ -427,10 +428,12 @@ public class PartFactory {
 		b1.addColourSwitchIndicator(new PVector(0, 1f));
 		b1.setActiveOnState(true);
 		b1.configureGravityFlip(isVertical);
+		b1.configureOffset(true, true, isVertical, !isVertical);
 
 		b2.addColourSwitchIndicator(new PVector(0, 1f));
 		b2.setActiveOnState(true);
 		b2.configureGravityFlip(isVertical);
+		b2.configureOffset(true, true, isVertical, !isVertical);
 
 		return portal;
 	}

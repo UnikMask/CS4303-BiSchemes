@@ -96,9 +96,15 @@ public class Room extends GObject {
         int id = -1;
         try {
              id = JParser.parseInt(roomJson, "id");
-             PVector dims = JParser.parsePVec(roomJson, "dimensions");
+            if (id < 0)
+                throw new InvalidIdException("\"id\" is invalid with " + id + " as id cannot be negative");
+            PVector dims = JParser.parsePVec(roomJson, "dimensions");
+             if (dims.x < 0 || dims.y < 0)
+                 throw new LevelParseException("\"dimensions\" is invalid with [" + dims.x + ", " + dims.y + "]. Dimensions cannot be negative");
              PVector spawnPos = JParser.parsePVec(roomJson, "spawnPosition");
-             room = new Room(parent, id, dims, spawnPos);
+             if (spawnPos.x < 0 || spawnPos.x > dims.x || spawnPos.y < 0 || spawnPos.y > dims.y)
+                 throw new LevelParseException("\"spawnPosition\" is invalid with [" + spawnPos.x + ", " + spawnPos.y + "]. Spawn position must be within the room");
+            room = new Room(parent, id, dims, spawnPos);
 
              JsonObject geometry = JParser.parseObj(roomJson, "geometry");
              JParser.parseGeometryArr(geometry, "primary", room.primaryGeometry);

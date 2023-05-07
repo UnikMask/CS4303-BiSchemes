@@ -168,7 +168,7 @@ public final class JParser {
         String type = parseStr(obj, "type").toUpperCase();
 
         pF.setSurfaceProperties(
-                parseDouble(obj, "restitution", 1),
+                parseDouble(obj, "restitution", 0.0),
                 parseDouble(obj, "staticFriction", 1),
                 parseDouble(obj, "dynamicFriction", 1));
 
@@ -235,7 +235,7 @@ public final class JParser {
         else anchor.z = 1;
 
         pF.setSurfaceProperties(
-                parseDouble(obj, "restitution", 1),
+                parseDouble(obj, "restitution", 0),
                 parseDouble(obj, "staticFriction", 1),
                 parseDouble(obj, "dynamicFriction", 1));
 
@@ -327,6 +327,8 @@ public final class JParser {
         LColour colour = parseLColour(obj, "colour");
         float orientation = parseFloat(obj, "orientation", 0f);
         int length = parseInt(obj, "length", 1);
+        if(length < 1)
+            throw new LevelParseException("\"length\" of is invalid for " + length + ", length of SPIKE cannot be less than 1");
         return pF.makeSpike(parent, anchor, orientation, length, colour, id);
     }
 
@@ -388,9 +390,9 @@ public final class JParser {
         switch (rbType.toUpperCase()) {
             case "GEOMETRY" -> pF.initRBGeometry();
             case "NO COLLISION" -> pF.initRBNoCollision();
-            case "ROTATEABLE" -> pF.initRBRotateable(parseDouble(obj, "mass"));
-            case "MOVEABLE" -> pF.initRBMoveable(parseDouble(obj, "mass"));
-            case "BLOCK" -> pF.initRBBlock(parseDouble(obj, "mass"));
+            case "ROTATEABLE" -> pF.initRBRotateable(parseDouble(obj, "mass",1));
+            case "MOVEABLE" -> pF.initRBMoveable(parseDouble(obj, "mass", 1));
+            case "BLOCK" -> pF.initRBBlock(parseDouble(obj, "mass", 1));
             default ->
                     throw new LevelParseException("\"rbType\" of \"" + rbType + "\" is unknown");
         }

@@ -6,7 +6,7 @@
     {
       "id": 0,
       "colour": "SECONDARY",
-      "range" : [0, 4],
+      "range" : [4, 8],
       "side" : "LEFT",
       "destRoomId" : 0,
       "linkId" : 0

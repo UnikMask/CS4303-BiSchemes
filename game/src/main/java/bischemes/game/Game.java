@@ -40,6 +40,7 @@ public class Game {
 		case PLAY:
 			// Update forces on grav item
 			gravity.updateForce(demoGravItem.getRigidBody());
+			setEngineCameraPosition();
 			engine.update();
 			break;
 		case INTRO:
@@ -48,6 +49,16 @@ public class Game {
 			break;
 		case END:
 		}
+	}
+
+	public void setEngineCameraPosition() {
+		PVector minCameraPosition = PVector.add(new PVector(-8, -4.5f), PVector.div(engine.getCameraBounds(), 2));
+		PVector maxCameraPosition = PVector.sub(new PVector(8, 4.5f), PVector.div(engine.getCameraBounds(), 2));
+		PVector newPosition = new PVector(
+				Math.min(Math.max(minCameraPosition.x, demoGravItem.getPosition().x), maxCameraPosition.x),
+				Math.min(Math.max(minCameraPosition.y, demoGravItem.getPosition().y), maxCameraPosition.y));
+		System.out.println("Player position: " + demoGravItem.getPosition() + ", camPosition: " + newPosition);
+		engine.setCameraPosition(PVector.lerp(engine.getCameraPosition(), newPosition, 0.1f));
 	}
 
 	public void setup() {
@@ -64,7 +75,7 @@ public class Game {
 		mainScene.attachToGObject(mainScene.scene, obstacles);
 
 		// Create an item that will fall down on the floor
-		demoGravItem = new Player(new PVector(0, 0), (float) Math.PI / 4);
+		demoGravItem = new Player(new PVector(0, 0), 0);
 		mainScene.attachToGObject(mainScene.scene, demoGravItem);
 
 		// Attach the scene to the engine & start the simulation

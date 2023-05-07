@@ -186,6 +186,9 @@ public final class JParser {
                 case "TRIANGLE" ->
                         pF.createTriangle(parent, anchor, parsePVec(obj, "vertex1"),
                                 parsePVec(obj, "vertex2"), parsePVec(obj, "vertex3"));
+                case "TRAPEZIUM" ->
+                        pF.createTrapezium(parent, anchor, parseFloat(obj, "orientation", 0f),
+                                parseFloat(obj, "height", 1f), parsePVec(obj, "widths"));
                 default ->
                         throw new LevelParseException("\"type\" of \"" + type + "\" is unknown");
             };
@@ -198,6 +201,9 @@ public final class JParser {
                 case "TRIANGLE" ->
                         pF.createCornerTriangle(parent, corner, parsePVec(obj, "vertex1"),
                                 parsePVec(obj, "vertex2"));
+                case "TRAPEZIUM" ->
+                        pF.createCornerTrapezium(parent, corner, parseFloat(obj, "orientation", 0f),
+                                parseFloat(obj, "height", 1f), parsePVec(obj, "widths"));
                 default ->
                         throw new LevelParseException("\"type\" of \"" + type + "\" is unknown");
             };
@@ -259,12 +265,14 @@ public final class JParser {
                 case "TRIANGLE" ->
                         pF.createCornerTriangle(parent, anchor, parsePVec(obj, "vertex1"),
                                 parsePVec(obj, "vertex2"), colour, id);
+                case "TRAPEZIUM" ->
+                        pF.createCornerTrapezium(parent, anchor, parseFloat(obj, "orientation", 0f),
+                                parseFloat(obj, "height", 1f), parsePVec(obj, "widths"), colour, id);
                 default ->
                         throw new LevelParseException("\"gType\" of \"" + type + "\" is unknown when defining by corner");
             };
         }
         else {
-            //TODO add more geometry (I want to add a trapezium at least)
             return switch (type) {
                 case "RECT" ->
                         pF.createRect(parent, anchor, parsePVec(obj, "dimensions"),
@@ -280,6 +288,9 @@ public final class JParser {
                                 parseFloat(obj, "orientation", 0f), colour, id);
                 case "CIRCLE" ->
                         pF.createCircle(parent, anchor, parseFloat(obj, "radius"), colour, id);
+                case "TRAPEZIUM" ->
+                        pF.createTrapezium(parent, anchor, parseFloat(obj, "orientation", 0f),
+                                parseFloat(obj, "height", 1f), parsePVec(obj, "widths"), colour, id);
                 default ->
                         throw new LevelParseException("\"gType\" of \"" + type + "\" is unknown");
             };

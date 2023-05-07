@@ -20,6 +20,9 @@ public abstract class BInteract extends BUpdate {
     private boolean showingIndicator = false;
     private float indicatorScale = 0f;
 
+    private boolean activeOnState = false;
+    private boolean stateActivity;
+
     protected BInteract(RObject interactable, float x, float y) {
         this.interactable = interactable;
         useCircleProx = false;
@@ -40,8 +43,14 @@ public abstract class BInteract extends BUpdate {
                 new PVector(1, 1), 4, 0, indicatorOffset, SpriteLoader.getInteractSymbol());
     }
 
+    public void setActiveOnState(boolean activeOnState) {
+        this.activeOnState = activeOnState;
+        this.stateActivity = true;
+    }
+
     // Checks whether a position is close enough to the interactable to interact
     protected boolean canInteract(PVector position) {
+        if (activeOnState && (stateActivity != interactable.getState())) return false;
         if (useCircleProx) {
             float distance = position.dist(interactable.getPosition());
             return distance < radius;

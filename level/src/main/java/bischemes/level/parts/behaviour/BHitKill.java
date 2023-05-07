@@ -16,8 +16,14 @@ public class BHitKill extends BHit {
         return new BHitKill(killer);
     }
 
+    public void setActiveOnState(boolean activeOnState) {
+        this.activeOnState = activeOnState;
+        this.stateActivity = true;
+    }
+
     @Override
     public void run(GObject hit) {
+        if (activeOnState && (stateActivity != killer.getState())) return;
         //TODO
     }
 

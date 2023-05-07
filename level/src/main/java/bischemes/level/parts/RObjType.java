@@ -1,7 +1,5 @@
 package bischemes.level.parts;
 
-import bischemes.level.util.LColour;
-
 public enum RObjType {
     GEOMETRY,
     DOOR,

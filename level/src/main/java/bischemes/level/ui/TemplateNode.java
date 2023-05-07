@@ -3,7 +3,10 @@ package bischemes.level.ui;
 
 import bischemes.level.Level;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class TemplateNode {
 

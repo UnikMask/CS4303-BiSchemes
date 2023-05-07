@@ -49,14 +49,24 @@ public class RObject extends GObject {
         return state;
     }
     public void setState(boolean state) {
-        if (!state ^ this.state) return;
-        switchState();
+        if (state ^ this.state) {
+            this.state = state;
+            if (bState != null)
+                for (BState o : bState)
+                    o.run();
+        }
+        for (GObject c : children)
+            if (c instanceof RObject r)
+                r.setState(state);
     }
     public void switchState() {
         state = !state;
         if (bState != null)
             for (BState o : bState)
                 o.run();
+        for (GObject c : children)
+            if (c instanceof RObject r)
+                r.switchState();
     }
 
     @Override

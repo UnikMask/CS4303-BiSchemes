@@ -33,6 +33,8 @@ public class BHitTeleport extends BHit {
         teleporter.addTeleportIcon(maxDimension);
     }
 
+    public void configureGravityFlip(boolean flipGravity) { teleporter.configureGravityFlip(flipGravity);}
+
     public void makePlayerOnly() {
         teleporter.makePlayerOnly();
     }

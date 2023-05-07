@@ -1,9 +1,9 @@
 package bischemes.level.ui;
 
 
+import bischemes.level.Level;
 import processing.core.PGraphics;
 import processing.core.PVector;
-import bischemes.level.Level;
 
 public final class LevelNode {
 

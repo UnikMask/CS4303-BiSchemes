@@ -5,53 +5,55 @@
   "adjacent" : [
     {
       "id": 0,
-      "anchor" : [0, 0],
-      "vertex" : [0, 10],
-      "visible" : false
+      "colour": "SECONDARY",
+      "range" : [0, 4],
+      "side" : "LEFT",
+      "destRoomId" : 0,
+      "linkId" : 0
     }
   ],
   "geometry" : {
     "primary": [
       {
         "type" : "RECT",
-        "anchor" : [0, 4],
+        "corner" : [0, 4],
         "dimensions" : [7, 4]
       },
       {
         "type" : "RECT",
-        "anchor" : [6, 7],
+        "corner" : [6, 7],
         "dimensions" : [2, 2]
       },
       {
         "type" : "RECT",
-        "anchor" : [9, 4],
+        "corner" : [9, 4],
         "dimensions" : [6, 4]
       },
       {
         "type" : "RECT",
-        "anchor" : [15, 4],
+        "corner" : [15, 4],
         "dimensions" : [1, 3]
       }
     ],
     "secondary": [
       {
         "type" : "RECT",
-        "anchor" : [0, 0],
+        "corner" : [0, 0],
         "dimensions" : [16, 4]
       },
       {
         "type" : "RECT",
-        "anchor" : [7, 4],
+        "corner" : [7, 4],
         "dimensions" : [2, 2]
       },
       {
         "type" : "RECT",
-        "anchor" : [0, 8],
+        "corner" : [0, 8],
         "dimensions" : [16, 2]
       },
       {
         "type" : "RECT",
-        "anchor" : [15, 7],
+        "corner" : [15, 7],
         "dimensions" : [1, 1]
       }
     ]
@@ -60,26 +62,28 @@
     {
       "type" : "BLOCK",
       "colour" : "PRIMARY",
-      "id" : 0,
+      "id" : 1,
       "anchor" : [5, 7],
       "dimensions" : [2, 2]
     },
     {
       "type" : "PORTAL",
-      "id" : 1,
+      "id" : 2,
       "anchor" : [13, 8],
-      "width" : 2
+      "width" : 2,
+      "isVertical" : true,
+      "topColour" : "PRIMARY"
     },
     {
       "type" : "LEVER",
       "colour" : "SECONDARY",
-      "id" : 2,
+      "id" : 3,
       "anchor" : [2, 7],
-      "linkedTo" : [1]
+      "linkedTo" : [2]
     },
     {
       "type" : "EXIT",
-      "id" : 3,
+      "id" : 4,
       "anchor" : [16, 0],
       "vertex" : [0, 4]
     }

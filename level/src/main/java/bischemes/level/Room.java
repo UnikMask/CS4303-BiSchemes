@@ -15,7 +15,7 @@ import java.util.List;
 
 public class Room extends GObject {
 
-    private Level parent;
+    private final Level parent;
 
     private final int id;
     private final PVector dimensions; // Dimension (width/height) of the room
@@ -78,23 +78,9 @@ public class Room extends GObject {
         interaction = false;
     }
 
-    public void setParentLevel(Level level) {
-        this.parent = level;
-
-        primaryGeometry.setColour(level.getColourPrimary());
-        secondaryGeometry.setColour(level.getColourSecondary());
-        for (RObject rObject : roomObjects) {
-            if (rObject == null) continue; //TODO remove once all object types implemented
-            if (rObject.getLColour() == null) continue;
-            switch (rObject.getLColour()) {
-                case PRIMARY -> rObject.setColour(level.getColourPrimary());
-                case SECONDARY -> rObject.setColour(level.getColourSecondary());
-            }
-        }
-    }
-
-    private Room(int id, PVector dimensions, PVector spawnPos) {
+    private Room(Level level, int id, PVector dimensions, PVector spawnPos) {
         super(null, new PVector(), 0f);
+        this.parent = level;
         this.id = id;
         this.dimensions = dimensions;
         this.spawnPos = spawnPos;
@@ -105,14 +91,14 @@ public class Room extends GObject {
     }
 
 
-    public static Room parseRoom(JsonObject roomJson) {
+    public static Room parseRoom(Level parent, JsonObject roomJson) {
         Room room;
         int id = -1;
         try {
              id = JParser.parseInt(roomJson, "id");
              PVector dims = JParser.parsePVec(roomJson, "dimensions");
              PVector spawnPos = JParser.parsePVec(roomJson, "spawnPosition");
-             room = new Room(id, dims, spawnPos);
+             room = new Room(parent, id, dims, spawnPos);
 
              JsonObject geometry = JParser.parseObj(roomJson, "geometry");
              JParser.parseGeometryArr(geometry, "primary", room.primaryGeometry);
@@ -120,7 +106,7 @@ public class Room extends GObject {
 
              JParser.parseRObjectArr(roomJson, "objects", room, room.roomObjects);
 
-             JParser.parseAdjacencyArr(roomJson, "adjancencies", room, room.adjacencies);
+             JParser.parseAdjacencyArr(roomJson, "adjacent", room, room.adjacencies);
 
              // TODO check for ID overlaps and throw InvalidIdExceptions
 
@@ -129,6 +115,18 @@ public class Room extends GObject {
         } catch (InvalidIdException e) {
             throw new InvalidIdException("parseRoom(" + ((id!=-1) ? id : "") + "), encountered an InvalidIdException \n\t"+e.getLocalizedMessage());
         }
+
+        room.primaryGeometry.setColour(room.parent.getColourPrimary());
+        room.secondaryGeometry.setColour(room.parent.getColourSecondary());
+        for (RObject rObject : room.roomObjects) {
+            if (rObject == null) continue; //TODO remove once all object types implemented
+            if (rObject.getLColour() == null) continue;
+            switch (rObject.getLColour()) {
+                case PRIMARY -> rObject.setColour(room.parent.getColourPrimary());
+                case SECONDARY -> rObject.setColour(room.parent.getColourSecondary());
+            }
+        }
+
         return room;
     }
 

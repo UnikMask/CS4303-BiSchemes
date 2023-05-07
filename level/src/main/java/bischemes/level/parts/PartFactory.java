@@ -71,20 +71,20 @@ public class PartFactory {
 		hasMesh = false;
 	}
 
-	public void initRBMoveable(float mass) {
+	public void initRBMoveable(double mass) {
 		initRBGeometry();
 		rbProperties.put("move", true);
 		rbProperties.put("mass", mass);
 	}
 
-	public void initRBRotateable(float mass) {
+	public void initRBRotateable(double mass) {
 		initRBGeometry();
 		rbProperties.put("rotate", true);
 		rbProperties.put("mass", mass);
 		hasInertia = true;
 	}
 
-	public void initRBBlock(float mass) {
+	public void initRBBlock(double mass) {
 		initRBRotateable(mass);
 		rbProperties.put("move", true);
 	}
@@ -93,7 +93,7 @@ public class PartFactory {
 		if (hasMesh) {
 			rbProperties.put("mesh", p);
 			if (hasInertia) {
-				float mass = (float) rbProperties.get("mass");
+				double mass = (double) rbProperties.get("mass");
 				rbProperties.put("inertia", PrimitiveUtils.getPrimitiveInertia(p, mass, new PVector()));
 			}
 			else rbProperties.remove("inertia");
@@ -271,7 +271,7 @@ public class PartFactory {
 		return obj;
 	}
 
-	public RObject makeBlock(GObject parent, PVector anchor, PVector dimensions, boolean initState, float mass,
+	public RObject makeBlock(GObject parent, PVector anchor, PVector dimensions, boolean initState, double mass,
 							 LColour colour, int id) {
 		initRBBlock(mass);
 		RObject block = createRect(parent, anchor, dimensions, 0f, colour, id);
@@ -279,7 +279,7 @@ public class PartFactory {
 		return block;
 	}
 
-	public RObject makeCornerBlock(GObject parent, PVector corner, PVector dimensions, boolean initState, float mass,
+	public RObject makeCornerBlock(GObject parent, PVector corner, PVector dimensions, boolean initState, double mass,
 								   LColour colour, int id) {
 		initRBBlock(mass);
 		RObject block = createCornerRect(parent, corner, dimensions, 0f, colour, id);

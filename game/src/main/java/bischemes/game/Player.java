@@ -37,7 +37,8 @@ public class Player extends GObject {
 			// Deal with jump
 			if (c == InputCommand.UP && state != PlayerState.JUMP && state != PlayerState.WALL) {
 				state = PlayerState.JUMP;
-				rigidBody.applyImpulse(PVector.mult(JUMP_FORCE, (float) rigidBody.getMass()), position);
+				rigidBody.applyImpulse(PVector.mult(JUMP_FORCE, (float) rigidBody.getMass()),
+						PVector.sub(position, new PVector(0, 0.45f)));
 			}
 		}
 
@@ -50,8 +51,8 @@ public class Player extends GObject {
 		rigidBody.addForce(PVector.mult(movement, (float) rigidBody.getMass()));
 	}
 
-	public Player(PVector position, float rotation) {
-		super(null, position, rotation);
+	public Player(PVector position, float orientation) {
+		super(null, position, orientation);
 		setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mass", 35.0, "inertia", 20.0, "move", true, "rotate",
 				true, "mesh", new Primitive(new Surface(0, 2.0, 1.0), PrimitiveUtils.makeRect(new PVector(1, 1)))))));
 		addVisualAttributes(VisualUtils.makeRect(new PVector(1, 1), 0xff54494b));

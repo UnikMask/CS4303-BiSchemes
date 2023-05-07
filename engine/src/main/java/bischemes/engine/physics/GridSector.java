@@ -163,15 +163,21 @@ public class GridSector {
 				for (int j = i + 1; j < clist.size(); j++) {
 					PrimitiveStore b = clist.get(j);
 					Pair<RigidBody> p = new Pair<>(a.p.getParent(), b.p.getParent());
+					if (p.a == p.b) {
+						continue;
+					}
 					Pair<PrimitiveStore> donePair = new Pair<>(a, b);
-					Manifold m = a.p.getCollision(b.p, PVector.sub(b.offset, a.offset));
 
-					if (m.isCollision() && !donePrimitives.contains(donePair)) {
+					if (!donePrimitives.contains(donePair)) {
 						donePrimitives.add(donePair);
-						if (pairs.containsKey(p)) {
-							pairs.get(p).combine(m);
-						} else {
-							pairs.put(p, m);
+						Manifold m = a.p.getCollision(b.p, PVector.sub(b.offset, a.offset));
+
+						if (m.isCollision()) {
+							if (pairs.containsKey(p)) {
+								pairs.get(p).combine(m);
+							} else {
+								pairs.put(p, m);
+							}
 						}
 					}
 				}

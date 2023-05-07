@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Manifold {
 	// Physics Hyperparameters
 	public static final double CORRECTION_THRESHOLD = 0.01;
-	public static final double CORRECTION_PERCENTAGE = 0.4;
+	public static final double CORRECTION_PERCENTAGE = 0.8;
 
 	// Manifold properties
 	private List<Interpenetration> contactPoints = new ArrayList<>();
@@ -57,6 +57,16 @@ public class Manifold {
 			this.staticFriction = staticFriction;
 			this.dynamicFriction = dynamicFriction;
 		}
+	}
+
+	public double getMaxPenetration() {
+		double max = Double.MAX_VALUE;
+		for (Interpenetration c : contactPoints) {
+			if (c.penetration < max) {
+				max = c.penetration;
+			}
+		}
+		return max;
 	}
 
 	/**

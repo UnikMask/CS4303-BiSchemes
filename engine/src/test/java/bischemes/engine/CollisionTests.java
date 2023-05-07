@@ -103,6 +103,16 @@ class CollisionTests {
 		mB.derive();
 		m = mA.getCollision(mB);
 		assertTrue(m.isCollision());
+
+		// Case 4 - no collision, with orientation, edge on B
+		System.out.println("\nCase4:");
+		bA.setLocalPosition(new PVector(0.7f, 0));
+		bA.setLocalOrientation(Math.PI / 4);
+		bB.setLocalOrientation(0);
+		mA.derive();
+		mB.derive();
+		m = mA.getCollision(mB);
+		assertFalse(m.isCollision());
 	}
 
 	@Test

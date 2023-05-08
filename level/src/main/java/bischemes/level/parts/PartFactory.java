@@ -438,9 +438,7 @@ public class PartFactory {
 		return portal;
 	}
 
-	// TODO determine design
 	public RObject makeExit(GObject parent, PVector range, boolean isVertical, boolean zeroAxis, int id) {
-
 		PVector anchor = new PVector(-1, -1);
 		PVector dimensions;
 		float length = range.y - range.x;
@@ -456,7 +454,6 @@ public class PartFactory {
 			anchor.y = length / 2f;
 			dimensions = new PVector(1, length);
 		}
-
 
 		initRBGeometry();
 		//TODO might not be ok for colour to be null

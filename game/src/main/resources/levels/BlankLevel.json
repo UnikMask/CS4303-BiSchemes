@@ -31,7 +31,7 @@
         {
           "type" : "EXIT",
           "id" : 2,
-          "anchor" : [16, 0],
+          "side" : "RIGHT",
           "edge" : [0, 10]
         }
       ]

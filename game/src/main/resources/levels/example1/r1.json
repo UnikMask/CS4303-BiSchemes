@@ -83,9 +83,9 @@
     },
     {
       "type" : "EXIT",
-      "id" : 4,
-      "anchor" : [16, 0],
-      "vertex" : [0, 4]
+      "id" : 3,
+      "side" : "RIGHT",
+      "edge" : [0, 4]
     }
   ]
 }

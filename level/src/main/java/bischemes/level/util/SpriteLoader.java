@@ -1,27 +1,26 @@
 package bischemes.level.util;
 
+import processing.core.PGraphics;
 import processing.core.PImage;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-// ----------------------------------------------------------------
-// A temporary class so that I can load PImages for use in RObjects
-// ----------------------------------------------------------------
-public final class SpriteLoader {
 
+public final class SpriteLoader {
 
     private static PImage blockSymbol = null;
     private static PImage lever = null;
     private static PImage lockSymbol = null;
-
     private static PImage interactSymbol = null;
     private static PImage switchSymbol = null;
     private static PImage teleportSymbol = null;
 
+    private static final String DIRECTORY = "sprites/";
+
     private static String getSpritePath(String filename) {
-        return "sprites/" + filename;
+        return DIRECTORY + filename;
     }
 
     private static PImage loadImage(String file) {

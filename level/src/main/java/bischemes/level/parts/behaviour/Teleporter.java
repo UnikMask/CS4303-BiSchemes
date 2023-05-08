@@ -107,6 +107,9 @@ public class Teleporter {
         //TODO set position of 'hit' as newPosition
 
         //TODO do stuff with flipGravity
+        if (flipGravity) {
+
+        }
 
     }
 

@@ -16,6 +16,7 @@ gradpe-app.setting
 *.impl
 *.ipr
 *.iws
+*.jar
 .classpath
 .settings
 .project

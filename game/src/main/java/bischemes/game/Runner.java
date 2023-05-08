@@ -3,7 +3,6 @@
  */
 package bischemes.game;
 
-import bischemes.game.Runner.RunnerState;
 import bischemes.game.ui.MapUI;
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -76,7 +75,7 @@ public class Runner extends PApplet {
 	@Override
 	public void mouseReleased() {
 		if (state == RunnerState.MENU)
-			mapUI.mouseReleased(this);
+			mapUI.mouseReleased();
 	}
 
 	@Override

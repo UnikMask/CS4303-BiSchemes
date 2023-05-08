@@ -223,8 +223,6 @@ public class Primitive implements PhysicsMesh {
 		PVector adjacent = dot1 > dot0 ? adjacent0 : adjacent1;
 		PVector rayDir = PVector.sub(bestSupport, adjacent);
 
-		m.addContactPoint(bestSupport, bestNormal, minPenetration, this, b);
-
 		// Perform Sutherland Clipping
 		PVector i1 = PVector.add(this.vertices.get(b.vertices.size() - 1), this.parent.getPosition());
 		boolean isEdge = true;
@@ -244,7 +242,10 @@ public class Primitive implements PhysicsMesh {
 			}
 		}
 		if (isEdge) {
-			m.addContactPoint(adjacent, bestNormal, PVector.dot(PVector.sub(adjacent, v1min), bestNormal), this, b);
+			PVector avg = PVector.div(PVector.add(bestSupport, adjacent), 2);
+			m.addContactPoint(avg, bestNormal, minPenetration, this, b);
+		} else {
+			m.addContactPoint(bestSupport, bestNormal, minPenetration, this, b);
 		}
 
 		return m;

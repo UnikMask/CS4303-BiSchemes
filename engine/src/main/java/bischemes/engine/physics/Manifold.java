@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Manifold {
 	// Physics Hyperparameters
 	public static final double CORRECTION_THRESHOLD = 0.01;
-	public static final double CORRECTION_PERCENTAGE = 0.8;
+	public static final double CORRECTION_PERCENTAGE = 0.2;
 
 	// Manifold properties
 	private List<Interpenetration> contactPoints = new ArrayList<>();

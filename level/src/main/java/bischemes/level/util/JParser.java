@@ -477,32 +477,144 @@ public final class JParser {
     }
 
     public static BHitTeleport parseBHitTeleport(JsonObject obj, RObject customObj) {
-        // TODO
-        return null;
+
+        PVector link = parsePVec(obj, "destination");
+        boolean swapColour = parseBoolean(obj, "swapColour", false);
+        int roomId = parseInt(obj, "destRoomId", -1);
+
+        BHitTeleport b;
+
+        if (roomId == -1)
+            b = BHitTeleport.assign(customObj, link, swapColour);
+        else if (roomId >= 0) {
+            Room destination = Room.getRoom(customObj).getLevel().getRoom(roomId);
+            b = BHitTeleport.assign(customObj, destination, link, swapColour);
+        }
+        else
+            throw new InvalidIdException("\"destRoomId\" of " + roomId + " is invalid, ids cannot be negative");
+
+
+        boolean flipGravity = parseBoolean(obj, "flipGravity", false);
+        b.configureGravityFlip(flipGravity);
+
+        Boolean activeState = parseBooleanOrNull(obj, "activeOnState");
+        if (activeState != null) b.setActiveOnState(activeState);
+
+        if (parseBoolean(obj, "playerOnly"))
+            b.makePlayerOnly();
+
+        if (parseBoolean(obj, "teleportIcon", false))
+            b.addTeleportIcon(parsePVec(obj, "iconSize", new PVector(1, 1)));
+
+        Boolean offsetX = parseBooleanOrNull(obj, "offsetX");
+        Boolean offsetY = parseBooleanOrNull(obj, "offsetY");
+        Boolean mirrorY = parseBooleanOrNull(obj, "mirrorY");
+        Boolean mirrorX = parseBooleanOrNull(obj, "mirrorX");
+        if (offsetX != null || offsetY != null || mirrorX != null || mirrorY != null) {
+            if (offsetX == null)
+                throw new LevelParseException("\"offsetX\" is required in any offset or mirror booleans are provided");
+            if (offsetY == null)
+                throw new LevelParseException("\"offsetY\" is required in any offset or mirror booleans are provided");
+            if (mirrorX == null)
+                throw new LevelParseException("\"mirrorX\" is required in any offset or mirror booleans are provided");
+            if (mirrorY == null)
+                throw new LevelParseException("\"mirrorY\" is required in any offset or mirror booleans are provided");
+            b.configureOffset(offsetX, offsetY, mirrorX, mirrorY);
+        }
+
+        return b;
     }
 
     public static BInteractTeleport parseBInteractTeleport(JsonObject obj, RObject customObj) {
-        // TODO
-        return null;
+        PVector link = parsePVec(obj, "destination");
+        boolean swapColour = parseBoolean(obj, "swapColour", false);
+        int roomId = parseInt(obj, "destRoomId", -1);
+
+        float r = parseFloat(obj, "radius", -1);
+        float x = 0;
+        float y = 0;
+
+        boolean useXY = r == -1;
+        if (useXY) {
+            x = parseFloat(obj, "xDist");
+            y = parseFloat(obj, "yDist");
+        }
+        else if (r < 0)
+            throw new LevelParseException("\"radius\" of BInteractTeleport cannot be negative");
+
+        BInteractTeleport b;
+
+        if (roomId == -1) {
+            if (useXY) b = BInteractTeleport.assign(customObj, x, y, link, swapColour);
+            else b = BInteractTeleport.assign(customObj, r, link, swapColour);
+        }
+        else if (roomId >= 0) {
+            Room destination = Room.getRoom(customObj).getLevel().getRoom(roomId);
+            if (useXY) b = BInteractTeleport.assign(customObj, x, y, destination, link, swapColour);
+            else b = BInteractTeleport.assign(customObj, r, destination, link, swapColour);
+        }
+        else
+            throw new InvalidIdException("\"destRoomId\" of " + roomId + " is invalid, ids cannot be negative");
+
+        boolean flipGravity = parseBoolean(obj, "flipGravity", false);
+        b.configureGravityFlip(flipGravity);
+
+        Boolean activeState = parseBooleanOrNull(obj, "activeOnState");
+        if (activeState != null) b.setActiveOnState(activeState);
+
+        if (parseBoolean(obj, "playerOnly"))
+            b.makePlayerOnly();
+
+        if (parseBoolean(obj, "teleportIcon", false))
+            b.addTeleportIcon(parsePVec(obj, "iconSize", new PVector(1, 1)));
+
+        if (parseBoolean(obj, "addIndicator", false)){
+            PVector indicatorOffset = parsePVec(obj, "indicatorOffset", new PVector(0, 0));
+            String type = parseStr(obj, "indicatorType", "INTERACT");
+            switch (type.toUpperCase()) {
+                case "INTERACT" -> b.addIndicator(indicatorOffset);
+                case "TELEPORT" -> b.addTeleportIndicator(indicatorOffset);
+                case "COLOURSWITCH" -> b.addColourSwitchIndicator(indicatorOffset);
+                default ->
+                        throw new LevelParseException("\"indicatorType\" of \"" + type + "\" is unknown");
+            }
+        }
+
+        Boolean offsetX = parseBooleanOrNull(obj, "offsetX");
+        Boolean offsetY = parseBooleanOrNull(obj, "offsetY");
+        Boolean mirrorY = parseBooleanOrNull(obj, "mirrorY");
+        Boolean mirrorX = parseBooleanOrNull(obj, "mirrorX");
+        if (offsetX != null || offsetY != null || mirrorX != null || mirrorY != null) {
+            if (offsetX == null)
+                throw new LevelParseException("\"offsetX\" is required in any offset or mirror booleans are provided");
+            if (offsetY == null)
+                throw new LevelParseException("\"offsetY\" is required in any offset or mirror booleans are provided");
+            if (mirrorX == null)
+                throw new LevelParseException("\"mirrorX\" is required in any offset or mirror booleans are provided");
+            if (mirrorY == null)
+                throw new LevelParseException("\"mirrorY\" is required in any offset or mirror booleans are provided");
+            b.configureOffset(offsetX, offsetY, mirrorX, mirrorY);
+        }
+
+        return b;
     }
 
     public static BInteractStateSwitch parseBInteractStateSwitch(JsonObject obj, RObject customObj) {
         float r = parseFloat(obj, "radius", -1);
-        PVector indicator = parsePVecOrNull(obj, "indicatorOffset");
+        BInteractStateSwitch b;
         if (r == -1) {
             float x = parseFloat(obj, "xDist");
             float y = parseFloat(obj, "yDist");
-            BInteractStateSwitch b = BInteractStateSwitch.assign(customObj, x, y);
-            if (indicator != null) b.addIndicator(indicator);
-            return b;
+            b = BInteractStateSwitch.assign(customObj, x, y);
         }
-        if (r > 0) {
-            BInteractStateSwitch b =  BInteractStateSwitch.assign(customObj, r);
-            if (indicator != null) b.addIndicator(indicator);
-            return b;
-        }
+        else if (r > 0)
+            b =  BInteractStateSwitch.assign(customObj, r);
         else
             throw new LevelParseException("\"radius\" of BInteractStateSwitch cannot be negative");
+        PVector indicator = parsePVecOrNull(obj, "indicatorOffset");
+        if (indicator != null)
+            b.addIndicator(indicator);
+        return b;
     }
     public static BStateBlock parseBStateBlock(JsonObject obj, RObject customObj) {
         boolean state = parseBoolean(obj, "initialState", false);

@@ -57,7 +57,6 @@ public class Game {
 		PVector newPosition = new PVector(
 				Math.min(Math.max(minCameraPosition.x, demoGravItem.getPosition().x), maxCameraPosition.x),
 				Math.min(Math.max(minCameraPosition.y, demoGravItem.getPosition().y), maxCameraPosition.y));
-		System.out.println("Player position: " + demoGravItem.getPosition() + ", camPosition: " + newPosition);
 		engine.setCameraPosition(PVector.lerp(engine.getCameraPosition(), newPosition, 0.1f));
 	}
 
@@ -84,7 +83,7 @@ public class Game {
 	}
 
 	public Game(PApplet applet, PGraphics g) {
-		engine = new EngineRuntime(applet, applet.getGraphics());
+		engine = new EngineRuntime(applet, g);
 		setup();
 	}
 }

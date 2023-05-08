@@ -8,6 +8,7 @@ import bischemes.engine.GObject;
 import bischemes.engine.VisualUtils;
 import bischemes.engine.*;
 import bischemes.engine.physics.*;
+import bischemes.engine.physics.ForceGenerators.DirectionalGravity;
 import bischemes.game.InputHandler.InputCommand;
 import processing.core.PVector;
 
@@ -37,6 +38,7 @@ public class Player extends GObject {
 	private PlayerState state = PlayerState.IDLE;
 	private double tAnimation = 0;
 	private PlayerMovement pMvt = new PlayerMovement(this, new PVector(1, 0));
+	private DirectionalGravity gravity;
 
 	/////////////////////
 	// GObject Methods //
@@ -74,14 +76,15 @@ public class Player extends GObject {
 		}
 
 		// Set running state
-		double projectedVelocity = PVector.dot(getRigidBody().getProperties().velocity, new PVector(1, 0));
+		PVector tangent = gravity.getTangent();
+		double projectedVelocity = PVector.dot(getRigidBody().getProperties().velocity, tangent);
 		if (Math.abs(projectedVelocity) > RUN_THRESHOLD && state == PlayerState.IDLE) {
 			state = PlayerState.RUN;
 		} else if (Math.abs(projectedVelocity) <= RUN_THRESHOLD && state == PlayerState.RUN) {
 			state = PlayerState.IDLE;
 		}
-		if (Math.abs(PVector.dot(movement, new PVector(1, 0))) > RUN_THRESHOLD) {
-			pMvt.setDirection(PVector.dot(movement, new PVector(1, 0)) >= 0);
+		if (Math.abs(PVector.dot(movement, tangent)) > RUN_THRESHOLD) {
+			pMvt.setDirection(PVector.dot(movement, tangent) >= 0);
 			pMvt.updateForce(getRigidBody());
 		}
 
@@ -103,7 +106,7 @@ public class Player extends GObject {
 		case IDLE -> spriteIdle;
 		case RUN -> {
 			double projectedVelocity = Math
-					.abs(PVector.dot(getRigidBody().getProperties().velocity, new PVector(1, 0)));
+					.abs(PVector.dot(getRigidBody().getProperties().velocity, gravity.getTangent()));
 			tAnimation += projectedVelocity / spritesRun.size() / 60;
 			tAnimation %= spritesRun.size();
 			int frame = (int) ((tAnimation * spritesRun.size()) % spritesRun.size());
@@ -141,11 +144,12 @@ public class Player extends GObject {
 	//////////////////
 
 	// Constructor for a player.
-	public Player(PVector position, float orientation) {
+	public Player(PVector position, float orientation, DirectionalGravity gravity) {
 		super(null, position, orientation);
 		setRigidBody(new RigidBody(
 				new RigidBodyProperties(Map.of("mass", 35.0, "inertia", 20.0, "move", true, "rotate", false, "mesh",
-						new Primitive(new Surface(0, 2.0, 1.0), PrimitiveUtils.makeRect(new PVector(0.4f, 1)))))));
+						new Primitive(new Surface(0, 1.0, 1.0), PrimitiveUtils.makeRect(new PVector(0.4f, 1)))))));
+		this.gravity = gravity;
 
 		// Generate sprites
 		spriteIdle = generateSprite(fpIdle);

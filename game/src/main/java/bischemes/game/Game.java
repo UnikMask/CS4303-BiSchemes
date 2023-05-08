@@ -25,7 +25,7 @@ public class Game {
 	SceneGridPair mainScene;
 
 	GObject demoGravItem;
-	ForceGenerator gravity = new DirectionalGravity();
+	DirectionalGravity gravity = new DirectionalGravity();
 
 	// States of a level/game - feel free to modify
 	enum GameState {
@@ -74,7 +74,7 @@ public class Game {
 		mainScene.attachToGObject(mainScene.scene, obstacles);
 
 		// Create an item that will fall down on the floor
-		demoGravItem = new Player(new PVector(0, 0), 0);
+		demoGravItem = new Player(new PVector(0, 0), 0, gravity);
 		mainScene.attachToGObject(mainScene.scene, demoGravItem);
 
 		// Attach the scene to the engine & start the simulation

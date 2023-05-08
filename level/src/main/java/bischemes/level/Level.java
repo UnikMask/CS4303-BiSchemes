@@ -1,7 +1,6 @@
 package bischemes.level;
 
 import bischemes.level.parts.Adjacency;
-import bischemes.level.parts.RObject;
 import bischemes.level.util.InvalidIdException;
 import bischemes.level.util.JParser;
 import bischemes.level.util.LColour;
@@ -15,7 +14,6 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 
 /** Holds the information of a Level in the game, including its individual Rooms */
 public class Level {
@@ -32,7 +30,7 @@ public class Level {
     private final int colourSecondary;
     /** array of individual Room objects which comprise the Level */
     private final Room[] rooms;
-    /** id of the intial Room of the Level */
+    /** id of the initial Room of the Level */
     private final int initRoomId;
     /** String array of Room JSON filenames used to load 'rooms' from */
     private final String[] roomFiles;

@@ -470,7 +470,6 @@ public final class JParser {
             case "BSTATEHIDE" -> parseBStateHide(obj, customObj);
             case "BSTATESWAPCOLOUR" -> parseBStateSwapColour(obj, customObj);
             case "BSTATESWITCHSTATES" -> parseBStateSwitchStates(obj, customObj);
-            case "BUPDATEFOLLOWPATH" -> parseBUpdateFollowPath(obj, customObj);
             case "BUPDATETIMER" -> parseBUpdateTimer(obj, customObj);
             default -> throw new LevelParseException("\"bType\" of \"" + type + "\" is unknown");
         };
@@ -503,8 +502,12 @@ public final class JParser {
         if (parseBoolean(obj, "playerOnly"))
             b.makePlayerOnly();
 
-        if (parseBoolean(obj, "teleportIcon", false))
-            b.addTeleportIcon(parsePVec(obj, "iconSize", new PVector(1, 1)));
+        float iconSize = parseFloat(obj, "iconSize", -1f);
+        if (iconSize != -1) {
+            if (iconSize < 0)
+                throw new LevelParseException("\"iconSize\" of BHitTeleport cannot be negative");
+            b.addTeleportIcon(new PVector(iconSize, iconSize));
+        }
 
         Boolean offsetX = parseBooleanOrNull(obj, "offsetX");
         Boolean offsetY = parseBooleanOrNull(obj, "offsetY");
@@ -562,11 +565,14 @@ public final class JParser {
         Boolean activeState = parseBooleanOrNull(obj, "activeOnState");
         if (activeState != null) b.setActiveOnState(activeState);
 
-        if (parseBoolean(obj, "playerOnly"))
-            b.makePlayerOnly();
+        b.makePlayerOnly();
 
-        if (parseBoolean(obj, "teleportIcon", false))
-            b.addTeleportIcon(parsePVec(obj, "iconSize", new PVector(1, 1)));
+        float iconSize = parseFloat(obj, "iconSize", -1f);
+        if (iconSize != -1) {
+            if (iconSize < 0)
+                throw new LevelParseException("\"iconSize\" of BHitTeleport cannot be negative");
+            b.addTeleportIcon(new PVector(iconSize, iconSize));
+        }
 
         if (parseBoolean(obj, "addIndicator", false)){
             PVector indicatorOffset = parsePVec(obj, "indicatorOffset", new PVector(0, 0));
@@ -614,6 +620,8 @@ public final class JParser {
         PVector indicator = parsePVecOrNull(obj, "indicatorOffset");
         if (indicator != null)
             b.addIndicator(indicator);
+        Boolean activeState = parseBooleanOrNull(obj, "activeOnState");
+        if (activeState != null) b.setActiveOnState(activeState);
         return b;
     }
     public static BStateBlock parseBStateBlock(JsonObject obj, RObject customObj) {
@@ -629,11 +637,20 @@ public final class JParser {
     }
     public static BStateHide parseBStateHide(JsonObject obj, RObject customObj) {
         boolean state = parseBoolean(obj, "initialState", false);
-        return BStateHide.assign(customObj, state);
+        BStateHide b = BStateHide.assign(customObj, state);
+
+        float iconSize = parseFloat(obj, "iconSize", -1f);
+        if (iconSize != -1) {
+            if (iconSize < 0)
+                throw new LevelParseException("\"iconSize\" of parseBStateHide cannot be negative");
+            b.addLockIcon(new PVector(iconSize, iconSize));
+        }
+        return b;
     }
     public static BStateSwapColour parseBStateSwapColour(JsonObject obj, RObject customObj) {
-        float iconSize = parseFloat(obj, "iconSize", -1f);
         BStateSwapColour b = BStateSwapColour.assign(customObj);
+
+        float iconSize = parseFloat(obj, "iconSize", -1f);
         if (iconSize != -1) {
             if (iconSize < 0)
                 throw new LevelParseException("\"iconSize\" of BStateSwapColour cannot be negative");
@@ -649,10 +666,7 @@ public final class JParser {
                 throw new LevelParseException("cannot link a BStateSwitchStates behaviour to the parent RObject");
         return BStateSwitchStates.assign(customObj, linkedIDs);
     }
-    public static BUpdateFollowPath parseBUpdateFollowPath(JsonObject obj, RObject customObj) {
-        //TODO
-        return null;
-    }
+
     public static BUpdateTimer parseBUpdateTimer(JsonObject obj, RObject customObj) {
 
         int period = parseInt(obj, "period", -1);

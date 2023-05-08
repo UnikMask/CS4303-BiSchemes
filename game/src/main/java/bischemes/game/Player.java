@@ -14,6 +14,9 @@ public class Player extends GObject {
 	private static final PVector JUMP_FORCE = new PVector(0, 5);
 	private static final double RUN_THRESHOLD = 0.01;
 	private static final double WALL_DOT_THRESHOLD = 0.3;
+	private static final double MIRROR_THRESHOLD = 0.1;
+
+	private VisualAttribute playerVisuals;
 
 	enum PlayerState {
 		IDLE, RUN, JUMP, WALL, FALL
@@ -58,15 +61,18 @@ public class Player extends GObject {
 			state = PlayerState.IDLE;
 		}
 		rigidBody.addForce(PVector.mult(movement, (float) rigidBody.getMass()));
+
+		// Mirror character accordingly
+		playerVisuals.mirrorX = movement.x + MIRROR_THRESHOLD * (playerVisuals.mirrorX ? -1 : 1) < 0;
 	}
 
 	public Player(PVector position, float orientation) {
 		super(null, position, orientation);
 		setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mass", 35.0, "inertia", 20.0, "move", true, "rotate",
 				false, "mesh", new Primitive(new Surface(0, 2.0, 1.0), PrimitiveUtils.makeRect(new PVector(1, 1)))))));
-		VisualAttribute playerVisual = VisualUtils.makeRect(new PVector(1, 1), 0xff54494b,
+		playerVisuals = VisualUtils.makeRect(new PVector(1, 1), 0xff54494b,
 				EngineRuntime.applet.loadImage("char_idle.png"));
-		addVisualAttributes(playerVisual);
+		addVisualAttributes(playerVisuals);
 	}
 
 }

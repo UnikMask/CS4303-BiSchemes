@@ -4,6 +4,7 @@
 package bischemes.game;
 
 import bischemes.game.ui.MapUI;
+import bischemes.level.Level;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PGraphics;
@@ -21,7 +22,7 @@ public class Runner extends PApplet {
 
 	public void settings() {
 		size(1600, 900, PConstants.P2D);
-		//size(1920, 1080, PConstants.P2D);
+		// size(1920, 1080, PConstants.P2D);
 		// fullScreen();
 	}
 
@@ -36,22 +37,29 @@ public class Runner extends PApplet {
 	public void draw() {
 		background(0);
 		switch (state) {
-		case PLAY:
-			if (game == null) {
-				game = new Game(this, g);
-			} else {
-				game.update(g);
-			}
-			break;
-		case MENU:
-			if (mapUI == null) {
-				mapUI = new MapUI();
-			} else {
-				mapUI.draw(this, g);
-			}
-			break;
-		default:
-			break;
+			case PLAY:
+				if (game == null) {
+					game = new Game(this, g);
+				} else {
+					game.update(g);
+				}
+				break;
+			case MENU:
+				if (mapUI == null) {
+					mapUI = new MapUI();
+				} else {
+					Level selection = mapUI.getSelection();
+					if (mapUI.getSelection() != null) {
+						game = new Game(this, g);
+						game.setLevel(selection);
+						state = RunnerState.PLAY;
+					} else {
+						mapUI.draw(this, g);
+					}
+				}
+				break;
+			default:
+				break;
 		}
 		InputHandler.getInstance().initFrame();
 	}

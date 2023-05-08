@@ -4,12 +4,8 @@ import java.util.Map;
 
 import bischemes.engine.GObject;
 import bischemes.engine.VisualUtils;
-import bischemes.engine.physics.Manifold;
-import bischemes.engine.physics.Primitive;
-import bischemes.engine.physics.PrimitiveUtils;
-import bischemes.engine.physics.RigidBody;
-import bischemes.engine.physics.RigidBodyProperties;
-import bischemes.engine.physics.Surface;
+import bischemes.engine.*;
+import bischemes.engine.physics.*;
 import bischemes.game.InputHandler.InputCommand;
 import processing.core.PVector;
 
@@ -39,7 +35,6 @@ public class Player extends GObject {
 
 	@Override
 	public void update() {
-		// TODO Player Controls
 		PVector movement = new PVector();
 		for (InputCommand c : InputHandler.getInstance().getHeldCommands()) {
 			movement.add(switch (c) {
@@ -69,7 +64,9 @@ public class Player extends GObject {
 		super(null, position, orientation);
 		setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mass", 35.0, "inertia", 20.0, "move", true, "rotate",
 				false, "mesh", new Primitive(new Surface(0, 2.0, 1.0), PrimitiveUtils.makeRect(new PVector(1, 1)))))));
-		addVisualAttributes(VisualUtils.makeRect(new PVector(1, 1), 0xff54494b));
+		VisualAttribute playerVisual = VisualUtils.makeRect(new PVector(1, 1), 0xff54494b,
+				EngineRuntime.applet.loadImage("char_idle.png"));
+		addVisualAttributes(playerVisual);
 	}
 
 }

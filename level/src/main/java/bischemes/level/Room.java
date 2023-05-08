@@ -13,24 +13,42 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/** Holds the geometry, objects and information of a single Room of a Level */
 public class Room extends GObject {
 
+    /** The Level which this Room belongs to */
     private final Level parent;
-
+    /** Unique identifier for the Room */
     private final int id;
-    private final PVector dimensions; // Dimension (width/height) of the room
-    private final PVector spawnPos; // Position the player spawns at in the room (x,y)
-
+    /** The dimension (width and height) of the Room */
+    private final PVector dimensions;
+    /** The position (x and y coordinate) the Player spawns at in the Room */
+    private final PVector spawnPos;
+    /** Parent object for all the Room geometry of the Level's primary colour */
     private final GObject primaryGeometry;
+    /** Parent object for all the Room geometry of the Level's secondary colour */
     private final GObject secondaryGeometry;
+    /** List of all Room Objects */
     private final List<RObject> roomObjects;
+    /** List of all Adjacency objects (sub-list of roomObjects)*/
     private final List<Adjacency> adjacencies;
 
+    /**
+     * Recursively finds the Room that any GObject belongs to
+     * @param child the GObject which is a child of the Room
+     * @return the Room of the GObject (or null if it reaches a GObject which isn't a Room and has no parent)
+     */
     public static Room getRoom(GObject child) {
         if (child instanceof Room) return (Room) child;
         return getRoom(child.getParent());
     }
 
+    /**
+     * Takes a Room array and returns the Room with the provided id or throws an InvalidIdException if it doesn't exist
+     * @param rooms Array of Room objects to search
+     * @param id The Room id to search for
+     * @return The Room possessing the id
+     */
     public static Room getRoom(Room[] rooms, int id) {
         for (Room room : rooms) if (room.id == id) return room;
         throw new InvalidIdException("getRoom(id), room with id " + id + " does not exist");
@@ -45,10 +63,20 @@ public class Room extends GObject {
     public List<RObject> getObjects() { return roomObjects; }
     public List<Adjacency> getAdjacencies() { return adjacencies; }
 
+    /**
+     * Searches for and returns the RObject with the provided id or throws an InvalidIdException if it doesn't exist
+     * @param id The RObject id to search for
+     * @return The RObject possessing the id
+     */
     public RObject getObject(int id) {
         for (RObject object : roomObjects) if (object.getId() == id) return object;
         throw new InvalidIdException("getObject(id), RObject with id " + id + " does not exist");
     }
+    /**
+     * Searches for and returns the Adjacency with the provided id or throws an InvalidIdException if it doesn't exist
+     * @param id The Adjacency id to search for
+     * @return The Adjacency possessing the id
+     */
     public Adjacency getAdjacency(int id) {
         for (Adjacency adjacency : adjacencies) if (adjacency.getId() == id) return adjacency;
         throw new InvalidIdException("getAdjacency(id), Adjacency with id " + id + " does not exist");
@@ -63,12 +91,14 @@ public class Room extends GObject {
         interaction = true;
     }
 
+    // TODO
     public boolean isInteraction() {
         if (!interaction) return false;
-        interaction = false;
+        //interaction = false; // will potentially only want to allow one interaction per key press?
         return true;
     }
 
+    // TODO
     @Override
     public void update() {
         super.update();
@@ -88,12 +118,17 @@ public class Room extends GObject {
         adjacencies = new ArrayList<>();
     }
 
-
+    /**
+     * Parses Room JSON and creates a Room object if successful
+     * @param parent The Level which the parsed Room belongs to
+     * @param roomJson The JsonObject holding the Room JSON
+     * @return a newly parsed Room
+     */
     public static Room parseRoom(Level parent, JsonObject roomJson) {
         Room room;
-        int id = -1;
+        int id = -1; //id is declared outside of try{} so that it may be used in exception messages
         try {
-             id = JParser.parseInt(roomJson, "id");
+            id = JParser.parseInt(roomJson, "id");
             if (id < 0)
                 throw new InvalidIdException("\"id\" is invalid with " + id + " as id cannot be negative");
             PVector dims = JParser.parsePVec(roomJson, "dimensions");
@@ -117,7 +152,7 @@ public class Room extends GObject {
         } catch (InvalidIdException e) {
             throw new InvalidIdException("parseRoom(" + ((id!=-1) ? id : "") + "), encountered an InvalidIdException \n\t"+e.getLocalizedMessage());
         }
-
+        // calls setColour() for all geometry and RObjects
         room.primaryGeometry.setColour(room.parent.getColourPrimary());
         room.secondaryGeometry.setColour(room.parent.getColourSecondary());
         for (RObject rObject : room.roomObjects) {
@@ -127,7 +162,15 @@ public class Room extends GObject {
                 case SECONDARY -> rObject.setColour(room.parent.getColourSecondary());
             }
         }
-
+        // validates that ids are unique for every RObject
+        for (int j = 0; j < room.roomObjects.size(); j++) {
+            for (int k = j + 1; k < room.roomObjects.size(); k++) {
+                if (room.roomObjects.get(j).getId() == room.roomObjects.get(k).getId())
+                    throw new InvalidIdException("\"id\" " + room.roomObjects.get(j).getId() + " is repeated in room " +
+                            "(id = " + room.getId() + ") in level (" + parent.getId() + ", " + parent.getName() + ") " +
+                            "is repeated (indexes " + j + ", " + k + ")");
+            }
+        }
         return room;
     }
 

@@ -64,7 +64,7 @@ public final class LevelMap {
 
     /**
      * Determines whether the provided mouse position is hovering over one of the LevelNodes. If so, returns true and
-     * sets 'selection' as the found LevelNode
+     * sets its internal 'selection' as the found LevelNode
      * @param cameraPosition position of the camera, used to offset position calculations
      * @param scale current scale of view
      * @param mouseX x coordinate of the cursor

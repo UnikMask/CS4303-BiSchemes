@@ -1,7 +1,6 @@
 package bischemes.level;
 
 import bischemes.level.parts.Adjacency;
-import bischemes.level.parts.RObject;
 import bischemes.level.util.InvalidIdException;
 import bischemes.level.util.JParser;
 import bischemes.level.util.LColour;
@@ -15,28 +14,32 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 
-
+/** Holds the information of a Level in the game, including its individual Rooms */
 public class Level {
 
+    /** name of the Level, drawn as text in the UI menu */
     private final String name;
+    /** unique identifier for the Level (validity of uniqueness is checked by Levels.java) */
     private final int id;
+    /** ids of prerequisite Level objects which require completion before this Level can be played */
     private final int[] prerequisites;
+    /** primary colour of the Level's geometry/objects */
     private final int colourPrimary;
+    /** secondary colour of the Level's geometry/objects */
     private final int colourSecondary;
-
+    /** array of individual Room objects which comprise the Level */
     private final Room[] rooms;
-
+    /** id of the initial Room of the Level */
     private final int initRoomId;
-
+    /** String array of Room JSON filenames used to load 'rooms' from */
     private final String[] roomFiles;
-
-
+    /** name of the Level JSON file this Level is parsed from */
     private final String filename;
+    /** directory where the Level JSON file (and any related Room JSON files) can be found */
     private final String directory;
-
-
+    /** whether the Level has been completed */
+    private boolean completed = false;
 
     private Level(String filename, String directory, String name, int id, int[] prerequisites, int colourPrimary,
                   int colourSecondary, int totalRooms, String[] roomFiles, int initRoomId) {
@@ -66,10 +69,17 @@ public class Level {
             case SECONDARY -> colourSecondary;
         };
     }
+    public void setCompleted(boolean completed) { this.completed = completed; }
+    public boolean isCompleted() { return completed; }
 
-    public static Level parseLevel(String levelDir, String infoFile) {
-        return parseLevel(levelDir, infoFile, false);
-    }
+    /**
+     * attempts to parse a Level from a Level JSON file
+     * @param levelDir the directory of the Level JSON file
+     * @param infoFile the filename of the Level JSON file
+     * @param skipOnFail determines whether exceptions should halt all parsing or whether the parsing of the current
+     *                   Level JSON file should just be skipped
+     * @return a correctly parsed Level object
+     */
     public static Level parseLevel(String levelDir, String infoFile, boolean skipOnFail) {
         BufferedInputStream in = null;
         JsonReader jsonReader = null;
@@ -77,7 +87,7 @@ public class Level {
         try {
             in = new BufferedInputStream(new FileInputStream(fullFilePath));
             jsonReader = Json.createReader(in);
-            return parseLevel(infoFile, jsonReader, levelDir);
+            return parseLevel(jsonReader, infoFile, levelDir);
         } catch (FileNotFoundException | InvalidIdException | LevelParseException e) {
             System.out.println("parseLevel(" + levelDir + ", " + infoFile + "), encountered an exception:");
             System.out.println("\t" + e.getLocalizedMessage());
@@ -91,8 +101,14 @@ public class Level {
         return null;
     }
 
-    private static Level parseLevel(String filename, JsonReader jsonReader, String roomDir)
-            throws InvalidIdException, LevelParseException {
+    /**
+     * Parses a Level from a JsonReader
+     * @param jsonReader the JsonReader initialised from the Level JSON file
+     * @param filename the name of Level JSON file (used in Room JSON parsing)
+     * @param roomDir the directory of the Level JSON file (used in Room JSON parsing)
+     * @return a parsed Level
+     */
+    private static Level parseLevel(JsonReader jsonReader, String filename, String roomDir) {
         JsonObject levelJson = jsonReader.readObject();
 
         int id = JParser.parseInt(levelJson, "id");
@@ -118,12 +134,16 @@ public class Level {
         return level;
     }
 
+    /**
+     * Parses the Room JSON which corresponds to this Level's Level JSON
+     * This can be used to reload Room data (e.g. reset Rooms to their original state)
+     */
     public void initialiseRooms() {
         JsonObject[] roomObjs = new JsonObject[rooms.length];
+        // Parses Room JSON from individual files
         if (roomFiles == null) {
-
-            BufferedInputStream in = null;
-            JsonReader jsonReader = null;
+            BufferedInputStream in;
+            JsonReader jsonReader;
             String fullFilePath = directory + "/" + filename;
             try {
                 in = new BufferedInputStream(new FileInputStream(fullFilePath));
@@ -141,6 +161,7 @@ public class Level {
                 in.close();
             } catch (IOException ignored) {}
         }
+        // Parses Room JSON from "rooms" array of the Level JSON file
         else {
             for (int i = 0; i < roomObjs.length; i++) {
                 BufferedInputStream in;
@@ -159,7 +180,7 @@ public class Level {
                 } catch (IOException ignored) {}
             }
         }
-
+        // Checks that no Room ids are repeated
         for(int i = 0; i < rooms.length; i++) {
             rooms[i] = Room.parseRoom(this, roomObjs[i]);
             for (int j = 0; j < i; j++) {
@@ -167,22 +188,11 @@ public class Level {
                     throw new InvalidIdException("\"id\" " + id + " for room in level (" + id + ", " + name + ") " +
                             "is repeated (indexes " + j + ", " + i + ")");
             }
-            List<RObject> rObjects = rooms[i].getObjects();
-            for (int j = 0; j < rObjects.size(); j++) {
-                for (int k = j + 1; k < rObjects.size(); k++) {
-                    if (rObjects.get(j).getId() == rObjects.get(k).getId())
-                        throw new InvalidIdException("\"id\" " + rObjects.get(j).getId() + " is repeated in room " +
-                                "(id = " + rooms[i].getId() + ") in level (" + id + ", " + name + ") " +
-                                "is repeated (indexes " + j + ", " + k + ")");
-                }
-            }
         }
-
-        for (Room room : rooms) {
+        // Initialises Adjacency objects within Room (links them between Rooms)
+        for (Room room : rooms)
             for (Adjacency adjacency : room.getAdjacencies())
                 adjacency.init();
-        }
-
     }
 
 }

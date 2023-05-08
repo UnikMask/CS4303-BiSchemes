@@ -1,6 +1,7 @@
 package bischemes.level.parts.behaviour;
 
 import bischemes.engine.GObject;
+import bischemes.engine.physics.Manifold;
 import bischemes.level.parts.RObject;
 
 public class BHitKill extends BHit {
@@ -22,7 +23,7 @@ public class BHitKill extends BHit {
     }
 
     @Override
-    public void run(GObject hit) {
+    public void run(GObject hit, Manifold m) {
         if (activeOnState && (stateActivity != killer.getState())) return;
         //TODO
     }

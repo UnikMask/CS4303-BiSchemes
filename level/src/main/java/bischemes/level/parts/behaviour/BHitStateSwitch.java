@@ -1,6 +1,7 @@
 package bischemes.level.parts.behaviour;
 
 import bischemes.engine.GObject;
+import bischemes.engine.physics.Manifold;
 import bischemes.level.parts.RObject;
 
 public class BHitStateSwitch extends BHit {
@@ -22,7 +23,7 @@ public class BHitStateSwitch extends BHit {
     }
 
     @Override
-    public void run(GObject hit) {
+    public void run(GObject hit, Manifold m) {
         if (activeOnState && (stateActivity != switcher.getState())) return;
         switcher.switchState();
     }

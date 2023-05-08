@@ -1,4 +1,4 @@
-package bischemes.level.ui;
+package bischemes.game.ui;
 
 
 import bischemes.level.Level;

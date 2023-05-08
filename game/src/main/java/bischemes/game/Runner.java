@@ -4,13 +4,16 @@
 package bischemes.game;
 
 import bischemes.game.Runner.RunnerState;
+import bischemes.game.ui.MapUI;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PGraphics;
+import processing.event.MouseEvent;
 
 public class Runner extends PApplet {
-	public RunnerState state = RunnerState.PLAY;
+	public RunnerState state = RunnerState.MENU;
 	public Game game;
+	public MapUI mapUI;
 	public PGraphics g;
 
 	enum RunnerState {
@@ -18,14 +21,20 @@ public class Runner extends PApplet {
 	}
 
 	public void settings() {
-		size(1920, 1080, PConstants.P2D);
+		size(1600, 900, PConstants.P2D); // Caleb's preference for playing :)
+		// size(1920, 1080, PConstants.P2D);
 		// fullScreen();
 	}
 
 	public void setup() {
 		frameRate(60);
 		g = this.createGraphics(this.width, this.height, PConstants.P2D);
+
+		getSurface().setResizable(true);
+		getSurface().setLocation(0, 0);
 	}
+
+
 
 	public void draw() {
 		background(0);
@@ -37,18 +46,45 @@ public class Runner extends PApplet {
 				game.update(g);
 			}
 			break;
+		case MENU:
+			if (mapUI == null) {
+				mapUI = new MapUI();
+			} else {
+				mapUI.draw(this, g);
+			}
+			break;
 		default:
 			break;
 		}
 		InputHandler.getInstance().initFrame();
 	}
 
+	@Override
 	public void keyPressed() {
 		InputHandler.getInstance().keyPressed(this.key);
 	}
 
+	@Override
 	public void keyReleased() {
 		InputHandler.getInstance().keyReleased(this.key);
+	}
+
+	@Override
+	public void mousePressed() {
+		if (state == RunnerState.MENU)
+			mapUI.mousePressed(this);
+	}
+
+	@Override
+	public void mouseReleased() {
+		if (state == RunnerState.MENU)
+			mapUI.mouseReleased(this);
+	}
+
+	@Override
+	public void mouseWheel(MouseEvent event) {
+		if (state == RunnerState.MENU)
+			mapUI.mouseWheel(this, event);
 	}
 
 	public static void main(String[] args) {

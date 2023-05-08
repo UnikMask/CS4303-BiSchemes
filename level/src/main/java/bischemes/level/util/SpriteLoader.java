@@ -5,6 +5,7 @@ import processing.core.PImage;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 
 // ----------------------------------------------------------------
 // A temporary class so that I can load PImages for use in RObjects
@@ -20,6 +21,12 @@ public final class SpriteLoader {
     private static PImage switchSymbol = null;
     private static PImage teleportSymbol = null;
 
+    private static String getSpritePath(String filename) {
+        if (Paths.get("").toAbsolutePath().endsWith("game"))
+            return  "..\\" + "sprites/" + filename;
+        return "sprites/" + filename;
+    }
+
     private static PImage loadImage(String file) {
         try {
             InputStream i = new FileInputStream(file);
@@ -34,42 +41,42 @@ public final class SpriteLoader {
 
     public static PImage getBlockSymbol() {
         if (blockSymbol == null) {
-            blockSymbol = loadImage("sprites/BlockSymbol.tga");
+            blockSymbol = loadImage(getSpritePath("BlockSymbol.tga"));
         }
         return blockSymbol;
     }
 
     public static PImage getLockSymbol() {
         if (lockSymbol == null) {
-            lockSymbol = loadImage("sprites/LockSymbol.tga");
+            lockSymbol = loadImage(getSpritePath("LockSymbol.tga"));
         }
         return lockSymbol;
     }
 
     public static PImage getLever() {
         if (lever == null) {
-            lever = loadImage("sprites/Lever.tga");
+            lever = loadImage(getSpritePath("Lever.tga"));
         }
         return lever;
     }
 
     public static PImage getInteractSymbol() {
         if (interactSymbol == null) {
-            interactSymbol = loadImage("sprites/InteractSymbol.tga");
+            interactSymbol = loadImage(getSpritePath("InteractSymbol.tga"));
         }
         return interactSymbol;
     }
 
     public static PImage getSwitchSymbol() {
         if (switchSymbol == null) {
-            switchSymbol = loadImage("sprites/SwitchSymbol.tga");
+            switchSymbol = loadImage(getSpritePath("SwitchSymbol.tga"));
         }
         return switchSymbol;
     }
 
     public static PImage getTeleportSymbol() {
         if (teleportSymbol == null) {
-            teleportSymbol = loadImage("sprites/TeleportSymbol.tga");
+            teleportSymbol = loadImage(getSpritePath("TeleportSymbol.tga"));
         }
         return teleportSymbol;
     }

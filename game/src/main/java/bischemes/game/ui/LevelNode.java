@@ -1,8 +1,9 @@
-package bischemes.level.ui;
+package bischemes.game.ui;
 
 
 import bischemes.level.Level;
 import processing.core.PGraphics;
+import processing.core.PShape;
 import processing.core.PVector;
 
 public final class LevelNode {
@@ -23,6 +24,8 @@ public final class LevelNode {
     private final LevelNode[] dependencies;
     private final PVector slicePosition;
     private final PVector realPosition;
+
+    private PShape rect;
 
     private boolean completed = false;
     private boolean selected = false;

@@ -19,8 +19,7 @@ public class Player extends GObject {
 	private static final double WALL_DOT_THRESHOLD = 0.3;
 	private static final double MIRROR_THRESHOLD = 0.1;
 	private static final String fpIdle = "char_idle.png";
-	private static final List<String> fpRun = Arrays.asList("char_run2.png", "char_run3.png", "char_run1.png",
-			"char_run1.png");
+	private static final List<String> fpRun = Arrays.asList("char_run2.png", "char_run3.png", "char_run1.png");
 	private static final String fpJump = "char_jump.png";
 	private static final String fpWall = "char_wall.png";
 
@@ -37,6 +36,7 @@ public class Player extends GObject {
 	private Integer playerVisuals;
 	private PlayerState state = PlayerState.IDLE;
 	private double tAnimation = 0;
+	private PlayerMovement pMvt = new PlayerMovement(this, new PVector(1, 0));
 
 	/////////////////////
 	// GObject Methods //
@@ -60,8 +60,8 @@ public class Player extends GObject {
 		PVector movement = new PVector();
 		for (InputCommand c : InputHandler.getInstance().getHeldCommands()) {
 			movement.add(switch (c) {
-			case RIGHT -> BASE_MOVEMENT_INTENSITY;
-			case LEFT -> PVector.mult(BASE_MOVEMENT_INTENSITY, -1);
+			case RIGHT -> new PVector(1, 0);
+			case LEFT -> new PVector(-1, 0);
 			default -> new PVector();
 			});
 
@@ -80,7 +80,10 @@ public class Player extends GObject {
 		} else if (Math.abs(projectedVelocity) <= RUN_THRESHOLD && state == PlayerState.RUN) {
 			state = PlayerState.IDLE;
 		}
-		rigidBody.addForce(PVector.mult(movement, (float) rigidBody.getMass()));
+		if (Math.abs(PVector.dot(movement, new PVector(1, 0))) > RUN_THRESHOLD) {
+			pMvt.setDirection(PVector.dot(movement, new PVector(1, 0)) >= 0);
+			pMvt.updateForce(getRigidBody());
+		}
 
 		// Mirror character accordingly
 		VisualAttribute current = getVisualAttribute(playerVisuals);
@@ -103,7 +106,6 @@ public class Player extends GObject {
 					.abs(PVector.dot(getRigidBody().getProperties().velocity, new PVector(1, 0)));
 			tAnimation += projectedVelocity / spritesRun.size() / 60;
 			tAnimation %= spritesRun.size();
-			System.out.println("tAnimation = " + tAnimation);
 			int frame = (int) ((tAnimation * spritesRun.size()) % spritesRun.size());
 			yield(spritesRun.get(frame));
 		}

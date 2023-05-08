@@ -32,8 +32,6 @@ public final class Levels {
         loadLevels(skipOnLoadFail, DEFAULT_LEVEL_DIR);
     }
     public static void loadLevels(boolean skipOnLoadFail, String directory) {
-        if (Paths.get("").toAbsolutePath().endsWith("game"))
-            directory = "..\\" + directory;
         try (Stream<Path> stream = Files.list(Paths.get(directory))){
             for(Path p : stream.toList()) {
                 Level level;

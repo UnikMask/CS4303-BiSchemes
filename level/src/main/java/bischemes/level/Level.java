@@ -72,7 +72,7 @@ public class Level {
     public static Level parseLevel(String levelDir, String infoFile, boolean skipOnFail) {
         BufferedInputStream in = null;
         JsonReader jsonReader = null;
-        String fullFilePath = levelDir + "\\" + infoFile;
+        String fullFilePath = levelDir + "/" + infoFile;
         try {
             in = new BufferedInputStream(new FileInputStream(fullFilePath));
             jsonReader = Json.createReader(in);
@@ -123,7 +123,7 @@ public class Level {
 
             BufferedInputStream in = null;
             JsonReader jsonReader = null;
-            String fullFilePath = directory + "\\" + filename;
+            String fullFilePath = directory + "/" + filename;
             try {
                 in = new BufferedInputStream(new FileInputStream(fullFilePath));
                 jsonReader = Json.createReader(in);
@@ -143,9 +143,9 @@ public class Level {
         else {
             for (int i = 0; i < roomObjs.length; i++) {
                 BufferedInputStream in;
-                try { in = new BufferedInputStream(new FileInputStream(directory + "\\" + roomFiles[i])); }
+                try { in = new BufferedInputStream(new FileInputStream(directory + "/" + roomFiles[i])); }
                 catch (FileNotFoundException e) {
-                    throw new LevelParseException("FileNotFoundException, could not find \"" + directory + "\\" +
+                    throw new LevelParseException("FileNotFoundException, could not find \"" + directory + "/" +
                             roomFiles[i] + "\" from \"rooms\"");
                 }
 

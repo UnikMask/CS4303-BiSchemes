@@ -22,8 +22,6 @@ public final class SpriteLoader {
     private static PImage teleportSymbol = null;
 
     private static String getSpritePath(String filename) {
-        if (Paths.get("").toAbsolutePath().endsWith("game"))
-            return  "..\\" + "sprites/" + filename;
         return "sprites/" + filename;
     }
 

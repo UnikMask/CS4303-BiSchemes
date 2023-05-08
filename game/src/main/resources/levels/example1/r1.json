@@ -1,0 +1,91 @@
+{
+  "id" : 1,
+  "dimensions" : [16, 10],
+  "spawnPosition" : [1.5, 7.5],
+  "adjacent" : [
+    {
+      "id": 0,
+      "colour": "SECONDARY",
+      "range" : [4, 8],
+      "side" : "LEFT",
+      "destRoomId" : 0,
+      "linkId" : 0
+    }
+  ],
+  "geometry" : {
+    "primary": [
+      {
+        "type" : "RECT",
+        "corner" : [0, 4],
+        "dimensions" : [7, 4]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [6, 7],
+        "dimensions" : [2, 2]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [9, 4],
+        "dimensions" : [6, 4]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [15, 4],
+        "dimensions" : [1, 3]
+      }
+    ],
+    "secondary": [
+      {
+        "type" : "RECT",
+        "corner" : [0, 0],
+        "dimensions" : [16, 4]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [7, 4],
+        "dimensions" : [2, 2]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [0, 8],
+        "dimensions" : [16, 2]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [15, 7],
+        "dimensions" : [1, 1]
+      }
+    ]
+  },
+  "objects" : [
+    {
+      "type" : "BLOCK",
+      "colour" : "PRIMARY",
+      "id" : 1,
+      "anchor" : [5, 7],
+      "dimensions" : [2, 2]
+    },
+    {
+      "type" : "PORTAL",
+      "id" : 2,
+      "anchor" : [13, 8],
+      "width" : 2,
+      "isVertical" : true,
+      "topColour" : "PRIMARY"
+    },
+    {
+      "type" : "LEVER",
+      "colour" : "SECONDARY",
+      "id" : 3,
+      "anchor" : [2, 7],
+      "linkedTo" : [2]
+    },
+    {
+      "type" : "EXIT",
+      "id" : 4,
+      "anchor" : [16, 0],
+      "vertex" : [0, 4]
+    }
+  ]
+}

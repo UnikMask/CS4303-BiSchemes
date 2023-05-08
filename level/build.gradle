@@ -1,11 +1,6 @@
 plugins {
-    id 'java'
+    id 'bischemes.java-library-conventions'
 }
-
-group 'bischemes.level'
-version 'unspecified'
-
-
 
 repositories {
     mavenCentral()

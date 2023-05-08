@@ -71,12 +71,6 @@
       "id": 2,
       "anchor": [0, 8],
       "linkedTo": [1]
-    },
-    {
-      "type" : "EXIT",
-      "id" : 3,
-      "anchor" : [16, 0],
-      "edge" : [0, 10]
     }
   ]
 }

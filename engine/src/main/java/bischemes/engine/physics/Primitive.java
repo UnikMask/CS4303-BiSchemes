@@ -79,13 +79,13 @@ public class Primitive implements PhysicsMesh {
 
 	public Manifold getCollision(Primitive b, PVector offset) {
 		return switch (this.primitiveType) {
-		case CIRCLE -> switch (b.primitiveType) {
-			case CIRCLE -> this.circleToCircleCollision(b, offset);
-			case POLYGON -> this.circleToPolygonCollision(b, offset);
+			case CIRCLE -> switch (b.primitiveType) {
+				case CIRCLE -> this.circleToCircleCollision(b, offset);
+				case POLYGON -> this.circleToPolygonCollision(b, offset);
 			};
-		case POLYGON -> switch (b.primitiveType) {
-			case CIRCLE -> b.circleToPolygonCollision(this, PVector.mult(offset, -1));
-			case POLYGON -> this.polygonToPolygonCollision(b, offset);
+			case POLYGON -> switch (b.primitiveType) {
+				case CIRCLE -> b.circleToPolygonCollision(this, PVector.mult(offset, -1));
+				case POLYGON -> this.polygonToPolygonCollision(b, offset);
 			};
 		};
 	}
@@ -224,7 +224,7 @@ public class Primitive implements PhysicsMesh {
 		PVector rayDir = PVector.sub(bestSupport, adjacent);
 
 		// Perform Sutherland Clipping
-		PVector i1 = PVector.add(this.vertices.get(b.vertices.size() - 1), this.parent.getPosition());
+		PVector i1 = PVector.add(this.vertices.get(this.vertices.size() - 1), this.parent.getPosition());
 		boolean isEdge = true;
 		PVector clip = clip(rayDir, bestSupport, new Pair<>(v1min, v2min));
 		if (clip != null) {

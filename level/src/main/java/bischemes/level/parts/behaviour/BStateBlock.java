@@ -14,7 +14,7 @@ public class BStateBlock extends BState {
     private final VisualAttribute lockSymbol;
     private final RObject block;
 
-    private BStateBlock(RObject block, boolean initState, PVector maxDimension) {
+    private BStateBlock(RObject block, PVector maxDimension) {
         this.block = block;
 
         PVector dimension = new PVector(
@@ -25,7 +25,7 @@ public class BStateBlock extends BState {
     }
 
     public static BStateBlock assign(RObject block, boolean initState, PVector maxDimension) {
-        BStateBlock b = new BStateBlock(block, initState, maxDimension);
+        BStateBlock b = new BStateBlock(block, maxDimension);
 
         block.setState(initState);
         block.addOnStateChange(b);

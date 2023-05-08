@@ -26,8 +26,6 @@ public class Room extends GObject {
     private final List<RObject> roomObjects;
     private final List<Adjacency> adjacencies;
 
-    //TODO private final ??? adjacent; // to make points of adjacency between rooms
-
     public static Room getRoom(GObject child) {
         if (child instanceof Room) return (Room) child;
         return getRoom(child.getParent());
@@ -114,8 +112,6 @@ public class Room extends GObject {
 
              JParser.parseAdjacencyArr(roomJson, "adjacent", room, room.adjacencies);
 
-             // TODO check for ID overlaps and throw InvalidIdExceptions
-
         } catch (LevelParseException e) {
             throw new LevelParseException("parseRoom(" + ((id!=-1) ? id : "") + "), encountered a LevelParseException\n\t"+e.getLocalizedMessage());
         } catch (InvalidIdException e) {
@@ -125,7 +121,7 @@ public class Room extends GObject {
         room.primaryGeometry.setColour(room.parent.getColourPrimary());
         room.secondaryGeometry.setColour(room.parent.getColourSecondary());
         for (RObject rObject : room.roomObjects) {
-            if (rObject == null) continue; //TODO remove once all object types implemented
+            if (rObject == null) continue; //TODO remove once exit is implemented
             if (rObject.getLColour() == null) continue;
             switch (rObject.getLColour()) {
                 case PRIMARY -> rObject.setColour(room.parent.getColourPrimary());

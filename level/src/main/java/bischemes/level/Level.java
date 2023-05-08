@@ -1,5 +1,7 @@
 package bischemes.level;
 
+import bischemes.level.parts.Adjacency;
+import bischemes.level.parts.RObject;
 import bischemes.level.util.InvalidIdException;
 import bischemes.level.util.JParser;
 import bischemes.level.util.LColour;
@@ -13,6 +15,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 
 
 public class Level {
@@ -87,7 +90,8 @@ public class Level {
         return null;
     }
 
-    private static Level parseLevel(String filename, JsonReader jsonReader, String roomDir) throws InvalidIdException, LevelParseException {
+    private static Level parseLevel(String filename, JsonReader jsonReader, String roomDir)
+            throws InvalidIdException, LevelParseException {
         JsonObject levelJson = jsonReader.readObject();
 
         int id = JParser.parseInt(levelJson, "id");
@@ -141,7 +145,8 @@ public class Level {
                 BufferedInputStream in;
                 try { in = new BufferedInputStream(new FileInputStream(directory + "\\" + roomFiles[i])); }
                 catch (FileNotFoundException e) {
-                    throw new LevelParseException("FileNotFoundException, could not find \"" + directory + "\\" + roomFiles[i] + "\" from \"rooms\"");
+                    throw new LevelParseException("FileNotFoundException, could not find \"" + directory + "\\" +
+                            roomFiles[i] + "\" from \"rooms\"");
                 }
 
                 JsonReader roomReader = Json.createReader(in);
@@ -156,16 +161,26 @@ public class Level {
 
         for(int i = 0; i < rooms.length; i++) {
             rooms[i] = Room.parseRoom(this, roomObjs[i]);
-            //todo add better error reporting here?
             for (int j = 0; j < i; j++) {
                 if (rooms[i].getId() == rooms[j].getId())
-                    throw new InvalidIdException("\"id\" " + id + " for room in level (" + id + ", " + name + ") is repeated (indexes " + j + ", " + i + ")");
+                    throw new InvalidIdException("\"id\" " + id + " for room in level (" + id + ", " + name + ") " +
+                            "is repeated (indexes " + j + ", " + i + ")");
+            }
+            List<RObject> rObjects = rooms[i].getObjects();
+            for (int j = 0; j < rObjects.size(); j++) {
+                for (int k = j + 1; k < rObjects.size(); j++) {
+                    if (rObjects.get(j).getId() == rObjects.get(k).getId())
+                        throw new InvalidIdException("\"id\" " + rObjects.get(j).getId() + " is repeated in room " +
+                                "(id = " + rooms[i].getId() + ") in level (" + id + ", " + name + ") " +
+                                "is repeated (indexes " + j + ", " + k + ")");
+                }
             }
         }
 
-        //TODO check validity of rooms
-
-        //TODO initialise room adjacencies
+        for (Room room : rooms) {
+            for (Adjacency adjacency : room.getAdjacencies())
+                adjacency.init();
+        }
 
     }
 

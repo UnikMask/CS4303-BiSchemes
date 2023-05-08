@@ -8,9 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.stream.Stream;
-
-
-//TODO replace with 'Levels' class which also contains Level.java stuff
 public final class Levels {
 
     private static final HashMap<Integer, Level> levels = new HashMap<>();

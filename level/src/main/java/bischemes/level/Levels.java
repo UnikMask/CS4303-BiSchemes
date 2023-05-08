@@ -64,14 +64,18 @@ public final class Levels {
         try (Stream<Path> stream = Files.list(Paths.get(directory))){
             for(Path p : stream.toList()) {
                 Level level;
+                // Each item in the directory is either a subdirectory containing level information or a full level file
                 if (p.toFile().isFile()) level = Level.parseLevel(directory, p.toFile().getName(), skipOnLoadFail);
                 else level = Level.parseLevel(p.toString(), DEFAULT_INFO_FILE, skipOnLoadFail);
                 if (level == null) continue;
-
+                // Handle duplicate ids
                 if (idExists(level.getId())) {
-                    if (skipOnLoadFail) System.out.println("");
-                    else throw new InvalidIdException("\"id\" " + level.getId() + " from " + getLevel(level.getId()).getName() + " is repeated in " + level.getName());
+                    String errMsg = "\"id\" " + level.getId() + " from " + getLevel(level.getId()).getName() +
+                            " is repeated in " + level.getName();
+                    if (skipOnLoadFail) System.out.println(errMsg + ". " + level.getName() + " will be skipped");
+                    else throw new InvalidIdException(errMsg);
                 }
+                // Add loaded Level into levels
                 else {
                     levels.put(level.getId(), level);
                     System.out.println("Loaded level from \"" + p + "\", id = " + level.getId() + ", name = " + level.getName());

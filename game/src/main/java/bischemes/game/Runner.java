@@ -21,20 +21,17 @@ public class Runner extends PApplet {
 	}
 
 	public void settings() {
-		size(1600, 900, PConstants.P2D); // Caleb's preference for playing :)
-		// size(1920, 1080, PConstants.P2D);
+		size(1920, 1080, PConstants.P2D);
 		// fullScreen();
 	}
 
 	public void setup() {
 		frameRate(60);
-		g = this.createGraphics(this.width, this.height, PConstants.P2D);
+		g = getGraphics();
 
 		getSurface().setResizable(true);
 		getSurface().setLocation(0, 0);
 	}
-
-
 
 	public void draw() {
 		background(0);

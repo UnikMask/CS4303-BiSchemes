@@ -5,7 +5,6 @@ import processing.core.PImage;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
 
 // ----------------------------------------------------------------
 // A temporary class so that I can load PImages for use in RObjects

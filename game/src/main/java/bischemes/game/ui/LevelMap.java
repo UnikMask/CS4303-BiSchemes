@@ -89,4 +89,17 @@ public final class LevelMap {
         g.popMatrix();
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("LevelMap{");
+        sb.append("width = ").append(width);
+        sb.append(", height = ").append(height);
+        sb.append(", slices = ").append(mapSlices.length);
+        sb.append('}');
+        for (MapSlice slice : mapSlices) {
+            sb.append("\n\t").append(slice);
+        }
+        return sb.toString();
+    }
+
 }

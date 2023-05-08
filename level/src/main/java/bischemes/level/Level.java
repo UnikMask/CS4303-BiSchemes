@@ -25,6 +25,7 @@ public class Level {
     private final int[] prerequisites;
     private final int colourPrimary;
     private final int colourSecondary;
+
     private final Room[] rooms;
 
     private final int initRoomId;

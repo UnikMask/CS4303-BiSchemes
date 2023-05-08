@@ -2,8 +2,8 @@
   "name": "Example Level 2",
   "id": 2,
   "prerequisites": [],
-  "colourPrimary": "ffffff",
-  "colourSecondary": "000000",
+  "colourPrimary": "ADDF6E",
+  "colourSecondary": "24390A",
   "initRoomID": 0,
   "rooms": [
     {
@@ -74,8 +74,8 @@
         {
           "type" : "EXIT",
           "id" : 2,
-          "range" : [0, 10],
-          "side" : "RIGHT"
+          "side" : "RIGHT",
+          "range" : [0, 10]
         }
       ]
     }

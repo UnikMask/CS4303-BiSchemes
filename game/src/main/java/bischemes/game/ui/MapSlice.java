@@ -169,4 +169,16 @@ public final class MapSlice {
         for (LevelNode node : nodes) node.drawNode(g);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("MapSlice{");
+        sb.append("width = ").append(width);
+        sb.append(", height = ").append(height);
+        sb.append(", nodes = ").append(nodes.length);
+        sb.append('}');
+        for (LevelNode node : nodes) {
+            sb.append("\n\t\t").append(node);
+        }
+        return sb.toString();
+    }
 }

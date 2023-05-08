@@ -1,9 +1,9 @@
 {
-  "name": "LEVEL NAME",
+  "name": "NAME GOES HERE",
   "id": 0,
   "prerequisites": [],
-  "colourPrimary": "ffffff",
-  "colourSecondary": "000000",
+  "colourPrimary": "EBD764",
+  "colourSecondary": "660E47",
   "initRoomID": 0,
   "rooms": [
     {

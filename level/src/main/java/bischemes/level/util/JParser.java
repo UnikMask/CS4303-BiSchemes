@@ -112,7 +112,7 @@ public final class JParser {
     public static int parseColour(JsonObject obj, String name) {
         String hexStr = parseStr(obj, name);
         if (hexStr.length() != 6) throw new LevelParseException("\"" + name + "\" is not a valid hexadecimal: length != 6 for \"" + hexStr + "\"");
-        try { return Integer.valueOf(hexStr, 16); }
+        try { return -16777216 + Integer.valueOf(hexStr, 16); }
         catch (NumberFormatException e) { throw new LevelParseException("\"" + name + "\" is not a valid hexadecimal: NumberFormatException on \"" + hexStr + "\""); }
     }
 

@@ -6,6 +6,8 @@ import processing.core.PGraphics;
 import processing.core.PShape;
 import processing.core.PVector;
 
+import static processing.core.PConstants.RECT;
+
 public final class LevelNode {
 
     private static final float SELECT_SIZE_FACTOR = 1.5f; // How much bigger a selected node appears
@@ -15,8 +17,8 @@ public final class LevelNode {
     private static final float TEXT_SCALE_RATE    = DEFAULT_TEXT_SIZE / (float) SELECT_SCALE_TIME;
 
     private static final int   RECT_CORNER_ROUND  = 20; // Radius value for corners of drawn nodes
-    private static final int   GREY_OUTER_COLOUR  = 0x4F4F4F; // Colour used for unavailable levels
-    private static final int   GREY_INNER_COLOUR  = 0xB9B9B9; // Colour used for unavailable levels
+    private static final int   GREY_OUTER_COLOUR  = Integer.valueOf("4F4F4F", 16); // Colour used for unavailable levels
+    private static final int   GREY_INNER_COLOUR  = Integer.valueOf("B9B9B9", 16); // Colour used for unavailable levels
 
 
     public final Level level;
@@ -92,6 +94,7 @@ public final class LevelNode {
     }
 
     public void drawNode(PGraphics g) {
+
         if (isAvailable()) {
             g.stroke(level.getColourSecondary());
             g.fill(level.getColourPrimary());
@@ -112,6 +115,7 @@ public final class LevelNode {
             if (selected) { if (currentScale < SELECT_SCALE_TIME) currentScale++; }
             else scaling = --currentScale < 1;
         }
+
         g.rect(realPosition.x, realPosition.y, width, width, RECT_CORNER_ROUND);
     }
 
@@ -123,6 +127,19 @@ public final class LevelNode {
             else g.stroke(GREY_INNER_COLOUR);
             g.line(dependencyPos.x, dependencyPos.y, realPosition.x, realPosition.y);
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("LevelNode{");
+        sb.append("levelId = ").append(level.getId());
+        sb.append(", levelName = ").append(level.getName());
+        sb.append(", colourPri = ").append(level.getColourPrimary()).append('(').append(Integer.toHexString(level.getColourPrimary())).append(')');
+        sb.append(", colourSec = ").append(level.getColourSecondary()).append('(').append(Integer.toHexString(level.getColourSecondary())).append(')');;
+        sb.append(", slicePos = [").append(slicePosition.x).append(", ").append(slicePosition.y).append(']');
+        sb.append(", realPos = [").append(realPosition.x).append(", ").append(realPosition.y).append(']');
+        sb.append('}');
+        return sb.toString();
     }
 
 }

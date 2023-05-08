@@ -84,8 +84,8 @@
     {
       "type" : "EXIT",
       "id" : 4,
-      "range" : [0, 4],
-      "side" : "RIGHT"
+      "side" : "RIGHT",
+      "range" : [0, 4]
     }
   ]
 }

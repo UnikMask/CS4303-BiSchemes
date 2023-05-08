@@ -2,8 +2,8 @@
   "name" : "Example Level 1",
   "id" : 1,
   "prerequisites" : [],
-  "colourPrimary" : "ffffff",
-  "colourSecondary" : "000000",
+  "colourPrimary" : "E35959",
+  "colourSecondary" : "2C3E49",
   "initRoomID" : 0,
   "rooms" : [
     "r0.json",

@@ -24,6 +24,7 @@ public class MapUI {
     public MapUI() {
         Levels.loadLevels(true);
         map = new LevelMap(Levels.getLevels());
+        System.out.println(map);
     }
 
     private void bindCameraPosition(PApplet a) {
@@ -46,6 +47,8 @@ public class MapUI {
 
         hasSelection = map.hasSelection(cameraPosition, scale, a.mouseX, a.mouseY);
 
+        g.background(255);
+
         map.draw(g, cameraPosition, scale);
     }
     public void mousePressed(PApplet a) {
@@ -57,6 +60,7 @@ public class MapUI {
     }
 
     public void mouseReleased(PApplet a) {
+        if (!hasSelection) System.out.println(map);
         if (!moving && hasSelection) System.out.println(map.getSelection().getId());
         moving = false;
     }

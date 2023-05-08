@@ -27,38 +27,16 @@ public class VisualAttribute {
 		TEXTURED, UNTEXTURED, TINTED_TEXTURED
 	}
 
+	////////////////////
+	// Public Methods //
+	////////////////////
+
 	public VisualKind getVisualKind() {
 		return visualKind;
 	}
 
 	public void setOffset(PVector offset) {
 		this.offset = offset;
-	}
-
-	private void loadShape() {
-		shape = EngineRuntime.applet.createShape();
-		shape.beginShape();
-		shape.noStroke();
-
-		if (visualKind == VisualKind.UNTEXTURED) {
-			shape.fill(color);
-			for (PVector v : vertices) {
-				shape.vertex(v.x, v.y);
-			}
-		} else {
-			// shape.textureMode(PConstants.NORMAL);
-			shape.texture(texture);
-
-			if (visualKind == VisualKind.TINTED_TEXTURED) {
-				shape.tint(color);
-			}
-
-			for (int i = 0; i < vertices.size(); i++) {
-				shape.vertex(vertices.get(i).x, vertices.get(i).y, texCoords.get(i).x * texture.width,
-						texCoords.get(i).y * texture.height);
-			}
-		}
-		shape.endShape();
 	}
 
 	public void draw(PGraphics g) {
@@ -80,6 +58,38 @@ public class VisualAttribute {
 
 	public void activate(GObject obj) {
 		this.obj = obj;
+	}
+
+	public void setColour(int colour) {
+		if (this.visualKind == VisualKind.UNTEXTURED)
+			makeUntextured(colour);
+		else
+			makeTintedTexture(colour);
+	}
+
+	public void mirrorVerticesV() {
+		for (PVector v : vertices)
+			if (v.x > 0)
+				v.x *= -1;
+	}
+
+	public void mirrorVerticesH() {
+		for (PVector v : vertices)
+			if (v.y > 0)
+				v.y *= -1;
+	}
+
+	public void setScaling(PVector scaling) {
+		this.scaling = scaling;
+	}
+
+	public void setScaling(float scaling) {
+		if (this.scaling == null)
+			this.scaling = new PVector(scaling, scaling);
+		else {
+			this.scaling.x = scaling;
+			this.scaling.y = scaling;
+		}
 	}
 
 	public void makeUntextured(int colour) {
@@ -117,37 +127,40 @@ public class VisualAttribute {
 		this.shape = null;
 	}
 
-	public void setColour(int colour) {
-		if (this.visualKind == VisualKind.UNTEXTURED)
-			makeUntextured(colour);
-		else
-			makeTintedTexture(colour);
-	}
+	/////////////////////
+	// Private Methods //
+	/////////////////////
 
-	public void mirrorVerticesV() {
-		for (PVector v : vertices)
-			if (v.x > 0)
-				v.x *= -1;
-	}
+	// Load a shape to cache if required.
+	private void loadShape() {
+		shape = EngineRuntime.applet.createShape();
+		shape.beginShape();
+		shape.noStroke();
 
-	public void mirrorVerticesH() {
-		for (PVector v : vertices)
-			if (v.y > 0)
-				v.y *= -1;
-	}
+		if (visualKind == VisualKind.UNTEXTURED) {
+			shape.fill(color);
+			for (PVector v : vertices) {
+				shape.vertex(v.x, v.y);
+			}
+		} else {
+			// shape.textureMode(PConstants.NORMAL);
+			shape.texture(texture);
 
-	public void setScaling(PVector scaling) {
-		this.scaling = scaling;
-	}
+			if (visualKind == VisualKind.TINTED_TEXTURED) {
+				shape.tint(color);
+			}
 
-	public void setScaling(float scaling) {
-		if (this.scaling == null)
-			this.scaling = new PVector(scaling, scaling);
-		else {
-			this.scaling.x = scaling;
-			this.scaling.y = scaling;
+			for (int i = 0; i < vertices.size(); i++) {
+				shape.vertex(vertices.get(i).x, vertices.get(i).y, texCoords.get(i).x * texture.width,
+						texCoords.get(i).y * texture.height);
+			}
 		}
+		shape.endShape();
 	}
+
+	//////////////////
+	// Constructors //
+	//////////////////
 
 	public VisualAttribute(List<PVector> vertices, List<PVector> texCoords, String texturePath) {
 		this.vertices = vertices;

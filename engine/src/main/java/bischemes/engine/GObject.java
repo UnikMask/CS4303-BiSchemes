@@ -79,11 +79,14 @@ public class GObject {
 			child.setColour(colour);
 	}
 
-	public void addVisualAttributes(VisualAttribute... attributes) {
+	public List<Integer> addVisualAttributes(VisualAttribute... attributes) {
+		List<Integer> ret = new ArrayList<>(attributes.length);
 		for (VisualAttribute a : attributes) {
 			a.activate(this);
 			visualAttributes.add(a);
+			ret.add(visualAttributes.size() - 1);
 		}
+		return ret;
 	}
 
 	public VisualAttribute getVisualAttribute(int index) {

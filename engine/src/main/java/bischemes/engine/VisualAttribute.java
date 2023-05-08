@@ -19,6 +19,7 @@ public class VisualAttribute {
 	private List<PVector> texCoords;
 	public boolean mirrorX = false;
 	public boolean mirrorY = false;
+	public boolean visible = true;
 
 	private PVector scaling = new PVector(1, 1);
 
@@ -61,7 +62,9 @@ public class VisualAttribute {
 	}
 
 	public void draw(PGraphics g) {
-		if (shape == null) {
+		if (!visible) {
+			return;
+		} else if (shape == null) {
 			loadShape();
 		}
 		g.pushMatrix();

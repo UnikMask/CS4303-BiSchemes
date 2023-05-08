@@ -230,9 +230,14 @@ public final class JParser {
         RObjType type = parseRObjType(obj, "type");
         int id = parseInt(obj, "id");
 
+        if (type == RObjType.EXIT)
+            return parseExit(obj, parent, pF, id);
+
         PVector anchor = parsePVecOrNull(obj, "corner");
-        if (anchor == null) anchor = parsePVec(obj, "anchor");
-        else anchor.z = 1;
+        if (anchor == null)
+            anchor = parsePVec(obj, "anchor");
+        else
+            anchor.z = 1;
 
         pF.setSurfaceProperties(
                 parseDouble(obj, "restitution", 0),
@@ -246,8 +251,8 @@ public final class JParser {
             case LEVER -> parseLever(obj, parent, pF, anchor, id);
             case SPIKE -> parseSpike(obj, parent, pF, anchor, id);
             case PORTAL -> parsePortal(obj, parent, pF, anchor, id);
-            case EXIT -> parseExit(obj, parent, pF, anchor, id);
             case CUSTOM -> parseCustom(obj, parent, pF, anchor, id);
+            default -> throw new IllegalStateException("Unexpected value: " + type);
         };
     }
 
@@ -376,11 +381,45 @@ public final class JParser {
         }
     }
 
-    public static RObject parseExit(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
-        if (anchor.z == 1) throw new LevelParseException("cannot use \"corner\" parameter in Exit definition");
-        // TODO
-        //return pF.makeExit(parent);
-        return null;
+    public static RObject parseExit(JsonObject obj, GObject parent, PartFactory pF, int id) {
+        PVector range = parsePVec(obj, "range");
+
+        if (range.x < 0)
+            throw new LevelParseException("\"range\" start value of [" + range.x + ", " + range.y + "] is invalid. " +
+                    "Range values cannot extend below 0");
+        if (range.x >= range.y)
+            throw new LevelParseException("\"range\" start value of [" + range.x + ", " + range.y + "] is invalid. " +
+                    "Range start values cannot be greater than range end values");
+
+        String side = parseStr(obj, "side");
+
+        boolean isVertical = false;
+        boolean zeroAxis = false;
+
+        switch (side.toUpperCase()) {
+            case "LEFT" :
+                break;
+            case "RIGHT" :
+                zeroAxis = true;
+                break;
+            case "TOP" :
+                isVertical = true;
+                break;
+            case "BOTTOM" :
+                isVertical = true;
+                zeroAxis = true;
+                break;
+            default :
+                throw new LevelParseException("\"side\" of \"" + side + "\" is unknown");
+        }
+
+        float maxBound = (isVertical) ? Room.getRoom(parent).getDimensions().x : Room.getRoom(parent).getDimensions().y;
+        if (range.y > maxBound)
+            throw new LevelParseException("\"range\" start value of [" + range.x + ", " + range.y + "] is invalid. " +
+                    "Range values cannot extend past side length (length = " + maxBound + " for " + side + " of room " +
+                    "(id = " + Room.getRoom(parent).getId() + "))");
+
+        return pF.makeExit(parent, range, isVertical, zeroAxis, id);
     }
 
     public static RObject parseCustom(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
@@ -531,11 +570,10 @@ public final class JParser {
 
     public static void parseAdjacencyArr(JsonObject obj, String name, GObject parent, List<Adjacency> adjacencies) {
         JsonArray arr = parseArr(obj, name);
-        PartFactory partFactory = new PartFactory();
         int i = 0;
         try {
             for (; i < arr.size(); i++)
-                adjacencies.add(parseAdjacency(arr.getJsonObject(i), parent, partFactory));
+                adjacencies.add(parseAdjacency(arr.getJsonObject(i), parent));
         }
         catch (ClassCastException e) {
             throw new LevelParseException("parseAdjacencyArr(obj, " + name + ", parent), encountered an exception: \n\t\"" + name + "\" array does not contain assignable JsonObjects at index " + i); }
@@ -543,7 +581,7 @@ public final class JParser {
             throw new LevelParseException("parseAdjacencyArr(obj, " + name + ", parent), encountered an exception at index " + i + ":\n\t" + e.getLocalizedMessage()); }
     }
 
-    public static Adjacency parseAdjacency(JsonObject obj, GObject parent, PartFactory pF) {
+    public static Adjacency parseAdjacency(JsonObject obj, GObject parent) {
         int id = parseInt(obj, "id");
         LColour colour = parseLColour(obj, "colour");
 

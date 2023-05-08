@@ -74,8 +74,8 @@
         {
           "type" : "EXIT",
           "id" : 2,
-          "anchor" : [16, 0],
-          "edge" : [0, 10]
+          "range" : [0, 10],
+          "side" : "RIGHT"
         }
       ]
     }

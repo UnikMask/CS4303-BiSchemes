@@ -3,6 +3,7 @@ package bischemes.level.parts;
 import bischemes.engine.GObject;
 import bischemes.engine.VisualUtils;
 import bischemes.engine.physics.*;
+import bischemes.level.Room;
 import bischemes.level.parts.behaviour.*;
 import bischemes.level.util.LColour;
 import bischemes.level.util.SpriteLoader;
@@ -301,7 +302,6 @@ public class PartFactory {
 		BStateHide.assign(rect, initState).addLockIcon(dimensions);
 		return rect;
 	}
-
 	public RObject makeSpike(GObject parent, PVector anchor, float orientation, int length, LColour colour, int id) {
 		initRBGeometry();
 
@@ -338,7 +338,7 @@ public class PartFactory {
 		BStateFlip.assign(lever, false);
 		BStateSwitchStates.assign(lever, linkedIDs);
 		BInteractStateSwitch.assign(lever, 1, 1).addIndicator(new PVector(1, 1));
-		return null;
+		return lever;
 	}
 
 
@@ -441,9 +441,29 @@ public class PartFactory {
 	// TODO determine design
 	public RObject makeExit(GObject parent, PVector range, boolean isVertical, boolean zeroAxis, int id) {
 
-		// need length, anchor,
+		PVector anchor = new PVector(-1, -1);
+		PVector dimensions;
+		float length = range.y - range.x;
+		if (isVertical) {
+			if (!zeroAxis)
+				anchor.y = Room.getRoom(parent).getDimensions().y + 1;
+			anchor.x = length / 2f;
+			dimensions = new PVector(length, 1);
+		}
+		else {
+			if (!zeroAxis)
+				anchor.x = Room.getRoom(parent).getDimensions().x + 1;
+			anchor.y = length / 2f;
+			dimensions = new PVector(1, length);
+		}
 
-		return null;
+
+		initRBGeometry();
+		//TODO might not be ok for colour to be null
+		RObject exit = createRect(parent, anchor, dimensions, 0f, null, id);
+		BHitExit.assign(exit);
+
+		return exit;
 	}
 
 }

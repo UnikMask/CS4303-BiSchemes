@@ -17,8 +17,10 @@ public class VisualAttribute {
 	private int color = 0xffffffff;
 	private PImage texture;
 	private List<PVector> texCoords;
+	public boolean mirrorX = false;
+	public boolean mirrorY = false;
 
-	private PVector scaling = null;
+	private PVector scaling = new PVector(1, 1);
 
 	enum VisualKind {
 		TEXTURED, UNTEXTURED, TINTED_TEXTURED
@@ -68,7 +70,7 @@ public class VisualAttribute {
 		g.translate(offset.x, offset.y);
 		g.rotate((float) obj.getOrientation());
 		if (scaling != null)
-			g.scale(scaling.x, scaling.y);
+			g.scale(scaling.x * (mirrorX ? -1 : 1), scaling.y * (mirrorY ? -1 : 1));
 		g.shape(shape);
 		g.popMatrix();
 	}

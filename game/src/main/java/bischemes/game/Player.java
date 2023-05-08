@@ -38,6 +38,10 @@ public class Player extends GObject {
 	private PlayerState state = PlayerState.IDLE;
 	private double tAnimation = 0;
 
+	/////////////////////
+	// GObject Methods //
+	/////////////////////
+
 	@Override
 	public void onHit(GObject hit, Manifold m) {
 		if (state == PlayerState.JUMP) {
@@ -52,6 +56,7 @@ public class Player extends GObject {
 
 	@Override
 	public void update() {
+		// Get movement vector
 		PVector movement = new PVector();
 		for (InputCommand c : InputHandler.getInstance().getHeldCommands()) {
 			movement.add(switch (c) {
@@ -85,7 +90,12 @@ public class Player extends GObject {
 		applyFrame(getVisibleFrame());
 	}
 
-	public int getVisibleFrame() {
+	/////////////////////
+	// Private Methods //
+	/////////////////////
+
+	// Get the player's visible frame index.
+	private int getVisibleFrame() {
 		return switch (state) {
 		case IDLE -> spriteIdle;
 		case RUN -> {
@@ -103,7 +113,8 @@ public class Player extends GObject {
 		};
 	}
 
-	public void applyFrame(int frame) {
+	// Apply a new frame to the player.
+	private void applyFrame(int frame) {
 		if (playerVisuals == null) {
 			getVisualAttribute(frame).visible = true;
 			playerVisuals = frame;
@@ -117,11 +128,15 @@ public class Player extends GObject {
 	}
 
 	// Generate a sprite for the player and add it to its list of visual attributes.
-	public int generateSprite(String fp) {
+	private int generateSprite(String fp) {
 		VisualAttribute a = VisualUtils.makeRect(new PVector(1, 1), 0xff54494b, EngineRuntime.applet.loadImage(fp));
 		a.visible = false;
 		return addVisualAttributes(a).get(0);
 	}
+
+	//////////////////
+	// Constructors //
+	//////////////////
 
 	// Constructor for a player.
 	public Player(PVector position, float orientation) {

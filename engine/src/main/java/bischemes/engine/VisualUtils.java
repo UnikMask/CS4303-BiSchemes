@@ -64,12 +64,26 @@ public final class VisualUtils {
 				color);
 	}
 
+	public static VisualAttribute makeRect(PVector size, int color, PImage texture) {
+		return new VisualAttribute(
+				Arrays.asList(new PVector(-size.x / 2, -size.y / 2), new PVector(-size.x / 2, size.y / 2),
+						new PVector(size.x / 2, size.y / 2), new PVector(size.x / 2, -size.y / 2)),
+				Arrays.asList(new PVector(0, 1), new PVector(0, 0), new PVector(1, 0), new PVector(1, 1)), texture,
+				color);
+	}
+
 	public static VisualAttribute makeRect(PVector size, String texture) {
-		return makeTexturedPolygon(size, 4, 0, new PVector(), texture);
+		return new VisualAttribute(
+				Arrays.asList(new PVector(-size.x / 2, -size.y / 2), new PVector(-size.x / 2, size.y / 2),
+						new PVector(size.x / 2, size.y / 2), new PVector(size.x / 2, -size.y / 2)),
+				Arrays.asList(new PVector(0, 0), new PVector(0, 1), new PVector(1, 1), new PVector(1, 0)), texture);
 	}
 
 	public static VisualAttribute makeRect(PVector size, PImage texture) {
-		return makeTexturedPolygon(size, 4, 0, new PVector(), texture);
+		return new VisualAttribute(
+				Arrays.asList(new PVector(-size.x / 2, -size.y / 2), new PVector(-size.x / 2, size.y / 2),
+						new PVector(size.x / 2, size.y / 2), new PVector(size.x / 2, -size.y / 2)),
+				Arrays.asList(new PVector(0, 0), new PVector(0, 1), new PVector(1, 1), new PVector(1, 0)), texture);
 	}
 
 	public static VisualAttribute makeTriangle(PVector vertex1, PVector vertex2, PVector vertex3, int colour) {

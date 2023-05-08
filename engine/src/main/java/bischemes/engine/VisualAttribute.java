@@ -2,6 +2,7 @@ package bischemes.engine;
 
 import java.util.List;
 
+import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.core.PImage;
 import processing.core.PShape;
@@ -13,7 +14,7 @@ public class VisualAttribute {
 	private PShape shape;
 	private VisualKind visualKind;
 	private GObject obj;
-	private int color;
+	private int color = 0xffffffff;
 	private PImage texture;
 	private List<PVector> texCoords;
 
@@ -32,9 +33,6 @@ public class VisualAttribute {
 	}
 
 	private void loadShape() {
-		if (shape != null) {
-			return;
-		}
 		shape = EngineRuntime.applet.createShape();
 		shape.beginShape();
 		shape.noStroke();
@@ -45,18 +43,25 @@ public class VisualAttribute {
 				shape.vertex(v.x, v.y);
 			}
 		} else {
-			for (int i = 0; i < vertices.size(); i++) {
-				shape.vertex(vertices.get(i).x, vertices.get(i).y, texCoords.get(i).x, texCoords.get(i).y);
-			}
-			if (visualKind == VisualKind.TINTED_TEXTURED)
-				shape.tint(color);
+			// shape.textureMode(PConstants.NORMAL);
 			shape.texture(texture);
+
+			if (visualKind == VisualKind.TINTED_TEXTURED) {
+				shape.tint(color);
+			}
+
+			for (int i = 0; i < vertices.size(); i++) {
+				shape.vertex(vertices.get(i).x, vertices.get(i).y, texCoords.get(i).x * texture.width,
+						texCoords.get(i).y * texture.height);
+			}
 		}
 		shape.endShape();
 	}
 
 	public void draw(PGraphics g) {
-		loadShape();
+		if (shape == null) {
+			loadShape();
+		}
 		g.pushMatrix();
 		PVector pos = obj.getPosition();
 		g.translate(pos.x, pos.y);
@@ -150,6 +155,11 @@ public class VisualAttribute {
 	public VisualAttribute(List<PVector> vertices, List<PVector> texCoords, PImage texture) {
 		this.vertices = vertices;
 		this.makeTextured(texCoords, texture);
+	}
+
+	public VisualAttribute(List<PVector> vertices, List<PVector> texCoords, PImage texture, int color) {
+		this.vertices = vertices;
+		this.makeTintedTexture(color, texCoords, texture);
 	}
 
 	public VisualAttribute(List<PVector> vertices) {

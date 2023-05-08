@@ -1,19 +1,14 @@
 package bischemes.game;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
-import bischemes.engine.EngineRuntime;
-import bischemes.engine.GObject;
-import bischemes.engine.SceneGridPair;
-import bischemes.engine.VisualUtils;
-import bischemes.engine.physics.GridSector;
-import bischemes.engine.physics.Primitive;
-import bischemes.engine.physics.PrimitiveUtils;
-import bischemes.engine.physics.RigidBody;
-import bischemes.engine.physics.RigidBodyProperties;
-import bischemes.engine.physics.Surface;
+import bischemes.engine.*;
+import bischemes.engine.physics.*;
 import bischemes.engine.physics.ForceGenerators.DirectionalGravity;
-import bischemes.engine.physics.ForceGenerators.ForceGenerator;
+import bischemes.game.Game.GameState;
+import bischemes.level.Level;
+import bischemes.level.Room;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
@@ -22,10 +17,15 @@ public class Game {
 	EngineRuntime engine;
 	GameState state = GameState.PLAY;
 
-	SceneGridPair mainScene;
-
-	GObject demoGravItem;
-	DirectionalGravity gravity = new DirectionalGravity();
+	Player player;
+	DirectionalGravity gravity;
+	boolean playerInPrimary = true;
+	Level level;
+	SceneGridPair primaryScene;
+	SceneGridPair secondaryScene;
+	Pair<Integer> colours;
+	List<Room> rooms;
+	Room currentRoom;
 
 	// States of a level/game - feel free to modify
 	enum GameState {
@@ -35,50 +35,68 @@ public class Game {
 	public void update(PGraphics g) {
 		// Update behaviour per state
 		switch (state) {
-		case PAUSE:
-			break;
-		case PLAY:
-			// Update forces on grav item
-			gravity.updateForce(demoGravItem.getRigidBody());
-			setEngineCameraPosition();
-			engine.update();
-			break;
-		case INTRO:
-			break;
-		case FINISH:
-			break;
-		case END:
+			case PAUSE:
+				break;
+			case PLAY:
+				// Update forces on grav item
+				setEngineCameraPosition();
+				engine.update();
+				gravity.updateForce(player.getRigidBody());
+				break;
+			case INTRO:
+				break;
+			case FINISH:
+				break;
+			case END:
 		}
 	}
 
 	public void setEngineCameraPosition() {
-		PVector minCameraPosition = PVector.add(new PVector(-8, -4.5f), PVector.div(engine.getCameraBounds(), 2));
-		PVector maxCameraPosition = PVector.sub(new PVector(8, 4.5f), PVector.div(engine.getCameraBounds(), 2));
+		PVector minCameraPosition = PVector.add(new PVector(), PVector.div(engine.getCameraBounds(), 2));
+		PVector maxCameraPosition = PVector.sub(currentRoom.getDimensions(), PVector.div(engine.getCameraBounds(), 2));
 		PVector newPosition = new PVector(
-				Math.min(Math.max(minCameraPosition.x, demoGravItem.getPosition().x), maxCameraPosition.x),
-				Math.min(Math.max(minCameraPosition.y, demoGravItem.getPosition().y), maxCameraPosition.y));
+				Math.min(Math.max(minCameraPosition.x, player.getPosition().x), maxCameraPosition.x),
+				Math.min(Math.max(minCameraPosition.y, player.getPosition().y), maxCameraPosition.y));
 		engine.setCameraPosition(PVector.lerp(engine.getCameraPosition(), newPosition, 0.1f));
 	}
 
 	public void setup() {
 		engine.setCameraBounds(new PVector(16, 9));
-		mainScene = new SceneGridPair(new GObject(null, new PVector(), 0),
-				new GridSector(new PVector(16, 9), new PVector(-8, -4.5f), 16, 9));
-		mainScene.scene.addVisualAttributes(VisualUtils.makeRect(new PVector(16, 9), 0xffffc857));
+		primaryScene = new SceneGridPair(new GObject(null, new PVector(), 0), null);
+		secondaryScene = new SceneGridPair(new GObject(null, new PVector(), 0), null);
+		engine.attachScene(primaryScene);
+		engine.attachScene(secondaryScene);
+	}
 
-		// Create an obstacle
-		GObject obstacles = new GObject(null, new PVector(0, -3.5f), 0);
-		obstacles.setRigidBody(new RigidBody(new RigidBodyProperties(
-				Map.of("mesh", new Primitive(new Surface(0, 0.8, 0.8), PrimitiveUtils.makeRect(new PVector(16, 2)))))));
-		obstacles.addVisualAttributes(VisualUtils.makeRect(new PVector(16, 2), 0xff54494b));
-		mainScene.attachToGObject(mainScene.scene, obstacles);
+	public void setLevel(Level level) {
+		this.level = level;
+		rooms = Arrays.asList(level.getRooms());
+		colours = new Pair<>(level.getColourPrimary(), level.getColourSecondary());
 
-		// Create an item that will fall down on the floor
-		demoGravItem = new Player(new PVector(0, 0), 0, gravity, 0xff54494b);
-		mainScene.attachToGObject(mainScene.scene, demoGravItem);
+		Room initRoom = level.getInitRoom();
+		loadRoom(initRoom);
+		gravity = new DirectionalGravity();
+		player = new Player(initRoom.getSpawnPosition(), 0, gravity, level.getColourSecondary());
+		primaryScene.attachToGObject(primaryScene.scene, player);
+	}
 
-		// Attach the scene to the engine & start the simulation
-		engine.attachScene(mainScene);
+	public void loadRoom(Room room) {
+		// Immediate room loading
+		if (currentRoom == null) {
+			// Initialise scenes
+			currentRoom = room;
+			primaryScene.grid = new GridSector(room.getDimensions(), new PVector(),
+					(int) room.getDimensions().x, (int) room.getDimensions().y);
+			VisualAttribute primaryBg = VisualUtils.makeRect(room.getDimensions(), colours.a);
+			primaryBg.setOffset(PVector.div(room.getDimensions(), 2));
+			// primaryScene.scene.addVisualAttributes(primaryBg);
+			secondaryScene.grid = new GridSector(room.getDimensions(), new PVector(),
+					(int) room.getDimensions().x, (int) room.getDimensions().y);
+
+			// Add geometries to both scenes
+			primaryScene.attachToGObject(primaryScene.scene, room.getPrimaryGeometry());
+			secondaryScene.attachToGObject(secondaryScene.scene, room.getSecondaryGeometry());
+		}
 		engine.setPause(false);
 	}
 
@@ -86,4 +104,5 @@ public class Game {
 		engine = new EngineRuntime(applet, g);
 		setup();
 	}
+
 }

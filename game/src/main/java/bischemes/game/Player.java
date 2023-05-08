@@ -14,7 +14,6 @@ import processing.core.PVector;
 
 public class Player extends GObject {
 	// Player Constants
-	private static final PVector BASE_MOVEMENT_INTENSITY = new PVector(30, 0);
 	private static final PVector JUMP_FORCE = new PVector(0, 5);
 	private static final double RUN_THRESHOLD = 0.01;
 	private static final double WALL_DOT_THRESHOLD = 0.3;

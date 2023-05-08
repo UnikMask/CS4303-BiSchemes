@@ -29,6 +29,7 @@ public class Player extends GObject {
 	private int spriteIdle;
 	private int spriteJump;
 	private int spriteWall;
+	private int color;
 
 	enum PlayerState {
 		IDLE, RUN, JUMP, WALL, FALL
@@ -134,7 +135,7 @@ public class Player extends GObject {
 
 	// Generate a sprite for the player and add it to its list of visual attributes.
 	private int generateSprite(String fp) {
-		VisualAttribute a = VisualUtils.makeRect(new PVector(1, 1), 0xff54494b, EngineRuntime.applet.loadImage(fp));
+		VisualAttribute a = VisualUtils.makeRect(new PVector(1, 1), color, EngineRuntime.applet.loadImage(fp));
 		a.visible = false;
 		return addVisualAttributes(a).get(0);
 	}
@@ -144,12 +145,13 @@ public class Player extends GObject {
 	//////////////////
 
 	// Constructor for a player.
-	public Player(PVector position, float orientation, DirectionalGravity gravity) {
+	public Player(PVector position, float orientation, DirectionalGravity gravity, int color) {
 		super(null, position, orientation);
 		setRigidBody(new RigidBody(
 				new RigidBodyProperties(Map.of("mass", 35.0, "inertia", 20.0, "move", true, "rotate", false, "mesh",
 						new Primitive(new Surface(0, 1.0, 1.0), PrimitiveUtils.makeRect(new PVector(0.4f, 1)))))));
 		this.gravity = gravity;
+		this.color = color;
 
 		// Generate sprites
 		spriteIdle = generateSprite(fpIdle);

@@ -74,7 +74,7 @@ public class Game {
 		mainScene.attachToGObject(mainScene.scene, obstacles);
 
 		// Create an item that will fall down on the floor
-		demoGravItem = new Player(new PVector(0, 0), 0, gravity);
+		demoGravItem = new Player(new PVector(0, 0), 0, gravity, 0xff54494b);
 		mainScene.attachToGObject(mainScene.scene, demoGravItem);
 
 		// Attach the scene to the engine & start the simulation

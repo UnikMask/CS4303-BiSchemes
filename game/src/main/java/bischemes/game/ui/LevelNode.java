@@ -10,15 +10,14 @@ import static processing.core.PConstants.RECT;
 
 public final class LevelNode {
 
-    private static final float SELECT_SIZE_FACTOR = 1.5f; // How much bigger a selected node appears
+    private static final float SELECT_SIZE_FACTOR = 1.3f; // How much bigger a selected node appears
     private static final int   SELECT_SCALE_TIME  = 15; // How many draw() frames required to scale to full size
     private static final float SELECT_SCALE_RATE  = (SELECT_SIZE_FACTOR - 1f) / (float) SELECT_SCALE_TIME;
-    private static final int   DEFAULT_TEXT_SIZE  = 30; // How large drawn text (level names) should be
-    private static final float TEXT_SCALE_RATE    = DEFAULT_TEXT_SIZE / (float) SELECT_SCALE_TIME;
+    private static final int   DEFAULT_TEXT_SIZE  = 20; // How large drawn text (level names) should be
 
     private static final int   RECT_CORNER_ROUND  = 20; // Radius value for corners of drawn nodes
-    private static final int   GREY_OUTER_COLOUR  = Integer.valueOf("4F4F4F", 16); // Colour used for unavailable levels
-    private static final int   GREY_INNER_COLOUR  = Integer.valueOf("B9B9B9", 16); // Colour used for unavailable levels
+    private static final int   GREY_OUTER_COLOUR  = 0x4F4F4F; // Colour used for unavailable levels
+    private static final int   GREY_INNER_COLOUR  = 0xB9B9B9; // Colour used for unavailable levels
 
 
     public final Level level;
@@ -83,6 +82,7 @@ public final class LevelNode {
         if (distance.y < 0) distance.y *= -1;
         if (selected) distance.div(SELECT_SIZE_FACTOR);
         selected = distance.x < squareWidth && distance.y < squareWidth;
+        if (selected) scaling = true;
         return selected;
     }
 
@@ -94,6 +94,23 @@ public final class LevelNode {
     }
 
     public void drawNode(PGraphics g) {
+        float width = realPosition.z;
+        if (scaling) {
+            float scale = 1 + (currentScale * SELECT_SCALE_RATE);
+            width *= scale;
+
+            if (isAvailable()) g.fill(level.getColourSecondary());
+            else g.fill(GREY_OUTER_COLOUR);
+
+            g.textSize(DEFAULT_TEXT_SIZE * scale);
+            g.text(level.getName(), realPosition.x, realPosition.y - (width / 1.5f));
+
+            if (selected) {
+                if (currentScale < SELECT_SCALE_TIME)
+                    currentScale++;
+            }
+            else scaling = --currentScale > 1;
+        }
 
         if (isAvailable()) {
             g.stroke(level.getColourSecondary());
@@ -102,18 +119,6 @@ public final class LevelNode {
         else {
             g.stroke(GREY_OUTER_COLOUR);
             g.fill(GREY_INNER_COLOUR);
-        }
-
-        float width = realPosition.z;
-        if (scaling) {
-            width *= currentScale;
-            width *= SELECT_SCALE_RATE;
-
-            g.textSize(currentScale * TEXT_SCALE_RATE);
-            g.text(level.getName(), realPosition.x, realPosition.y - width);
-
-            if (selected) { if (currentScale < SELECT_SCALE_TIME) currentScale++; }
-            else scaling = --currentScale < 1;
         }
 
         g.rect(realPosition.x, realPosition.y, width, width, RECT_CORNER_ROUND);

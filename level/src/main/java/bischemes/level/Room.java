@@ -121,7 +121,6 @@ public class Room extends GObject {
         room.primaryGeometry.setColour(room.parent.getColourPrimary());
         room.secondaryGeometry.setColour(room.parent.getColourSecondary());
         for (RObject rObject : room.roomObjects) {
-            if (rObject == null) continue; //TODO remove once exit is implemented
             if (rObject.getLColour() == null) continue;
             switch (rObject.getLColour()) {
                 case PRIMARY -> rObject.setColour(room.parent.getColourPrimary());

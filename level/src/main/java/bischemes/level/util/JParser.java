@@ -230,9 +230,14 @@ public final class JParser {
         RObjType type = parseRObjType(obj, "type");
         int id = parseInt(obj, "id");
 
+        if (type == RObjType.EXIT)
+            return parseExit(obj, parent, pF, id);
+
         PVector anchor = parsePVecOrNull(obj, "corner");
-        if (anchor == null) anchor = parsePVec(obj, "anchor");
-        else anchor.z = 1;
+        if (anchor == null)
+            anchor = parsePVec(obj, "anchor");
+        else
+            anchor.z = 1;
 
         pF.setSurfaceProperties(
                 parseDouble(obj, "restitution", 0),
@@ -246,8 +251,8 @@ public final class JParser {
             case LEVER -> parseLever(obj, parent, pF, anchor, id);
             case SPIKE -> parseSpike(obj, parent, pF, anchor, id);
             case PORTAL -> parsePortal(obj, parent, pF, anchor, id);
-            case EXIT -> parseExit(obj, parent, pF, anchor, id);
             case CUSTOM -> parseCustom(obj, parent, pF, anchor, id);
+            default -> throw new IllegalStateException("Unexpected value: " + type);
         };
     }
 
@@ -376,11 +381,45 @@ public final class JParser {
         }
     }
 
-    public static RObject parseExit(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
-        if (anchor.z == 1) throw new LevelParseException("cannot use \"corner\" parameter in Exit definition");
-        // TODO
-        //return pF.makeExit(parent);
-        return null;
+    public static RObject parseExit(JsonObject obj, GObject parent, PartFactory pF, int id) {
+        PVector range = parsePVec(obj, "range");
+
+        if (range.x < 0)
+            throw new LevelParseException("\"range\" start value of [" + range.x + ", " + range.y + "] is invalid. " +
+                    "Range values cannot extend below 0");
+        if (range.x >= range.y)
+            throw new LevelParseException("\"range\" start value of [" + range.x + ", " + range.y + "] is invalid. " +
+                    "Range start values cannot be greater than range end values");
+
+        String side = parseStr(obj, "side");
+
+        boolean isVertical = false;
+        boolean zeroAxis = false;
+
+        switch (side.toUpperCase()) {
+            case "LEFT" :
+                break;
+            case "RIGHT" :
+                zeroAxis = true;
+                break;
+            case "TOP" :
+                isVertical = true;
+                break;
+            case "BOTTOM" :
+                isVertical = true;
+                zeroAxis = true;
+                break;
+            default :
+                throw new LevelParseException("\"side\" of \"" + side + "\" is unknown");
+        }
+
+        float maxBound = (isVertical) ? Room.getRoom(parent).getDimensions().x : Room.getRoom(parent).getDimensions().y;
+        if (range.y > maxBound)
+            throw new LevelParseException("\"range\" start value of [" + range.x + ", " + range.y + "] is invalid. " +
+                    "Range values cannot extend past side length (length = " + maxBound + " for " + side + " of room " +
+                    "(id = " + Room.getRoom(parent).getId() + "))");
+
+        return pF.makeExit(parent, range, isVertical, zeroAxis, id);
     }
 
     public static RObject parseCustom(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {
@@ -438,32 +477,144 @@ public final class JParser {
     }
 
     public static BHitTeleport parseBHitTeleport(JsonObject obj, RObject customObj) {
-        // TODO
-        return null;
+
+        PVector link = parsePVec(obj, "destination");
+        boolean swapColour = parseBoolean(obj, "swapColour", false);
+        int roomId = parseInt(obj, "destRoomId", -1);
+
+        BHitTeleport b;
+
+        if (roomId == -1)
+            b = BHitTeleport.assign(customObj, link, swapColour);
+        else if (roomId >= 0) {
+            Room destination = Room.getRoom(customObj).getLevel().getRoom(roomId);
+            b = BHitTeleport.assign(customObj, destination, link, swapColour);
+        }
+        else
+            throw new InvalidIdException("\"destRoomId\" of " + roomId + " is invalid, ids cannot be negative");
+
+
+        boolean flipGravity = parseBoolean(obj, "flipGravity", false);
+        b.configureGravityFlip(flipGravity);
+
+        Boolean activeState = parseBooleanOrNull(obj, "activeOnState");
+        if (activeState != null) b.setActiveOnState(activeState);
+
+        if (parseBoolean(obj, "playerOnly"))
+            b.makePlayerOnly();
+
+        if (parseBoolean(obj, "teleportIcon", false))
+            b.addTeleportIcon(parsePVec(obj, "iconSize", new PVector(1, 1)));
+
+        Boolean offsetX = parseBooleanOrNull(obj, "offsetX");
+        Boolean offsetY = parseBooleanOrNull(obj, "offsetY");
+        Boolean mirrorY = parseBooleanOrNull(obj, "mirrorY");
+        Boolean mirrorX = parseBooleanOrNull(obj, "mirrorX");
+        if (offsetX != null || offsetY != null || mirrorX != null || mirrorY != null) {
+            if (offsetX == null)
+                throw new LevelParseException("\"offsetX\" is required in any offset or mirror booleans are provided");
+            if (offsetY == null)
+                throw new LevelParseException("\"offsetY\" is required in any offset or mirror booleans are provided");
+            if (mirrorX == null)
+                throw new LevelParseException("\"mirrorX\" is required in any offset or mirror booleans are provided");
+            if (mirrorY == null)
+                throw new LevelParseException("\"mirrorY\" is required in any offset or mirror booleans are provided");
+            b.configureOffset(offsetX, offsetY, mirrorX, mirrorY);
+        }
+
+        return b;
     }
 
     public static BInteractTeleport parseBInteractTeleport(JsonObject obj, RObject customObj) {
-        // TODO
-        return null;
+        PVector link = parsePVec(obj, "destination");
+        boolean swapColour = parseBoolean(obj, "swapColour", false);
+        int roomId = parseInt(obj, "destRoomId", -1);
+
+        float r = parseFloat(obj, "radius", -1);
+        float x = 0;
+        float y = 0;
+
+        boolean useXY = r == -1;
+        if (useXY) {
+            x = parseFloat(obj, "xDist");
+            y = parseFloat(obj, "yDist");
+        }
+        else if (r < 0)
+            throw new LevelParseException("\"radius\" of BInteractTeleport cannot be negative");
+
+        BInteractTeleport b;
+
+        if (roomId == -1) {
+            if (useXY) b = BInteractTeleport.assign(customObj, x, y, link, swapColour);
+            else b = BInteractTeleport.assign(customObj, r, link, swapColour);
+        }
+        else if (roomId >= 0) {
+            Room destination = Room.getRoom(customObj).getLevel().getRoom(roomId);
+            if (useXY) b = BInteractTeleport.assign(customObj, x, y, destination, link, swapColour);
+            else b = BInteractTeleport.assign(customObj, r, destination, link, swapColour);
+        }
+        else
+            throw new InvalidIdException("\"destRoomId\" of " + roomId + " is invalid, ids cannot be negative");
+
+        boolean flipGravity = parseBoolean(obj, "flipGravity", false);
+        b.configureGravityFlip(flipGravity);
+
+        Boolean activeState = parseBooleanOrNull(obj, "activeOnState");
+        if (activeState != null) b.setActiveOnState(activeState);
+
+        if (parseBoolean(obj, "playerOnly"))
+            b.makePlayerOnly();
+
+        if (parseBoolean(obj, "teleportIcon", false))
+            b.addTeleportIcon(parsePVec(obj, "iconSize", new PVector(1, 1)));
+
+        if (parseBoolean(obj, "addIndicator", false)){
+            PVector indicatorOffset = parsePVec(obj, "indicatorOffset", new PVector(0, 0));
+            String type = parseStr(obj, "indicatorType", "INTERACT");
+            switch (type.toUpperCase()) {
+                case "INTERACT" -> b.addIndicator(indicatorOffset);
+                case "TELEPORT" -> b.addTeleportIndicator(indicatorOffset);
+                case "COLOURSWITCH" -> b.addColourSwitchIndicator(indicatorOffset);
+                default ->
+                        throw new LevelParseException("\"indicatorType\" of \"" + type + "\" is unknown");
+            }
+        }
+
+        Boolean offsetX = parseBooleanOrNull(obj, "offsetX");
+        Boolean offsetY = parseBooleanOrNull(obj, "offsetY");
+        Boolean mirrorY = parseBooleanOrNull(obj, "mirrorY");
+        Boolean mirrorX = parseBooleanOrNull(obj, "mirrorX");
+        if (offsetX != null || offsetY != null || mirrorX != null || mirrorY != null) {
+            if (offsetX == null)
+                throw new LevelParseException("\"offsetX\" is required in any offset or mirror booleans are provided");
+            if (offsetY == null)
+                throw new LevelParseException("\"offsetY\" is required in any offset or mirror booleans are provided");
+            if (mirrorX == null)
+                throw new LevelParseException("\"mirrorX\" is required in any offset or mirror booleans are provided");
+            if (mirrorY == null)
+                throw new LevelParseException("\"mirrorY\" is required in any offset or mirror booleans are provided");
+            b.configureOffset(offsetX, offsetY, mirrorX, mirrorY);
+        }
+
+        return b;
     }
 
     public static BInteractStateSwitch parseBInteractStateSwitch(JsonObject obj, RObject customObj) {
         float r = parseFloat(obj, "radius", -1);
-        PVector indicator = parsePVecOrNull(obj, "indicatorOffset");
+        BInteractStateSwitch b;
         if (r == -1) {
             float x = parseFloat(obj, "xDist");
             float y = parseFloat(obj, "yDist");
-            BInteractStateSwitch b = BInteractStateSwitch.assign(customObj, x, y);
-            if (indicator != null) b.addIndicator(indicator);
-            return b;
+            b = BInteractStateSwitch.assign(customObj, x, y);
         }
-        if (r > 0) {
-            BInteractStateSwitch b =  BInteractStateSwitch.assign(customObj, r);
-            if (indicator != null) b.addIndicator(indicator);
-            return b;
-        }
+        else if (r > 0)
+            b =  BInteractStateSwitch.assign(customObj, r);
         else
             throw new LevelParseException("\"radius\" of BInteractStateSwitch cannot be negative");
+        PVector indicator = parsePVecOrNull(obj, "indicatorOffset");
+        if (indicator != null)
+            b.addIndicator(indicator);
+        return b;
     }
     public static BStateBlock parseBStateBlock(JsonObject obj, RObject customObj) {
         boolean state = parseBoolean(obj, "initialState", false);
@@ -531,11 +682,10 @@ public final class JParser {
 
     public static void parseAdjacencyArr(JsonObject obj, String name, GObject parent, List<Adjacency> adjacencies) {
         JsonArray arr = parseArr(obj, name);
-        PartFactory partFactory = new PartFactory();
         int i = 0;
         try {
             for (; i < arr.size(); i++)
-                adjacencies.add(parseAdjacency(arr.getJsonObject(i), parent, partFactory));
+                adjacencies.add(parseAdjacency(arr.getJsonObject(i), parent));
         }
         catch (ClassCastException e) {
             throw new LevelParseException("parseAdjacencyArr(obj, " + name + ", parent), encountered an exception: \n\t\"" + name + "\" array does not contain assignable JsonObjects at index " + i); }
@@ -543,7 +693,7 @@ public final class JParser {
             throw new LevelParseException("parseAdjacencyArr(obj, " + name + ", parent), encountered an exception at index " + i + ":\n\t" + e.getLocalizedMessage()); }
     }
 
-    public static Adjacency parseAdjacency(JsonObject obj, GObject parent, PartFactory pF) {
+    public static Adjacency parseAdjacency(JsonObject obj, GObject parent) {
         int id = parseInt(obj, "id");
         LColour colour = parseLColour(obj, "colour");
 

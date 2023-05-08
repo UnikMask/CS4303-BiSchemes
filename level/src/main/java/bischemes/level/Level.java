@@ -168,9 +168,7 @@ public class Level {
             }
             List<RObject> rObjects = rooms[i].getObjects();
             for (int j = 0; j < rObjects.size(); j++) {
-                if (rObjects.get(j) == null) continue; //TODO remove once exit implemented
                 for (int k = j + 1; k < rObjects.size(); k++) {
-                    if (rObjects.get(k) == null) continue; //TODO remove once exit implemented
                     if (rObjects.get(j).getId() == rObjects.get(k).getId())
                         throw new InvalidIdException("\"id\" " + rObjects.get(j).getId() + " is repeated in room " +
                                 "(id = " + rooms[i].getId() + ") in level (" + id + ", " + name + ") " +

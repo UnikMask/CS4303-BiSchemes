@@ -28,8 +28,6 @@ public final class LevelNode {
     /** Actual position of LevelNode, calculated from slicePosition and MapSlice dimensions/positioning/scale */
     private final PVector realPosition;
 
-    /** Whether the Level held has been completed */
-    private boolean completed = false;
     /** Whether this LevelNode is currently selected (whether the mouse cursor is hovering over LevelNode) */
     private boolean selected = false;
 
@@ -63,12 +61,8 @@ public final class LevelNode {
         return realPosition;
     }
 
-    public void setCompleted(boolean v) {
-        completed = v;
-    }
-
     public boolean isCompleted() {
-        return completed;
+        return level.isCompleted();
     }
 
     public void setSelected(boolean v) {
@@ -84,7 +78,7 @@ public final class LevelNode {
      * @return true if the level has been completed already or if ALL its dependencies have been completed
      */
     public boolean isAvailable() {
-        if (completed) return true;
+        if (isCompleted()) return true;
         boolean available = true;
         for (LevelNode node : dependencies) available &= node.isCompleted();
         return available;

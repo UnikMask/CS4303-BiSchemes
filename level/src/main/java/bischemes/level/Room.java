@@ -128,6 +128,15 @@ public class Room extends GObject {
             }
         }
 
+        for (int j = 0; j < room.roomObjects.size(); j++) {
+            for (int k = j + 1; k < room.roomObjects.size(); k++) {
+                if (room.roomObjects.get(j).getId() == room.roomObjects.get(k).getId())
+                    throw new InvalidIdException("\"id\" " + room.roomObjects.get(j).getId() + " is repeated in room " +
+                            "(id = " + room.getId() + ") in level (" + parent.getId() + ", " + parent.getName() + ") " +
+                            "is repeated (indexes " + j + ", " + k + ")");
+            }
+        }
+
         return room;
     }
 

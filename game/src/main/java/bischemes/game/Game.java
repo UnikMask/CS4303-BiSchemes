@@ -23,7 +23,6 @@ public class Game {
 
 	// General game components
 	Player player;
-	DirectionalGravity gravity;
 	boolean playerInPrimary = true;
 	Level level;
 	SceneGridPair primaryScene;
@@ -33,19 +32,11 @@ public class Game {
 	Room currentRoom;
 	GObject primaryNode;
 	boolean isPrimaryScene;
-
-	// Transition components
-	Room nextRoom;
-	GObject nextRoomNode;
-	PVector previousPlayerPosition;
-	PVector targetPlayerPosition;
-	PVector previousCameraPosition;
-	PVector targetCameraPosition;
-	double timer = 0;
+	Pair<DirectionalGravity> gravities;
 
 	// States of a level/game - feel free to modify
 	enum GameState {
-		PAUSE, PLAY, TRANSITION, INTRO, FINISH, END
+		PAUSE, PLAY, INTRO, FINISH, END
 	}
 
 	public void update(PGraphics g) {
@@ -57,19 +48,7 @@ public class Game {
 				// Update forces on grav item
 				setEngineCameraPosition();
 				engine.update();
-				gravity.updateForce(player.getRigidBody());
 				break;
-			case TRANSITION:
-				timer += (1.0 / 60.0) / TRANSITION_DURATION;
-
-				if (timer < 1) {
-					engine.setCameraPosition(PVector.lerp(previousCameraPosition, targetCameraPosition, (float) timer));
-					player.setLocalPosition(PVector.lerp(previousPlayerPosition, targetPlayerPosition, (float) timer));
-				} else {
-					unloadLastRoom();
-					timer = 0;
-				}
-				engine.update();
 			case INTRO:
 				break;
 			case FINISH:
@@ -101,8 +80,9 @@ public class Game {
 		colours = new Pair<>(level.getColourPrimary(), level.getColourSecondary());
 
 		Room initRoom = level.getInitRoom();
-		gravity = new DirectionalGravity();
-		player = new Player(initRoom.getSpawnPosition(), 0, gravity, level.getColourSecondary());
+		gravities = new Pair<>(new DirectionalGravity(new PVector(0, 1)), new DirectionalGravity(new PVector(0, -1)));
+		player = new Player(initRoom.getSpawnPosition(), 0, gravities.b, level.getColourSecondary());
+
 		loadRoom(initRoom);
 		secondaryScene.attachToGObject(secondaryScene.scene, player);
 		engine.setPause(false);
@@ -125,63 +105,26 @@ public class Game {
 		primaryScene.attachToGObject(primaryScene.scene, room.getPrimaryGeometry());
 		secondaryScene.attachToGObject(secondaryScene.scene, room.getSecondaryGeometry());
 
-		// Load objects into the game
+		// Initialise and load objects into the game
 		ArrayDeque<RObject> q = new ArrayDeque<>(room.getObjects());
 		while (!q.isEmpty()) {
 			RObject o = q.pollFirst();
 			if (o.getLColour() == null) {
-				q.addAll(o.getChildren().stream().map((go) -> (RObject) go).toList());
+				q.addAll(o.getChildren().stream().filter((go) -> go instanceof RObject).map((go) -> (RObject) go)
+						.toList());
 			} else {
 				switch (o.getLColour()) {
 					case PRIMARY -> {
+						o.init(player, gravities.a);
 						primaryScene.attachToGObject(primaryScene.scene, o);
 					}
 					case SECONDARY -> {
+						o.init(player, gravities.b);
 						secondaryScene.attachToGObject(secondaryScene.scene, o);
 					}
 				}
 			}
 		}
-	}
-
-	private void loadNextRoom(Room room, Adjacency adj, PVector direction, boolean isPrimaryScene) {
-		engine.setPause(true);
-		nextRoom = room;
-
-		// Compute transition vectors
-		PVector nextRoomPosition = PVector.add(
-				PVector.add(PVector.div(room.getDimensions(), 2), primaryNode.getPosition()),
-				PVector.mult(direction, PVector.dot(PVector.div(currentRoom.getDimensions(), 2), direction)));
-
-		previousPlayerPosition = player.getLocalPosition().copy();
-		targetPlayerPosition = PVector.add(adj.getLocalPosition(),
-				PVector.mult(direction, PVector.dot(Player.PLAYER_SIZE, direction)));
-
-		previousCameraPosition = engine.getCameraPosition();
-		targetCameraPosition = PVector.add(engine.getCameraPosition(), nextRoomPosition);
-
-		// Set the next room's node
-		nextRoomNode = new GObject(null, nextRoomPosition, 0);
-		nextRoomNode.addVisualAttributes(VisualUtils.makeRect(room.getDimensions(), colours.a));
-		primaryScene.attachToGObject(primaryScene.scene, nextRoomNode);
-
-		// Attach next room components to next room
-		secondaryScene.attachToGObject(secondaryScene.scene, room.getPrimaryGeometry());
-		state = GameState.TRANSITION;
-	}
-
-	private void unloadLastRoom() {
-		deconstructCurrentRoom();
-		loadRoom(nextRoom);
-		player.setLocalPosition(targetPlayerPosition);
-		if (isPrimaryScene) {
-			primaryScene.attachToGObject(primaryScene.scene, player);
-		} else {
-			secondaryScene.attachToGObject(secondaryScene.scene, player);
-		}
-		deconstructNextRoom();
-		state = GameState.PLAY;
-		engine.setPause(false);
 	}
 
 	/////////////////
@@ -193,17 +136,6 @@ public class Game {
 		secondaryScene = null;
 		primaryNode = null;
 		currentRoom = null;
-	}
-
-	private void deconstructNextRoom() {
-		nextRoom = null;
-		nextRoomNode = null;
-
-		previousPlayerPosition = null;
-		targetPlayerPosition = null;
-
-		previousCameraPosition = null;
-		targetCameraPosition = null;
 	}
 
 	//////////////////

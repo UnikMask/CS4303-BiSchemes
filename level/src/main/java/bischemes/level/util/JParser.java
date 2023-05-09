@@ -358,10 +358,10 @@ public final class JParser {
                     break;
                 case "TOP" :
                     isVertical = true;
+                    flipFace = true;
                     break;
                 case "BOTTOM" :
                     isVertical = true;
-                    flipFace = true;
                     break;
                 default :
                     throw new LevelParseException("\"side\" of \"" + side + "\" is unknown");
@@ -397,9 +397,9 @@ public final class JParser {
         boolean zeroAxis = false;
 
         switch (side.toUpperCase()) {
-            case "LEFT" :
-                break;
             case "RIGHT" :
+                break;
+            case "LEFT" :
                 zeroAxis = true;
                 break;
             case "TOP" :
@@ -726,9 +726,9 @@ public final class JParser {
         boolean zeroAxis = false;
 
         switch (side.toUpperCase()) {
-            case "LEFT" :
-                break;
             case "RIGHT" :
+                break;
+            case "LEFT" :
                 zeroAxis = true;
                 break;
             case "TOP" :

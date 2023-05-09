@@ -109,6 +109,8 @@ public class PartFactory {
 
 	private void finishPolygon(GObject obj, List<PVector> vertices) {
 		Surface surface = new Surface(restitution, staticFriction, dynamicFriction);
+		List<PVector> copy = new ArrayList<>(vertices.size());
+		for (PVector p : vertices) copy.add(p.copy());
 		finishRigidBody(obj, new Primitive(surface, vertices));
 	}
 
@@ -253,7 +255,6 @@ public class PartFactory {
 
 	private GObject createTrapezium(GObject obj, float height, PVector widths) {
 		float halfHeight = height / 2f;
-		float rectWidth = Math.min(widths.x, widths.y);
 
 		List<PVector> vertices = new ArrayList<>(4);
 		vertices.add(new PVector(-widths.y / 2f, halfHeight));

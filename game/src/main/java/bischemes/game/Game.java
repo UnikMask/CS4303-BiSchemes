@@ -116,7 +116,7 @@ public class Game {
 		primaryNode = new GObject(null, PVector.div(room.getDimensions(), 2), 0);
 		VisualAttribute primaryBg = VisualUtils.makeRect(room.getDimensions(),
 				colours.a);
-		primaryNode.addVisualAttributes(primaryBg);
+		//primaryNode.addVisualAttributes(primaryBg); //TODO re-add bg
 		primaryScene.attachToGObject(primaryScene.scene, primaryNode);
 		secondaryScene.grid = new GridSector(room.getDimensions(), new PVector(),
 				(int) room.getDimensions().x, (int) room.getDimensions().y);

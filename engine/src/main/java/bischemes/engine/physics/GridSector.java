@@ -163,7 +163,8 @@ public class GridSector {
 				for (int j = i + 1; j < clist.size(); j++) {
 					PrimitiveStore b = clist.get(j);
 					Pair<RigidBody> p = new Pair<>(a.p.getParent(), b.p.getParent());
-					if (p.a == p.b) {
+					if (p.a == p.b || (!p.a.getProperties().isMovable && !p.a.getProperties().isRotatable
+							&& !p.b.getProperties().isMovable && !p.b.getProperties().isRotatable)) {
 						continue;
 					}
 					Pair<PrimitiveStore> donePair = new Pair<>(a, b);

@@ -134,20 +134,20 @@ public class Game implements GameInterface {
 
 
 	public void loadNextRoom(Room room, PVector newPlayerPosition) {
-
+		deconstructCurrentRoom();
+		player.setLocalPosition(newPlayerPosition);
+		loadRoom(room);
 	}
 
 	// Alex TODO when called this should switch the player's colour
 	public void switchPlayerColour() {
-
 	}
 
 	//
 	// Alex TODO when called this should return the user to the MapUI (set RunnerState to MENU)
 	public void completeLevel() {
-	//
 		level.setCompleted(true);
-		//TODO rest of the method :)
+		state = GameState.END;
 	}
 
 	/////////////////

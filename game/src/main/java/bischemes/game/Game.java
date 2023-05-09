@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.ArrayDeque;
 
 import bischemes.engine.*;
+import bischemes.game.InputHandler.InputCommand;
 import bischemes.engine.physics.*;
 import bischemes.engine.physics.ForceGenerators.DirectionalGravity;
 import bischemes.game.Game.GameState;
@@ -44,6 +45,11 @@ public class Game implements GameInterface {
 			case PAUSE:
 				break;
 			case PLAY:
+				// Check for interact input
+				if (InputHandler.getInstance().getPressedCommands().contains(InputCommand.INTERACT)) {
+					currentRoom.interact();
+				}
+
 				// Update forces on grav item
 				setEngineCameraPosition();
 				engine.update();

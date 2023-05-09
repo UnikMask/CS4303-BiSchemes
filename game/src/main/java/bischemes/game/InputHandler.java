@@ -24,6 +24,11 @@ public class InputHandler {
 	}
 
 	public InputCommand keyPressed(Character c) {
+		if (!pressedKeys.contains(c)) {
+			pressedKeys.add(c);
+		} else {
+			pressedKeys.remove(c);
+		}
 		if (!heldKeys.contains(c)) {
 			heldKeys.add(c);
 			return onPressCommands.containsKey(c) ? onPressCommands.get(c) : InputCommand.NONE;

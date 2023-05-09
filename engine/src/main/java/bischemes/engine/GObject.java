@@ -2,6 +2,8 @@ package bischemes.engine;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import bischemes.engine.physics.Manifold;
 import bischemes.engine.physics.RigidBody;
@@ -10,7 +12,7 @@ import processing.core.PVector;
 
 public class GObject {
 	protected GObject parent;
-	protected List<GObject> children = new ArrayList<>();
+	protected Set<GObject> children = new HashSet<>();
 	protected PVector position;
 	protected double orientation;
 	protected RigidBody rigidBody = null;
@@ -132,7 +134,13 @@ public class GObject {
 	}
 
 	public List<GObject> getChildren() {
-		return children;
+		return children.stream().toList();
+	}
+
+	public void removeChild(GObject child) {
+		if (children.contains(child)) {
+			children.remove(child);
+		}
 	}
 
 	/////////////////////

@@ -15,9 +15,10 @@ import processing.core.PVector;
 public class Player extends GObject {
 	// Player Constants
 	private static final PVector JUMP_FORCE = new PVector(0, 8);
+	public static final PVector PLAYER_SIZE = new PVector(0.75f, 2);
 	private static final double RUN_THRESHOLD = 0.01;
 	private static final double WALL_DOT_THRESHOLD = 0.3;
-	private static final double MIRROR_THRESHOLD = 0.1;
+	private static final double MIRROR_THRESHOLD = 0.01;
 	private static final double WALL_MAX_TIMER = 0.2;
 	private static final String fpIdle = "char_idle.png";
 	private static final List<String> fpRun = Arrays.asList("char_run2.png", "char_run3.png", "char_run1.png");
@@ -112,7 +113,7 @@ public class Player extends GObject {
 
 		// Mirror character accordingly
 		VisualAttribute current = getVisualAttribute(playerVisuals);
-		current.mirrorX = movement.x + MIRROR_THRESHOLD * (current.mirrorX ? -1 : 1) < 0;
+		current.mirrorX = projectedVelocity + MIRROR_THRESHOLD * (current.mirrorX ? -1 : 1) < 0;
 
 		// Set new animation frame
 		applyFrame(getVisibleFrame());
@@ -170,7 +171,7 @@ public class Player extends GObject {
 		super(null, position, orientation);
 		setRigidBody(new RigidBody(
 				new RigidBodyProperties(Map.of("mass", 35.0, "inertia", 20.0, "move", true, "rotate", false, "mesh",
-						new Primitive(new Surface(0.2, 1.0, 1.0), PrimitiveUtils.makeRect(new PVector(0.75f, 2)))))));
+						new Primitive(new Surface(0.2, 1.0, 1.0), PrimitiveUtils.makeRect(PLAYER_SIZE))))));
 		this.gravity = gravity;
 		this.color = color;
 

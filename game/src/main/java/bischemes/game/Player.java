@@ -15,12 +15,13 @@ import processing.core.PVector;
 
 public class Player extends PlayerAbstract {
 	// Player Constants
-	private static final PVector JUMP_FORCE = new PVector(0, 8);
+	private static final double JUMP_INTENSITY = 8;
 	public static final PVector PLAYER_SIZE = new PVector(0.75f, 1.8f);
 	private static final double RUN_THRESHOLD = 0.01;
 	private static final double WALL_DOT_THRESHOLD = 0.3;
 	private static final double MIRROR_THRESHOLD = 0.01;
 	private static final double WALL_MAX_TIMER = 0.2;
+	private static final float WALL_JUMP_INTENSITY = 2;
 	private static final String fpIdle = "char_idle.png";
 	private static final List<String> fpRun = Arrays.asList("char_run2.png", "char_run3.png", "char_run1.png");
 	private static final String fpJump = "char_jump.png";
@@ -43,6 +44,7 @@ public class Player extends PlayerAbstract {
 	private PlayerMovement pMvt = new PlayerMovement(this, new PVector(1, 0));
 	private DirectionalGravity gravity;
 	private double wallTimer;
+	private PVector wallNormal;
 
 	/////////////////////
 	// GObject Methods //
@@ -60,6 +62,7 @@ public class Player extends PlayerAbstract {
 			} else if (Math.abs(projectedCollision) < WALL_DOT_THRESHOLD) {
 				// Hit a wall
 				state = PlayerState.WALL;
+				wallNormal = normal;
 				wallTimer = 0;
 			} else {
 				// Hit floor
@@ -83,10 +86,14 @@ public class Player extends PlayerAbstract {
 			});
 
 			// Deal with jump
-			if (c == InputCommand.UP && state != PlayerState.JUMP && state != PlayerState.WALL) {
-				state = PlayerState.JUMP;
-				rigidBody.applyImpulse(PVector.mult(JUMP_FORCE, (float) rigidBody.getMass()),
+			if (c == InputCommand.UP && state != PlayerState.JUMP) {
+				PVector jumpForce = PVector.mult(PVector.add(PVector.mult(gravity.getDirection(), -1),
+						state == PlayerState.WALL ? PVector.mult(wallNormal, WALL_JUMP_INTENSITY) : new PVector())
+						.normalize(), (float) JUMP_INTENSITY);
+				System.out.println(jumpForce);
+				rigidBody.applyImpulse(PVector.mult(jumpForce, (float) rigidBody.getMass()),
 						PVector.sub(position, new PVector(0, 0.45f)));
+				state = PlayerState.JUMP;
 			}
 		}
 

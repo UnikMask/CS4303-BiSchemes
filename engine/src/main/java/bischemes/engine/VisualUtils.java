@@ -33,6 +33,18 @@ public final class VisualUtils {
 		return new VisualAttribute(vertices, uvMap, texture);
 	}
 
+	/**
+	 * Make a textured visual polygon.
+	 */
+	public static VisualAttribute makeTexturedPolygon(PVector size, int sides, float baseAngle, PVector anchor,
+													  PImage texture, int colour) {
+		List<PVector> vertices = new ArrayList<>();
+		List<PVector> uvMap = new ArrayList<>();
+
+		generateRegularPolygon(vertices, uvMap, sides, baseAngle, size, anchor);
+		return new VisualAttribute(vertices, uvMap, texture, colour);
+	}
+
 	public static VisualAttribute makeUntexturedPolygon(PVector size, int sides, float baseAngle, PVector anchor,
 			int color) {
 		List<PVector> vertices = new ArrayList<>();

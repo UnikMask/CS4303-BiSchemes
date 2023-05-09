@@ -90,6 +90,7 @@ public class Room extends GObject {
      * Flags that an INTERACT command has occurred within the last update() frame
      */
     public void interact() {
+        System.out.println("INTERACTION DETECTED");
         interaction = true;
     }
 

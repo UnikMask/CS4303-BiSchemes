@@ -47,6 +47,7 @@ public class Game implements GameInterface {
 			case PLAY:
 				// Update forces on grav item
 				setEngineCameraPosition();
+				if (InputHandler.getInstance().hasInteraction()) currentRoom.interact();
 				engine.update();
 				break;
 			case INTRO:

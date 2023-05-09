@@ -1,12 +1,11 @@
 package bischemes.level.parts.behaviour;
 
-import bischemes.engine.GObject;
 import bischemes.engine.VisualAttribute;
 import bischemes.engine.VisualUtils;
 import bischemes.level.PlayerAbstract;
-import bischemes.level.Room;
 import bischemes.level.parts.RObject;
 import bischemes.level.util.SpriteLoader;
+import processing.core.PImage;
 import processing.core.PVector;
 
 public abstract class BInteract extends BUpdate {
@@ -24,6 +23,10 @@ public abstract class BInteract extends BUpdate {
 	private boolean activeOnState = false;
 	private boolean stateActivity;
 
+	private PVector indicatorDimension;
+	private PImage indicatorTexture;
+	private PVector indicatorOffset;
+
 	protected BInteract(RObject interactable, float x, float y) {
 		super(interactable);
 		useCircleProx = false;
@@ -40,8 +43,11 @@ public abstract class BInteract extends BUpdate {
 	}
 
 	public void addIndicator(PVector indicatorOffset) {
-		indicator = VisualUtils.makeTexturedPolygon(
-				new PVector(1, 1), 4, 0, indicatorOffset, SpriteLoader.getInteractSymbol());
+		this.indicatorTexture = SpriteLoader.getInteractSymbol();
+		this.indicatorDimension = new PVector(1, 1);
+		this.indicatorOffset = indicatorOffset;
+		indicator = VisualUtils.makeTexturedPolygon(indicatorDimension, 4, 0, indicatorOffset,
+				indicatorTexture);
 	}
 
 	public void setActiveOnState(boolean activeOnState) {
@@ -68,8 +74,9 @@ public abstract class BInteract extends BUpdate {
 
 	// Checks whether the InputHandler currently holds the InputCommand INTERACT
 	private boolean isInteraction() {
-		// TODO need to get interaction from room
-		return false;
+		// TODO check if this works
+		if (room.isInteraction()) System.out.println("Interaction Detected for RObject with id=" + baseObj.getId());
+		return room.isInteraction();
 	}
 
 	private void updateIndicator(boolean showIndicator) {
@@ -112,9 +119,13 @@ public abstract class BInteract extends BUpdate {
 
 	@Override
 	public void setColour(int colour) {
-		if (indicator == null || showingIndicator)
-			return;
-		indicator.makeTintedTexture(colour);
+		if (indicator == null) return;
+		if (showingIndicator) baseObj.removeVisualAttributes(indicator);
+		indicator = VisualUtils.makeTexturedPolygon(indicatorDimension, 4, 0, indicatorOffset,
+				indicatorTexture, colour);
+		indicator.setScaling(indicatorScale);
+		if (showingIndicator) baseObj.addVisualAttributes(indicator);
+
 	}
 
 }

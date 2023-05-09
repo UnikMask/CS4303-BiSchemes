@@ -331,7 +331,8 @@ public class PartFactory {
 		initRBNoCollision();
 		RObject lever = new RObject(parent, anchor, orientation, id, colour);
 
-		lever.addVisualAttributes(VisualUtils.makeRect(new PVector(1, 1), SpriteLoader.getLever()));
+		lever.addVisualAttributes(VisualUtils.makeRect(new PVector(-1, -1),
+				Room.getRoom(lever).getLevel().getColour(colour), SpriteLoader.getLever()));
 
 		BStateFlip.assign(lever, false);
 		BStateSwitchStates.assign(lever, linkedIDs);

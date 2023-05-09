@@ -18,6 +18,8 @@ public class BStateSwapColour extends BState {
 
     private VisualAttribute switchSymbol = null;
 
+    private PVector iconDimension;
+
     private BStateSwapColour(RObject swapper) {
         super(swapper);
         swapper.addOnStateChange(this);
@@ -31,26 +33,30 @@ public class BStateSwapColour extends BState {
     }
 
     public void addSwitchIcon(PVector maxDimension) {
-        PVector dimension = new PVector(
+        PVector iconDimension = new PVector(
                 min(maxDimension.x, 1),
                 min(maxDimension.y, 1));
-        switchSymbol = VisualUtils.makeRect(dimension, SpriteLoader.getSwitchSymbol());
+
         baseObj.addVisualAttributes(switchSymbol);
     }
 
     @Override
     public void run() {
+        int oldColour = room.getLevel().getColour(baseObj.getLColour());
         if (baseObj.getLColour() == LColour.PRIMARY) {
             baseObj.setLColour(LColour.SECONDARY);
             baseObj.setColour(colourSecondary);
-            if (switchSymbol != null)
-                switchSymbol.setColour(colourPrimary);
         } else {
             baseObj.setLColour(LColour.PRIMARY);
             baseObj.setColour(colourPrimary);
-            if (switchSymbol != null)
-                switchSymbol.setColour(colourSecondary);
         }
+
+        if (switchSymbol != null) {
+            baseObj.removeVisualAttributes(switchSymbol);
+            switchSymbol = VisualUtils.makeRect(iconDimension , oldColour, SpriteLoader.getSwitchSymbol());
+            baseObj.addVisualAttributes(switchSymbol);
+        }
+
     }
 
     @Override

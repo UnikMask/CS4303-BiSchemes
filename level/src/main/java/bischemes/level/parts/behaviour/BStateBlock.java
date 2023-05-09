@@ -2,6 +2,7 @@ package bischemes.level.parts.behaviour;
 
 import bischemes.engine.VisualAttribute;
 import bischemes.engine.VisualUtils;
+import bischemes.engine.physics.PhysicsMesh;
 import bischemes.level.parts.RObject;
 import bischemes.level.util.SpriteLoader;
 import processing.core.PVector;
@@ -43,12 +44,16 @@ public class BStateBlock extends BState {
 
     private void makeMovable() {
         baseObj.addVisualAttributes(blockSymbol);
-        // Alter RigidBody properties of block to make movable
+        // TODO Alter RigidBody properties of block to make movable
+        baseObj.getRigidBody().getProperties().isMovable = true;
+        baseObj.getRigidBody().getProperties().isMovable = true;
     }
 
     private void makeImmovable() {
         baseObj.addVisualAttributes(lockSymbol);
-        // Alter RigidBody properties of block to make immovable
+        // TODO Alter RigidBody properties of block to make immovable
+        baseObj.getRigidBody().getProperties().isMovable = false;
+        baseObj.getRigidBody().getProperties().isRotatable = false;
     }
 
     @Override
@@ -57,10 +62,11 @@ public class BStateBlock extends BState {
         if (baseObj.getState()) baseObj.removeVisualAttributes(lockSymbol);
         else baseObj.removeVisualAttributes(blockSymbol);
 
-        this.blockSymbol = VisualUtils.makeRect(new PVector(1, 1), colour, SpriteLoader.getBlockSymbol());
-        this.lockSymbol = VisualUtils.makeRect(new PVector(1, 1), colour, SpriteLoader.getLockSymbol());
-        if (baseObj.getState()) blockSymbol.makeTintedTexture(colour);
-        else lockSymbol.makeTintedTexture(colour);
+        blockSymbol = VisualUtils.makeRect(new PVector(1, 1), colour, SpriteLoader.getBlockSymbol());
+        lockSymbol = VisualUtils.makeRect(new PVector(1, 1), colour, SpriteLoader.getLockSymbol());
+
+        if (baseObj.getState()) baseObj.addVisualAttributes(lockSymbol);
+        else baseObj.addVisualAttributes(blockSymbol);;
     }
 
 }

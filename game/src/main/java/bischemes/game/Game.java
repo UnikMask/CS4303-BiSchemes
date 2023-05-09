@@ -14,7 +14,7 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
-public class Game {
+public class Game implements GameInterface {
 	// Constants
 	private static final double TRANSITION_DURATION = 0.5;
 
@@ -76,6 +76,7 @@ public class Game {
 
 	public void setLevel(Level level) {
 		this.level = level;
+		level.initialiseRooms();
 		rooms = Arrays.asList(level.getRooms());
 		colours = new Pair<>(level.getColourPrimary(), level.getColourSecondary());
 
@@ -85,6 +86,9 @@ public class Game {
 
 		loadRoom(initRoom);
 		secondaryScene.attachToGObject(secondaryScene.scene, player);
+
+		level.setGameParameters(this, player);
+
 		engine.setPause(false);
 	}
 
@@ -125,6 +129,21 @@ public class Game {
 				}
 			}
 		}
+	}
+	// Alex TODO when called this method should switch the current room
+	public void loadNextRoom(Room room, PVector newPlayerPosition) {
+
+	}
+
+	// Alex TODO when called this should switch the player's colour
+	public void switchPlayerColour() {
+
+	}
+
+	// Alex TODO when called this should return the user to the MapUI (set RunnerState to MENU)
+	public void completeLevel() {
+		level.setCompleted(true);
+		//TODO rest of the method :)
 	}
 
 	/////////////////

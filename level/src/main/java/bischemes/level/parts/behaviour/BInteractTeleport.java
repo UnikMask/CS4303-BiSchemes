@@ -1,6 +1,7 @@
 package bischemes.level.parts.behaviour;
 
 import bischemes.engine.VisualUtils;
+import bischemes.level.Level;
 import bischemes.level.Room;
 import bischemes.level.parts.RObject;
 import bischemes.level.util.SpriteLoader;
@@ -78,8 +79,7 @@ public class BInteractTeleport extends BInteract {
 
     @Override
     public void onInteraction() {
-        // TODO get player
-        //teleporter.teleport(player);
+        teleporter.teleport(Room.getRoom(interactable).getLevel().getPlayer());
     }
 
     @Override

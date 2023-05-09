@@ -10,9 +10,10 @@ import bischemes.engine.*;
 import bischemes.engine.physics.*;
 import bischemes.engine.physics.ForceGenerators.DirectionalGravity;
 import bischemes.game.InputHandler.InputCommand;
+import bischemes.level.PlayerAbstract;
 import processing.core.PVector;
 
-public class Player extends GObject {
+public class Player extends PlayerAbstract {
 	// Player Constants
 	private static final PVector JUMP_FORCE = new PVector(0, 8);
 	public static final PVector PLAYER_SIZE = new PVector(0.75f, 1.8f);
@@ -117,6 +118,15 @@ public class Player extends GObject {
 		// Set new animation frame
 		applyFrame(getVisibleFrame());
 		gravity.updateForce(getRigidBody());
+	}
+
+	@Override
+	public PVector getGravityDirection() {
+		return gravity.getDirection();
+	}
+	@Override
+	public void setGravityDirection(PVector direction) {
+		gravity.setDirection(direction);
 	}
 
 	/////////////////////

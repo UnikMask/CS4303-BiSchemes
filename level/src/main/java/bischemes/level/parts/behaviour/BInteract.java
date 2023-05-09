@@ -3,6 +3,8 @@ package bischemes.level.parts.behaviour;
 import bischemes.engine.GObject;
 import bischemes.engine.VisualAttribute;
 import bischemes.engine.VisualUtils;
+import bischemes.level.PlayerAbstract;
+import bischemes.level.Room;
 import bischemes.level.parts.RObject;
 import bischemes.level.util.SpriteLoader;
 import processing.core.PVector;
@@ -97,16 +99,12 @@ public abstract class BInteract extends BUpdate {
 
 	@Override
 	public void run() {
-		return;
-
-		/*
-		 * GObject player = null;
-		 * // TODO need a way to actually get the player's GObject
-		 * PVector playerPos = player.getPosition();
-		 * boolean canInteract = canInteract(playerPos);
-		 * if (canInteract && isInteraction()) onInteraction();
-		 * if (indicator != null) updateIndicator(canInteract);
-		 */
+		PlayerAbstract player = Room.getRoom(interactable).getLevel().getPlayer();
+		if (player == null) return;
+		PVector playerPos = player.getPosition();
+		boolean canInteract = canInteract(playerPos);
+		if (canInteract && isInteraction()) onInteraction();
+		if (indicator != null) updateIndicator(canInteract);
 	}
 
 	@Override

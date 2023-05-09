@@ -22,9 +22,8 @@ public class Runner extends PApplet {
 	}
 
 	public void settings() {
-		size(1600, 900, PConstants.P2D);
-		// size(1920, 1080, PConstants.P2D);
-		// fullScreen();
+		size(1920, 1080, PConstants.P2D);
+		fullScreen();
 	}
 
 	public void setup() {

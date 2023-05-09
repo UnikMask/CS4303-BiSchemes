@@ -99,7 +99,12 @@ public abstract class BInteract extends BUpdate {
 
 	@Override
 	public void run() {
-		PlayerAbstract player = Room.getRoom(interactable).getLevel().getPlayer();
+		Room room = Room.getRoom(interactable);
+		if (room == null) {
+			System.out.println("NULL room for interactable, id = " + interactable.getId());
+			return;
+		}
+		PlayerAbstract player = room.getLevel().getPlayer();
 		if (player == null) return;
 		PVector playerPos = player.getPosition();
 		boolean canInteract = canInteract(playerPos);

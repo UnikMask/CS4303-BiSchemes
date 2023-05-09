@@ -40,6 +40,7 @@ public class Room extends GObject {
      * @return the Room of the GObject (or null if it reaches a GObject which isn't a Room and has no parent)
      */
     public static Room getRoom(GObject child) {
+        if (child == null) return null;
         if (child instanceof Room) return (Room) child;
         return getRoom(child.getParent());
     }

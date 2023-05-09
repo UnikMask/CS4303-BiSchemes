@@ -451,27 +451,28 @@ public class PartFactory {
 		return portal;
 	}
 
-	public RObject makeExit(GObject parent, PVector range, boolean isVertical, boolean zeroAxis, int id) {
-		PVector anchor = new PVector(-1, -1);
+	public RObject makeExit(GObject parent, PVector range, boolean isVertical, boolean zeroAxis, int id, LColour colour) {
+		PVector anchor = new PVector(0, 0);
 		PVector dimensions;
 		float length = range.y - range.x;
 		if (isVertical) {
 			if (!zeroAxis)
-				anchor.y = Room.getRoom(parent).getDimensions().y + 1;
+				anchor.y = Room.getRoom(parent).getDimensions().y;
 			anchor.x = length / 2f;
-			dimensions = new PVector(length, 1);
+			dimensions = new PVector(length, 0.25f);
 		}
 		else {
 			if (!zeroAxis)
-				anchor.x = Room.getRoom(parent).getDimensions().x + 1;
+				anchor.x = Room.getRoom(parent).getDimensions().x;
 			anchor.y = length / 2f;
-			dimensions = new PVector(1, length);
+			dimensions = new PVector(0.25f, length);
 		}
 
 		initRBGeometry();
 		//TODO might not be ok for colour to be null
-		RObject exit = createRect(parent, anchor, dimensions, 0f, null, id);
+		RObject exit = createRect(parent, anchor, dimensions, 0f, colour, id);
 		BHitExit.assign(exit);
+
 
 		return exit;
 	}

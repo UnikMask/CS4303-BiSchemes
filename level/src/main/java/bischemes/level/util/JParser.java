@@ -154,6 +154,11 @@ public final class JParser {
         return colour;
     }
 
+    public static LColour parseLColour(JsonObject obj, String name, LColour defaultValue) {
+        try { return parseLColour(obj, name); }
+        catch (LevelParseException e) { return defaultValue; }
+    }
+
     public static void parseGeometryArr(JsonObject obj, String name, GObject parent) {
         JsonArray arr = parseArr(obj, name);
         PartFactory partFactory = new PartFactory();
@@ -419,7 +424,9 @@ public final class JParser {
                     "Range values cannot extend past side length (length = " + maxBound + " for " + side + " of room " +
                     "(id = " + Room.getRoom(parent).getId() + "))");
 
-        return pF.makeExit(parent, range, isVertical, zeroAxis, id);
+        LColour colour = parseLColour(obj, "colour", LColour.SECONDARY);
+
+        return pF.makeExit(parent, range, isVertical, zeroAxis, id, colour);
     }
 
     public static RObject parseCustom(JsonObject obj, GObject parent, PartFactory pF, PVector anchor, int id) {

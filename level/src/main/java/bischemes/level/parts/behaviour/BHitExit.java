@@ -27,7 +27,7 @@ public class BHitExit extends BHit {
     public void run(GObject hit, Manifold m) {
         if (activeOnState && (stateActivity != baseObj.getState())) return;
         if (hit instanceof PlayerAbstract)
-            Room.getRoom(baseObj).getLevel().getGame().completeLevel();
+            room.getLevel().getGame().completeLevel();
     }
 
     @Override

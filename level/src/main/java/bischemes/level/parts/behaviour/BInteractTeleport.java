@@ -79,7 +79,7 @@ public class BInteractTeleport extends BInteract {
 
     @Override
     public void onInteraction() {
-        teleporter.teleport(room.getLevel().getPlayer());
+        teleporter.teleport(baseObj.getPlayer());
     }
 
     @Override

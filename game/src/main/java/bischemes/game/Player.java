@@ -14,7 +14,7 @@ import processing.core.PVector;
 
 public class Player extends GObject {
 	// Player Constants
-	private static final PVector JUMP_FORCE = new PVector(0, 5);
+	private static final PVector JUMP_FORCE = new PVector(0, 8);
 	private static final double RUN_THRESHOLD = 0.01;
 	private static final double WALL_DOT_THRESHOLD = 0.3;
 	private static final double MIRROR_THRESHOLD = 0.1;
@@ -62,9 +62,9 @@ public class Player extends GObject {
 		PVector movement = new PVector();
 		for (InputCommand c : InputHandler.getInstance().getHeldCommands()) {
 			movement.add(switch (c) {
-			case RIGHT -> new PVector(1, 0);
-			case LEFT -> new PVector(-1, 0);
-			default -> new PVector();
+				case RIGHT -> new PVector(1, 0);
+				case LEFT -> new PVector(-1, 0);
+				default -> new PVector();
 			});
 
 			// Deal with jump
@@ -103,18 +103,18 @@ public class Player extends GObject {
 	// Get the player's visible frame index.
 	private int getVisibleFrame() {
 		return switch (state) {
-		case IDLE -> spriteIdle;
-		case RUN -> {
-			double projectedVelocity = Math
-					.abs(PVector.dot(getRigidBody().getProperties().velocity, gravity.getTangent()));
-			tAnimation += projectedVelocity / spritesRun.size() / 60;
-			tAnimation %= spritesRun.size();
-			int frame = (int) ((tAnimation * spritesRun.size()) % spritesRun.size());
-			yield(spritesRun.get(frame));
-		}
-		case JUMP -> spriteJump;
-		case WALL -> spriteWall;
-		case FALL -> spriteJump;
+			case IDLE -> spriteIdle;
+			case RUN -> {
+				double projectedVelocity = Math
+						.abs(PVector.dot(getRigidBody().getProperties().velocity, gravity.getTangent()));
+				tAnimation += projectedVelocity / spritesRun.size() / 60;
+				tAnimation %= spritesRun.size();
+				int frame = (int) ((tAnimation * spritesRun.size()) % spritesRun.size());
+				yield (spritesRun.get(frame));
+			}
+			case JUMP -> spriteJump;
+			case WALL -> spriteWall;
+			case FALL -> spriteJump;
 		};
 	}
 
@@ -134,7 +134,7 @@ public class Player extends GObject {
 
 	// Generate a sprite for the player and add it to its list of visual attributes.
 	private int generateSprite(String fp) {
-		VisualAttribute a = VisualUtils.makeRect(new PVector(1, 1), color, EngineRuntime.applet.loadImage(fp));
+		VisualAttribute a = VisualUtils.makeRect(new PVector(2, 2), color, EngineRuntime.applet.loadImage(fp));
 		a.visible = false;
 		return addVisualAttributes(a).get(0);
 	}
@@ -148,7 +148,7 @@ public class Player extends GObject {
 		super(null, position, orientation);
 		setRigidBody(new RigidBody(
 				new RigidBodyProperties(Map.of("mass", 35.0, "inertia", 20.0, "move", true, "rotate", false, "mesh",
-						new Primitive(new Surface(0, 1.0, 1.0), PrimitiveUtils.makeRect(new PVector(0.4f, 1)))))));
+						new Primitive(new Surface(0, 1.0, 1.0), PrimitiveUtils.makeRect(new PVector(0.8f, 2)))))));
 		this.gravity = gravity;
 		this.color = color;
 

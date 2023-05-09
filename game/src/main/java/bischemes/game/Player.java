@@ -121,6 +121,7 @@ public class Player extends PlayerAbstract {
 		// Mirror character accordingly
 		VisualAttribute current = getVisualAttribute(playerVisuals);
 		current.mirrorX = projectedVelocity + MIRROR_THRESHOLD * (current.mirrorX ? -1 : 1) < 0;
+		current.mirrorY = PVector.dot(gravity.getDirection(), new PVector(0, 1)) > 0;
 
 		// Set new animation frame
 		applyFrame(getVisibleFrame());
@@ -139,6 +140,12 @@ public class Player extends PlayerAbstract {
 
 	public void setDirectionalGravity(DirectionalGravity g) {
 		this.gravity = g;
+	}
+
+	public void setColour(int colour) {
+		for (VisualAttribute v : visualAttributes) {
+			v.setColour(colour);
+		}
 	}
 
 	/////////////////////

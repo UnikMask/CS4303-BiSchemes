@@ -1,17 +1,16 @@
 package bischemes.game;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayDeque;
-
 import bischemes.engine.*;
-import bischemes.game.InputHandler.InputCommand;
 import bischemes.engine.physics.*;
 import bischemes.engine.physics.ForceGenerators.DirectionalGravity;
 import bischemes.game.Game.GameState;
-import bischemes.level.parts.*;
+import bischemes.game.InputHandler.InputCommand;
 import bischemes.level.*;
+import bischemes.level.parts.*;
 import bischemes.level.util.LColour;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.List;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
@@ -47,13 +46,15 @@ public class Game implements GameInterface {
 				break;
 			case PLAY:
 				// Check for interact input
-				if (InputHandler.getInstance().getPressedCommands().contains(InputCommand.INTERACT)) {
+				if (InputHandler.getInstance().getPressedCommands().contains(
+						InputCommand.INTERACT)) {
 					currentRoom.interact();
 				}
 
 				// Update forces on grav item
 				setEngineCameraPosition();
-				if (InputHandler.getInstance().hasInteraction()) currentRoom.interact();
+				if (InputHandler.getInstance().hasInteraction())
+					currentRoom.interact();
 				engine.update();
 				break;
 			case INTRO:
@@ -66,11 +67,15 @@ public class Game implements GameInterface {
 
 	public void setEngineCameraPosition() {
 		PVector minCameraPosition = PVector.add(new PVector(), PVector.div(engine.getCameraBounds(), 2));
-		PVector maxCameraPosition = PVector.sub(currentRoom.getDimensions(), PVector.div(engine.getCameraBounds(), 2));
+		PVector maxCameraPosition = PVector.sub(
+				currentRoom.getDimensions(), PVector.div(engine.getCameraBounds(), 2));
 		PVector newPosition = new PVector(
-				Math.min(Math.max(minCameraPosition.x, player.getPosition().x), maxCameraPosition.x),
-				Math.min(Math.max(minCameraPosition.y, player.getPosition().y), maxCameraPosition.y));
-		engine.setCameraPosition(PVector.lerp(engine.getCameraPosition(), newPosition, 0.1f));
+				Math.min(Math.max(minCameraPosition.x, player.getPosition().x),
+						maxCameraPosition.x),
+				Math.min(Math.max(minCameraPosition.y, player.getPosition().y),
+						maxCameraPosition.y));
+		engine.setCameraPosition(
+				PVector.lerp(engine.getCameraPosition(), newPosition, 0.1f));
 	}
 
 	public void setup() {
@@ -88,7 +93,8 @@ public class Game implements GameInterface {
 		colours = new Pair<>(level.getColourPrimary(), level.getColourSecondary());
 
 		Room initRoom = level.getInitRoom();
-		gravities = new Pair<>(new DirectionalGravity(new PVector(0, 1)), new DirectionalGravity(new PVector(0, -1)));
+		gravities = new Pair<>(new DirectionalGravity(new PVector(0, 1)),
+				new DirectionalGravity(new PVector(0, -1)));
 
 		loadRoom(initRoom, initRoom.getSpawnPosition());
 		secondaryScene.attachToGObject(secondaryScene.scene, player);
@@ -99,13 +105,17 @@ public class Game implements GameInterface {
 	}
 
 	public void removeRigidBody(RigidBody r, LColour l) {
-		if (l == LColour.PRIMARY) primaryScene.removeRigidBody(r);
-		else secondaryScene.removeRigidBody(r);
+		if (l == LColour.PRIMARY)
+			primaryScene.removeRigidBody(r);
+		else
+			secondaryScene.removeRigidBody(r);
 	}
 
 	public void addRigidBody(RigidBody r, LColour l) {
-		if (l == LColour.PRIMARY) primaryScene.addRigidBody(r);
-		else secondaryScene.addRigidBody(r);
+		if (l == LColour.PRIMARY)
+			primaryScene.addRigidBody(r);
+		else
+			secondaryScene.addRigidBody(r);
 	}
 
 	public void loadRoom(Room room, PVector playerPosition) {
@@ -118,8 +128,7 @@ public class Game implements GameInterface {
 		primaryScene.scene = new GObject(null, new PVector(), 0);
 		primaryScene.grid = new GridSector(extraDimensions, new PVector(-1, -1),
 				(int) extraDimensions.x, (int) extraDimensions.y);
-		VisualAttribute primaryBg = VisualUtils.makeRect(room.getDimensions(),
-				colours.a);
+		VisualAttribute primaryBg = VisualUtils.makeRect(room.getDimensions(), colours.a);
 		primaryBg.setOffset(PVector.div(room.getDimensions(), 2));
 		primaryScene.scene.addVisualAttributes(primaryBg);
 
@@ -130,7 +139,9 @@ public class Game implements GameInterface {
 
 		// Load player
 		if (player == null) {
-			player = new Player(playerPosition, 0, isPrimaryScene? gravities.a: gravities.b, level.getColourSecondary());
+			player = new Player(playerPosition, 0,
+					isPrimaryScene ? gravities.a : gravities.b,
+					level.getColourSecondary());
 		} else {
 			player.setLocalPosition(playerPosition);
 		}
@@ -142,14 +153,18 @@ public class Game implements GameInterface {
 
 		// Add geometries to both scenes
 		primaryScene.attachToGObject(primaryScene.scene, room.getPrimaryGeometry());
-		secondaryScene.attachToGObject(secondaryScene.scene, room.getSecondaryGeometry());
+		secondaryScene.attachToGObject(secondaryScene.scene,
+				room.getSecondaryGeometry());
 
 		// Initialise and load objects into the game
 		ArrayDeque<RObject> q = new ArrayDeque<>(room.getObjects());
 		while (!q.isEmpty()) {
 			RObject o = q.pollFirst();
 			if (o.getLColour() == null) {
-				q.addAll(o.getChildren().stream().filter((go) -> go instanceof RObject).map((go) -> (RObject) go)
+				q.addAll(o.getChildren()
+						.stream()
+						.filter((go) -> go instanceof RObject)
+						.map((go) -> (RObject) go)
 						.toList());
 			} else {
 				switch (o.getLColour()) {
@@ -166,7 +181,6 @@ public class Game implements GameInterface {
 		}
 	}
 
-
 	public void loadNextRoom(Room room, PVector newPlayerPosition) {
 		engine.setPause(true);
 		loadRoom(room, PVector.add(newPlayerPosition, new PVector(1, 0)));
@@ -175,12 +189,26 @@ public class Game implements GameInterface {
 
 	// Alex TODO when called this should switch the player's colour
 	public void switchPlayerColour() {
-		//isPrimaryScene = !isPrimaryScene;
+		if (isPrimaryScene) {
+			System.out.println("Updog primary");
+			primaryScene.removeRigidBody(player.getRigidBody());
+			primaryScene.scene.removeChild(player);
+			secondaryScene.attachToGObject(secondaryScene.scene, player);
+			player.setColour(colours.b);
+		} else {
+			secondaryScene.removeRigidBody(player.getRigidBody());
+			secondaryScene.scene.removeChild(player);
+			primaryScene.attachToGObject(primaryScene.scene, player);
+			player.setColour(colours.a);
+		}
+		isPrimaryScene = !isPrimaryScene;
 	}
 
 	//
-	// Alex TODO when called this should return the user to the MapUI (set RunnerState to MENU)
+	// Alex TODO when called this should return the user to the MapUI (set
+	// RunnerState to MENU)
 	public void completeLevel() {
+		//
 		level.setCompleted(true);
 		state = GameState.END;
 	}

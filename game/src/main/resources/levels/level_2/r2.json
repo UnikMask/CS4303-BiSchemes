@@ -1,0 +1,131 @@
+{
+  "id" : 2,
+  "dimensions" : [16, 10],
+  "adjacent" : [
+    {
+      "id": 0,
+      "colour": "SECONDARY",
+      "range" : [3, 7],
+      "side" : "LEFT",
+      "destRoomId" : 0,
+      "linkId" : 0
+    },
+    {
+      "id": 1,
+      "colour": "PRIMARY",
+      "range" : [0, 3],
+      "side" : "LEFT",
+      "destRoomId" : 0,
+      "linkId" : 1
+    },
+    {
+      "id": 2,
+      "colour": "PRIMARY",
+      "range" : [7, 10],
+      "side" : "LEFT",
+      "destRoomId" : 0,
+      "linkId" : 2
+    },
+    {
+      "id": 3,
+      "colour": "SECONDARY",
+      "range" : [7, 9],
+      "side" : "RIGHT",
+      "destRoomId" : 3,
+      "linkId" : 0
+    }
+  ],
+  "spawnPosition": [1, 4],
+  "geometry": {
+    "primary": [
+      {
+        "type" : "RECT",
+        "corner" : [0, 3],
+        "dimensions" : [6, 4]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [6, 3],
+        "dimensions" : [9, 2]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [12, 5],
+        "dimensions" : [3, 4]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [15, 7],
+        "dimensions" : [1, 2]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [6, 8],
+        "dimensions" : [5, 2]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [9, 5],
+        "dimensions" : [2, 3]
+      }
+    ],
+    "secondary": [
+      {
+        "type": "RECT",
+        "corner": [0, 0],
+        "dimensions": [16, 3]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [15, 3],
+        "dimensions" : [1, 4]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [0, 7],
+        "dimensions" : [6, 3]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [6, 5],
+        "dimensions" : [3, 3]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [11, 5],
+        "dimensions" : [1, 5]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [12, 9],
+        "dimensions" : [4, 1]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "id": 4,
+      "type": "PORTAL",
+      "anchor": [3, 3],
+      "width": 2,
+      "isVertical": true,
+      "topColour": "SECONDARY"
+    },
+    {
+      "id": 5,
+      "type": "PORTAL",
+      "anchor": [6, 9],
+      "width": 2,
+      "isVertical": false,
+      "leftColour": "PRIMARY"
+    },
+    {
+      "id": 6,
+      "colour": "SECONDARY",
+      "type": "BLOCK",
+      "anchor": [8, 9],
+      "dimensions": [2, 2],
+      "mass": 40.0
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "id" : 1,
+  "dimensions" : [16, 10],
+  "adjacent" : [
+    {
+      "id": 0,
+      "colour": "SECONDARY",
+      "range" : [3, 8],
+      "side" : "LEFT",
+      "destRoomId" : 0,
+      "linkId" : 0
+    },
+    {
+      "id": 1,
+      "colour": "SECONDARY",
+      "range" : [3, 8],
+      "side" : "RIGHT",
+      "destRoomId" : 3,
+      "linkId" : 0
+    },
+    {
+      "id": 2,
+      "colour": "SECONDARY",
+      "range" : [4, 12],
+      "side" : "BOTTOM",
+      "destRoomId" : 2,
+      "linkId" : 0
+    }
+  ],
+  "spawnPosition": [2, 4],
+  "geometry": {
+    "primary": [
+      {
+        "type" : "RECT",
+        "corner" : [0, 3],
+        "dimensions" : [16, 5]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [4, 0],
+        "dimensions" : [3, 3]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [9, 0],
+        "dimensions" : [3, 3]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [7, 0],
+        "dimensions" : [2, 1]
+      }
+    ],
+    "secondary": [
+      {
+        "type": "RECT",
+        "corner": [0, 0],
+        "dimensions": [4, 3]
+      },
+      {
+        "type": "RECT",
+        "corner": [12, 0],
+        "dimensions": [4, 3]
+      },
+      {
+        "type": "RECT",
+        "corner": [7, 1],
+        "dimensions": [2, 2]
+      },
+      {
+        "type": "RECT",
+        "corner": [0, 8],
+        "dimensions": [16, 2]
+      }
+    ]
+  },
+  "objects": []
+}

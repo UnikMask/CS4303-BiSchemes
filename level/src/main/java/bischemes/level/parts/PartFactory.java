@@ -1,6 +1,7 @@
 package bischemes.level.parts;
 
 import bischemes.engine.GObject;
+import bischemes.engine.VisualAttribute;
 import bischemes.engine.VisualUtils;
 import bischemes.engine.physics.*;
 import bischemes.level.Room;
@@ -136,13 +137,13 @@ public class PartFactory {
 	}
 
 	private GObject createRect(GObject obj, PVector dimensions) {
-		obj.addVisualAttributes(VisualUtils.makeRect(dimensions, DEFAULT_COLOUR));
-
 		List<PVector> vertices = new ArrayList<>(4);
 		vertices.add(new PVector(dimensions.x / 2f, dimensions.y / 2f));
 		vertices.add(new PVector(-dimensions.x / 2f, dimensions.y / 2f));
 		vertices.add(new PVector(-dimensions.x / 2f, -dimensions.y / 2f));
 		vertices.add(new PVector(dimensions.x / 2f, -dimensions.y / 2f));
+
+		obj.addVisualAttributes(new VisualAttribute(vertices, DEFAULT_COLOUR));
 
 		finishPolygon(obj, vertices);
 		return obj;
@@ -158,9 +159,11 @@ public class PartFactory {
 				(Math.min(0, Math.min(vertex2.x, vertex3.x)) + Math.max(0, Math.max(vertex2.x, vertex3.x))) / 2f,
 				(Math.min(0, Math.min(vertex2.y, vertex3.y)) + Math.max(0, Math.max(vertex2.y, vertex3.y))) / 2f
 		);
-		PVector vertex1 = new PVector().sub(anchor);
+		PVector v1 = new PVector().sub(anchor);
+		PVector v2 = vertex2.copy().sub(anchor);
+		PVector v3 = vertex2.copy().sub(anchor);
 		anchor = anchor.add(corner);
-		return (RObject) createTriangle(new RObject(parent, anchor, 0, id, colour), vertex1, vertex2, vertex3);
+		return (RObject) createTriangle(new RObject(parent, anchor, 0, id, colour), v1, v2, v3);
 	}
 	public GObject createTriangle(GObject parent, PVector anchor, PVector vertex1, PVector vertex2, PVector vertex3) {
 		return createTriangle(new GObject(parent, anchor, 0), vertex1, vertex2, vertex3);
@@ -170,19 +173,21 @@ public class PartFactory {
 				(Math.min(0, Math.min(vertex2.x, vertex3.x)) + Math.max(0, Math.max(vertex2.x, vertex3.x))) / 2f,
 				(Math.min(0, Math.min(vertex2.y, vertex3.y)) + Math.max(0, Math.max(vertex2.y, vertex3.y))) / 2f
 		);
-		PVector vertex1 = new PVector().sub(anchor);
+		PVector v1 = new PVector().sub(anchor);
+		PVector v2 = vertex2.copy().sub(anchor);
+		PVector v3 = vertex3.copy().sub(anchor);
 		anchor = anchor.add(corner);
-		return createTriangle(new GObject(parent, anchor, 0), vertex1, vertex2, vertex3);
+		return createTriangle(new GObject(parent, anchor, 0), v1, v2, v3);
 	}
 
 	private GObject createTriangle(GObject obj, PVector vertex1, PVector vertex2, PVector vertex3) {
-		obj.addVisualAttributes(
-				VisualUtils.makeTriangle(vertex1.copy(), vertex2.copy(), vertex3.copy(), DEFAULT_COLOUR));
-
 		List<PVector> vertices = new ArrayList<>(3);
 		vertices.add(vertex1.copy());
 		vertices.add(vertex2.copy());
 		vertices.add(vertex3.copy());
+
+
+		obj.addVisualAttributes(new VisualAttribute(vertices, DEFAULT_COLOUR));
 
 		finishPolygon(obj, vertices);
 		return obj;
@@ -256,16 +261,8 @@ public class PartFactory {
 		vertices.add(new PVector(widths.x / 2f, -halfHeight));
 		vertices.add(new PVector(widths.y / 2f, halfHeight));
 
+		obj.addVisualAttributes(new VisualAttribute(vertices, DEFAULT_COLOUR));
 
-		PVector t1V3 = new PVector(-rectWidth / 2, (widths.x > widths.y) ? -halfHeight : halfHeight );
-		PVector t2V3 = new PVector(rectWidth / 2, t1V3.y );
-
-		obj.addVisualAttributes(VisualUtils.makeRect(new PVector(rectWidth, height), DEFAULT_COLOUR));
-
-		obj.addVisualAttributes(
-				VisualUtils.makeTriangle(vertices.get(0).copy(), vertices.get(1).copy(), t1V3, DEFAULT_COLOUR));
-		obj.addVisualAttributes(
-				VisualUtils.makeTriangle(vertices.get(2).copy(), vertices.get(3).copy(), t2V3, DEFAULT_COLOUR));
 
 		finishPolygon(obj, vertices);
 

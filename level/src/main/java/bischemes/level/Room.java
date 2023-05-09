@@ -141,7 +141,8 @@ public class Room extends GObject {
 
              JsonObject geometry = JParser.parseObj(roomJson, "geometry");
              JParser.parseGeometryArr(geometry, "primary", room.primaryGeometry);
-             for (GObject g : room.primaryGeometry.getChildren()) g.removeAllVisualAttributes();
+             //TODO remove primary visual attributes
+             //for (GObject g : room.primaryGeometry.getChildren()) g.removeAllVisualAttributes();
              JParser.parseGeometryArr(geometry, "secondary", room.secondaryGeometry);
 
              JParser.parseRObjectArr(roomJson, "objects", room, room.roomObjects);

@@ -58,7 +58,11 @@ public class EngineRuntime {
 		Collections.sort(visuals, new Comparator<VisualAttribute>() {
 			@Override
 			public int compare(VisualAttribute a, VisualAttribute b) {
-				return (int) (b.getSize().x * b.getSize().y - a.getSize().x * a.getSize().y);
+				if (a.visibilityPriority != b.visibilityPriority) {
+					return a.visibilityPriority ? Integer.MAX_VALUE : -Integer.MAX_VALUE;
+				} else {
+					return (int) (b.getSize().x * b.getSize().y - a.getSize().x * a.getSize().y);
+				}
 			}
 		});
 

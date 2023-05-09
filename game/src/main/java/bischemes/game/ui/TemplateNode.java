@@ -2,6 +2,7 @@ package bischemes.game.ui;
 
 
 import bischemes.level.Level;
+import bischemes.level.util.InvalidIdException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,8 +48,12 @@ public final class TemplateNode {
             nodes.put(level.getKey(), new TemplateNode(level.getValue()));
         // Fill out the children Lists for every TemplateNode
         for (TemplateNode node : nodes.values())
-            for (int id : node.dependencies)
+            for (int id : node.dependencies) {
+                TemplateNode t = nodes.get(id);
+                if (t == null)
+                    throw new InvalidIdException("level id " + id + " is referenced in Level with id " + node.level.getId() + " but doesn't exist");
                 nodes.get(id).addChildNode(node);
+            }
         // Calculate the boolean properties of every TemplateNode and add them to a List to be returned
         List<TemplateNode> template = new ArrayList<>();
         for (TemplateNode node : nodes.values()) {

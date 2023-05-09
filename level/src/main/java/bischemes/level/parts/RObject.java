@@ -102,7 +102,7 @@ public class RObject extends GObject {
 
 		// Add gravity if movable or rotatable.
 		if (getRigidBody().getProperties().isMovable || getRigidBody().getProperties().isRotatable) {
-			addOnUpdate(new BUpdate() {
+			addOnUpdate(new BUpdate(null) {
 					public void run() {
 						gravity.updateForce(getRigidBody());
 					}

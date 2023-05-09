@@ -6,10 +6,8 @@ import bischemes.level.parts.RObject;
 
 public class BHitStateSwitch extends BHit {
 
-    private final RObject switcher;
-
     private BHitStateSwitch(RObject switcher) {
-        this.switcher = switcher;
+        super(switcher);
         switcher.addOnHit(this);
     }
 
@@ -24,8 +22,8 @@ public class BHitStateSwitch extends BHit {
 
     @Override
     public void run(GObject hit, Manifold m) {
-        if (activeOnState && (stateActivity != switcher.getState())) return;
-        switcher.switchState();
+        if (activeOnState && (stateActivity != baseObj.getState())) return;
+        baseObj.switchState();
     }
 
     @Override

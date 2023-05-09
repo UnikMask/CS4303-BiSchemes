@@ -8,10 +8,8 @@ import bischemes.level.parts.RObject;
 
 public class BHitExit extends BHit {
 
-    private final RObject exit;
-
     private BHitExit(RObject exit) {
-        this.exit = exit;
+        super(exit);
         exit.addOnHit(this);
     }
 
@@ -27,9 +25,9 @@ public class BHitExit extends BHit {
 
     @Override
     public void run(GObject hit, Manifold m) {
-        if (activeOnState && (stateActivity != exit.getState())) return;
+        if (activeOnState && (stateActivity != baseObj.getState())) return;
         if (hit instanceof PlayerAbstract)
-            Room.getRoom(exit).getLevel().getGame().completeLevel();
+            Room.getRoom(baseObj).getLevel().getGame().completeLevel();
     }
 
     @Override

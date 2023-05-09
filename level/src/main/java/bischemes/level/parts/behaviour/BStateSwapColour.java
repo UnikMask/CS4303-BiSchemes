@@ -13,15 +13,13 @@ import static java.lang.Math.min;
 
 public class BStateSwapColour extends BState {
 
-    private final RObject swapper;
-
     private final int colourPrimary;
     private final int colourSecondary;
 
     private VisualAttribute switchSymbol = null;
 
     private BStateSwapColour(RObject swapper) {
-        this.swapper = swapper;
+        super(swapper);
         swapper.addOnStateChange(this);
         Level l = Room.getRoom(swapper).getLevel();
         colourPrimary = l.getColourPrimary();
@@ -37,19 +35,19 @@ public class BStateSwapColour extends BState {
                 min(maxDimension.x, 1),
                 min(maxDimension.y, 1));
         switchSymbol = VisualUtils.makeRect(dimension, SpriteLoader.getSwitchSymbol());
-        swapper.addVisualAttributes(switchSymbol);
+        baseObj.addVisualAttributes(switchSymbol);
     }
 
     @Override
     public void run() {
-        if (swapper.getLColour() == LColour.PRIMARY) {
-            swapper.setLColour(LColour.SECONDARY);
-            swapper.setColour(colourSecondary);
+        if (baseObj.getLColour() == LColour.PRIMARY) {
+            baseObj.setLColour(LColour.SECONDARY);
+            baseObj.setColour(colourSecondary);
             if (switchSymbol != null)
                 switchSymbol.setColour(colourPrimary);
         } else {
-            swapper.setLColour(LColour.PRIMARY);
-            swapper.setColour(colourPrimary);
+            baseObj.setLColour(LColour.PRIMARY);
+            baseObj.setColour(colourPrimary);
             if (switchSymbol != null)
                 switchSymbol.setColour(colourSecondary);
         }

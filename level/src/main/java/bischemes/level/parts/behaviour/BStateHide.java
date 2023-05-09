@@ -11,12 +11,11 @@ import static java.lang.Math.min;
 public class BStateHide extends BState {
 
     private final VisualAttribute doorVAttr;
-    private final RObject hideable;
     private VisualAttribute lockSymbol = null;
 
 
     private BStateHide(RObject hideable) {
-        this.hideable = hideable;
+        super(hideable);
         doorVAttr = hideable.getVisualAttribute(0);
     }
 
@@ -36,31 +35,31 @@ public class BStateHide extends BState {
                 min(maxDimension.x, 1),
                 min(maxDimension.y, 1));
         lockSymbol = VisualUtils.makeRect(dimension, SpriteLoader.getLockSymbol());
-        if (!hideable.getState()) hideable.addVisualAttributes(lockSymbol);
+        if (!baseObj.getState()) baseObj.addVisualAttributes(lockSymbol);
     }
 
 
     @Override
     public void run() {
-        if (hideable.getState()) openDoor();
+        if (baseObj.getState()) openDoor();
         else closeDoor();
     }
 
     private void openDoor() {
-        if (lockSymbol != null) hideable.removeVisualAttributes(1, 0);
-        else hideable.removeVisualAttributes(0);
+        if (lockSymbol != null) baseObj.removeVisualAttributes(1, 0);
+        else baseObj.removeVisualAttributes(0);
         // TODO Alter RigidBody properties of door to make passable
     }
 
     private void closeDoor() {
-        if (lockSymbol != null) hideable.addVisualAttributes(doorVAttr, lockSymbol);
-        else hideable.addVisualAttributes(doorVAttr);
+        if (lockSymbol != null) baseObj.addVisualAttributes(doorVAttr, lockSymbol);
+        else baseObj.addVisualAttributes(doorVAttr);
         // TODO Alter RigidBody properties of door to make impassable
     }
 
     @Override
     public void setColour(int colour) {
-        if (!hideable.getState()) return;
+        if (!baseObj.getState()) return;
         doorVAttr.setColour(colour);
         if (lockSymbol != null) lockSymbol.makeTintedTexture(colour);
     }

@@ -11,7 +11,6 @@ import processing.core.PVector;
 
 public abstract class BInteract extends BUpdate {
 
-	protected final RObject interactable;
 	private final boolean useCircleProx;
 	private float xRange;
 	private float yRange;
@@ -26,7 +25,7 @@ public abstract class BInteract extends BUpdate {
 	private boolean stateActivity;
 
 	protected BInteract(RObject interactable, float x, float y) {
-		this.interactable = interactable;
+		super(interactable);
 		useCircleProx = false;
 		xRange = x;
 		yRange = y;
@@ -34,7 +33,7 @@ public abstract class BInteract extends BUpdate {
 	}
 
 	protected BInteract(RObject interactable, float r) {
-		this.interactable = interactable;
+		super(interactable);
 		useCircleProx = true;
 		radius = r;
 		interactable.addOnUpdate(this);
@@ -52,13 +51,13 @@ public abstract class BInteract extends BUpdate {
 
 	// Checks whether a position is close enough to the interactable to interact
 	protected boolean canInteract(PVector position) {
-		if (activeOnState && (stateActivity != interactable.getState()))
+		if (activeOnState && (stateActivity != baseObj.getState()))
 			return false;
 		if (useCircleProx) {
-			float distance = position.dist(interactable.getPosition());
+			float distance = position.dist(baseObj.getPosition());
 			return distance < radius;
 		} else {
-			PVector distance = position.copy().sub(interactable.getPosition());
+			PVector distance = position.copy().sub(baseObj.getPosition());
 			if (distance.x < 0)
 				distance.x *= -1;
 			if (distance.y < 0)
@@ -76,7 +75,7 @@ public abstract class BInteract extends BUpdate {
 	private void updateIndicator(boolean showIndicator) {
 		if (showIndicator) {
 			if (!showingIndicator) {
-				interactable.addVisualAttributes(indicator);
+				baseObj.addVisualAttributes(indicator);
 				indicatorScale = INDICATOR_SCALE_RATE;
 				showingIndicator = true;
 			} else if (indicatorScale < 1f) {
@@ -91,7 +90,7 @@ public abstract class BInteract extends BUpdate {
 			if (showingIndicator)
 				indicator.setScaling(indicatorScale);
 			else
-				interactable.removeVisualAttributes(indicator);
+				baseObj.removeVisualAttributes(indicator);
 		}
 	}
 
@@ -99,9 +98,8 @@ public abstract class BInteract extends BUpdate {
 
 	@Override
 	public void run() {
-		Room room = Room.getRoom(interactable);
 		if (room == null) {
-			System.out.println("NULL room for interactable, id = " + interactable.getId());
+			System.out.println("NULL room for interactable, id = " + baseObj.getId());
 			return;
 		}
 		PlayerAbstract player = room.getLevel().getPlayer();

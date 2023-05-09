@@ -22,7 +22,7 @@ public class BInteractStateSwitch extends BInteract {
 
     @Override
     public void onInteraction() {
-        interactable.switchState();
+        baseObj.switchState();
     }
 
 

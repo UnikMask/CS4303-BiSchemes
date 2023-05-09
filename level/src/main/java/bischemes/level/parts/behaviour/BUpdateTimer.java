@@ -1,10 +1,10 @@
 package bischemes.level.parts.behaviour;
 
+import bischemes.level.Room;
 import bischemes.level.parts.RObject;
 
 public class BUpdateTimer extends BUpdate {
 
-    private final RObject timeable;
     private final int[] periods;
 
     private int time = 0;
@@ -15,7 +15,7 @@ public class BUpdateTimer extends BUpdate {
 
 
     private BUpdateTimer(RObject timeable, int[] periods) {
-        this.timeable = timeable;
+        super(timeable);
         this.periods = periods;
         timeable.addOnUpdate(this);
     }
@@ -56,9 +56,9 @@ public class BUpdateTimer extends BUpdate {
 
     @Override
     public void run() {
-        if (!stateActivity || activeOnState == timeable.getState()) {
+        if (!stateActivity || activeOnState == baseObj.getState()) {
             time++;
-            if (updateTime()) timeable.switchState();
+            if (updateTime()) baseObj.switchState();
         }
     }
 

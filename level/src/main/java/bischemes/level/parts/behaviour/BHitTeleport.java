@@ -8,11 +8,10 @@ import processing.core.PVector;
 
 public class BHitTeleport extends BHit {
 
-    private final RObject object;
     private final Teleporter teleporter;
 
     private BHitTeleport(RObject object, Room destination, PVector link, boolean swapColour) {
-        this.object = object;
+        super(object);
         this.teleporter = new Teleporter(object, destination, link, swapColour);
         object.addOnHit(this);
     }
@@ -54,7 +53,7 @@ public class BHitTeleport extends BHit {
 
     @Override
     public void run(GObject hit, Manifold m) {
-        if (activeOnState && (stateActivity != object.getState())) return;
+        if (activeOnState && (stateActivity != baseObj.getState())) return;
         teleporter.teleport(hit);
     }
 

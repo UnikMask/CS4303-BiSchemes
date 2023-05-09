@@ -16,6 +16,7 @@ import static java.lang.Math.min;
 public class Teleporter {
 
     private final RObject base;
+    private final Room room;
     private final Room destination;
     private final PVector link;
     private final boolean swapColour;
@@ -38,11 +39,12 @@ public class Teleporter {
         this.destination = destination;
         this.link = link;
         this.swapColour = swapColour;
+        this.room = Room.getRoom(base);
         if (swapColour) //TODO eventually it would be nice for swapColour to be possible on all RObjects
             makePlayerOnly();
         if (destination != null)
-            playerOnly = destination.getLevel().getId() != Room.getRoom(base).getLevel().getId();
-        Level l = Room.getRoom(base).getLevel();
+            playerOnly = destination.getLevel().getId() != room.getLevel().getId();
+        Level l = room.getLevel();
         colourPrimary = l.getColourPrimary();
         colourSecondary = l.getColourSecondary();
     }
@@ -104,13 +106,13 @@ public class Teleporter {
                 direction.y *= -1;
                 player.setGravityDirection(direction);
             }
-            if (destination != null && destination.getId() == Room.getRoom(base).getId())
-                Room.getRoom(base).getLevel().getGame().loadNextRoom(destination, newPosition);
+            else if (destination != null && destination.getId() == room.getId())
+                room.getLevel().getGame().loadNextRoom(destination, newPosition);
             else
                 target.setLocalPosition(newPosition);
 
             if (swapColour)
-                Room.getRoom(base).getLevel().getGame().switchPlayerColour();
+                room.getLevel().getGame().switchPlayerColour();
         }
         else  {
             if (playerOnly) return;

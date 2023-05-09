@@ -12,10 +12,9 @@ public class BStateBlock extends BState {
 
     private VisualAttribute blockSymbol;
     private VisualAttribute lockSymbol;
-    private final RObject block;
 
     private BStateBlock(RObject block, PVector maxDimension) {
-        this.block = block;
+        super(block);
 
         PVector dimension = new PVector(
                 min(maxDimension.x, 1),
@@ -37,30 +36,30 @@ public class BStateBlock extends BState {
 
     @Override
     public void run() {
-        block.removeVisualAttributes(1);
-        if (block.getState()) makeImmovable();
+        baseObj.removeVisualAttributes(1);
+        if (baseObj.getState()) makeImmovable();
         else makeMovable();
     }
 
     private void makeMovable() {
-        block.addVisualAttributes(blockSymbol);
+        baseObj.addVisualAttributes(blockSymbol);
         // Alter RigidBody properties of block to make movable
     }
 
     private void makeImmovable() {
-        block.addVisualAttributes(lockSymbol);
+        baseObj.addVisualAttributes(lockSymbol);
         // Alter RigidBody properties of block to make immovable
     }
 
     @Override
     public void setColour(int colour) {
         //TODO WIP
-        if (block.getState()) block.removeVisualAttributes(lockSymbol);
-        else block.removeVisualAttributes(blockSymbol);
+        if (baseObj.getState()) baseObj.removeVisualAttributes(lockSymbol);
+        else baseObj.removeVisualAttributes(blockSymbol);
 
         this.blockSymbol = VisualUtils.makeRect(new PVector(1, 1), colour, SpriteLoader.getBlockSymbol());
         this.lockSymbol = VisualUtils.makeRect(new PVector(1, 1), colour, SpriteLoader.getLockSymbol());
-        if (block.getState()) blockSymbol.makeTintedTexture(colour);
+        if (baseObj.getState()) blockSymbol.makeTintedTexture(colour);
         else lockSymbol.makeTintedTexture(colour);
     }
 

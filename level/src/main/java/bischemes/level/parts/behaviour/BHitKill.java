@@ -8,10 +8,8 @@ import bischemes.level.parts.RObject;
 
 public class BHitKill extends BHit {
 
-    private final RObject killer;
-
     private BHitKill(RObject killer) {
-        this.killer = killer;
+        super(killer);
         killer.addOnHit(this);
     }
 
@@ -26,9 +24,9 @@ public class BHitKill extends BHit {
 
     @Override
     public void run(GObject hit, Manifold m) {
-        if (activeOnState && (stateActivity != killer.getState())) return;
+        if (activeOnState && (stateActivity != baseObj.getState())) return;
         if (hit instanceof PlayerAbstract player)
-            player.setLocalPosition(Room.getRoom(killer).getSpawnPosition());
+            player.setLocalPosition(room.getSpawnPosition());
     }
 
     @Override

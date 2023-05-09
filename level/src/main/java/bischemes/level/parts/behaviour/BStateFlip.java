@@ -6,10 +6,9 @@ import bischemes.level.parts.RObject;
 public class BStateFlip extends BState {
 
     private final VisualAttribute leverVAttr;
-    private final RObject flipable;
 
     private BStateFlip(RObject flipable) {
-        this.flipable = flipable;
+        super(flipable);
         leverVAttr = flipable.getVisualAttribute(0);
     }
 

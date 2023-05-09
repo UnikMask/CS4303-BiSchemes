@@ -81,6 +81,8 @@ public class RObject extends GObject {
     public void setLColour(LColour colour) { this.colour = colour; }
     public boolean getState() { return state; }
 
+    public RigidBody getRigidBody() { return rigidBody; }
+
     /**
      * Sets the RObject's state to the boolean value and the state of all its RObject children.
      * Calls the on-state-change (BState) Behaviour run() methods if state changes.
@@ -117,7 +119,8 @@ public class RObject extends GObject {
 		this.gravity = gravity;
 
 		// Add gravity if movable or rotatable.
-		if (rigidBody != null && (rigidBody.getProperties().isMovable || getRigidBody().getProperties().isRotatable)) {
+		if (rigidBody != null && (rigidBody.getProperties().isMovable ||
+                getRigidBody().getProperties().isRotatable || rigidBody.getProperties().mass != 0)) {
 			addOnUpdate(new BUpdate(null) {
 					public void run() {
 						gravity.updateForce(getRigidBody());

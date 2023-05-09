@@ -77,7 +77,7 @@
           "anchor": [16, 2.5],
           "dimensions": [1, 1],
           "mass": 40.0,
-          "initState": false
+          "initState": true
         },
         {
           "id" : 3,

@@ -64,6 +64,10 @@ public class InputHandler {
 
 	}
 
+	public boolean hasInteraction() {
+		return getPressedCommands().contains(InputCommand.INTERACT);
+	}
+
 	public static InputHandler getInstance() {
 		if (instance == null) {
 			instance = new InputHandler();

@@ -51,6 +51,10 @@ public class BHitTeleport extends BHit {
         teleporter.configureMirror(mirrorX, mirrorY);
     }
 
+    public void addAdditionalOffset(float x, float y) {
+        teleporter.addAdditionalOffset(x, y);
+    }
+
     @Override
     public void run(GObject hit, Manifold m) {
         if (activeOnState && (stateActivity != baseObj.getState())) return;

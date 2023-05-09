@@ -40,8 +40,6 @@ public class Level {
     private final String directory;
     /** whether the Level has been completed */
     private boolean completed = false;
-
-    private PlayerAbstract player;
     private GameInterface game;
 
     private Level(String filename, String directory, String name, int id, int[] prerequisites, int colourPrimary,
@@ -75,18 +73,11 @@ public class Level {
     public void setCompleted(boolean completed) { this.completed = completed; }
     public boolean isCompleted() { return completed; }
 
-    public void setGameParameters(GameInterface g, PlayerAbstract p) {
-        this.game = g;
-        this.player = p;
-    }
-
+    public void setGame(GameInterface g) { this.game = g; }
     public GameInterface getGame() {
         return game;
     }
 
-    public PlayerAbstract getPlayer() {
-        return player;
-    }
 
     /**
      * attempts to parse a Level from a Level JSON file

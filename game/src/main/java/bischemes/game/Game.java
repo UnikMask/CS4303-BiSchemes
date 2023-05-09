@@ -87,7 +87,7 @@ public class Game implements GameInterface {
 		loadRoom(initRoom);
 		secondaryScene.attachToGObject(secondaryScene.scene, player);
 
-		level.setGameParameters(this, player);
+		level.setGame(this);
 
 		engine.setPause(false);
 	}

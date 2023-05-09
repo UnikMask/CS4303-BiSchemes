@@ -3,6 +3,8 @@ package bischemes.level.parts;
 import bischemes.engine.GObject;
 import bischemes.engine.physics.Manifold;
 import bischemes.engine.physics.ForceGenerators.DirectionalGravity;
+import bischemes.engine.physics.RigidBody;
+import bischemes.level.PlayerAbstract;
 import bischemes.level.parts.behaviour.BHit;
 import bischemes.level.parts.behaviour.BState;
 import bischemes.level.parts.behaviour.BUpdate;
@@ -57,8 +59,22 @@ public class RObject extends GObject {
     protected List<BHit> bHit = null;
 
 	// Components related to game
-	protected GObject player;
-	protected DirectionalGravity gravity;
+	protected PlayerAbstract player;
+	protected DirectionalGravity gravity = null;
+
+    public PVector getGravityDirection() {
+        if (gravity == null) return null;
+        return gravity.getDirection();
+    }
+
+    public void setGravityDirection(PVector direction) {
+        if (gravity == null) return;
+        gravity.setDirection(direction);
+    }
+
+    public PlayerAbstract getPlayer() {
+        return player;
+    }
 
     public int getId() { return id; }
     public LColour getLColour() { return colour; }
@@ -96,12 +112,12 @@ public class RObject extends GObject {
                 r.switchState();
     }
 
-	public void init(GObject player, DirectionalGravity gravity) {
+	public void init(PlayerAbstract player, DirectionalGravity gravity) {
 		this.player = player;
 		this.gravity = gravity;
 
 		// Add gravity if movable or rotatable.
-		if (getRigidBody().getProperties().isMovable || getRigidBody().getProperties().isRotatable) {
+		if (rigidBody != null && (rigidBody.getProperties().isMovable || getRigidBody().getProperties().isRotatable)) {
 			addOnUpdate(new BUpdate(null) {
 					public void run() {
 						gravity.updateForce(getRigidBody());

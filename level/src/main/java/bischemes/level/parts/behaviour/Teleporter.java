@@ -67,7 +67,6 @@ public class Teleporter {
     }
 
     public void configureGravityFlip(boolean flipGravity) {
-        makePlayerOnly(); //TODO eventually it would be nice for flipGravity to be possible on all RObjects
         this.flipGravity = flipGravity;
     }
 
@@ -116,6 +115,11 @@ public class Teleporter {
         }
         else  {
             if (playerOnly) return;
+            if (flipGravity) {
+                PVector direction = base.getGravityDirection().copy();
+                direction.y *= -1;
+                base.setGravityDirection(direction);
+            }
             target.setLocalPosition(newPosition);
         }
     }

@@ -116,13 +116,13 @@ public class Game {
 		primaryNode = new GObject(null, PVector.div(room.getDimensions(), 2), 0);
 		VisualAttribute primaryBg = VisualUtils.makeRect(room.getDimensions(),
 				colours.a);
-		//primaryNode.addVisualAttributes(primaryBg); //TODO re-add bg
+		// primaryNode.addVisualAttributes(primaryBg); //TODO re-add bg
 		primaryScene.attachToGObject(primaryScene.scene, primaryNode);
 		secondaryScene.grid = new GridSector(room.getDimensions(), new PVector(),
 				(int) room.getDimensions().x, (int) room.getDimensions().y);
 
 		// Add geometries to both scenes
-		primaryScene.attachToGObject(primaryNode, room.getPrimaryGeometry());
+		primaryScene.attachToGObject(primaryScene.scene, room.getPrimaryGeometry());
 		secondaryScene.attachToGObject(secondaryScene.scene, room.getSecondaryGeometry());
 
 		// Load objects into the game
@@ -134,7 +134,7 @@ public class Game {
 			} else {
 				switch (o.getLColour()) {
 					case PRIMARY -> {
-						primaryScene.attachToGObject(primaryNode, o);
+						primaryScene.attachToGObject(primaryScene.scene, o);
 					}
 					case SECONDARY -> {
 						secondaryScene.attachToGObject(secondaryScene.scene, o);

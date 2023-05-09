@@ -146,6 +146,16 @@ public class GridSector {
 
 	}
 
+	public void remove(RigidBody b) {
+		if (b.properties.mesh instanceof Primitive p) {
+			remove(p);
+		} else {
+			for (PrimitiveInSet ps : ((PrimitiveAssembly) b.properties.mesh).getAssembly()) {
+				remove(ps);
+			}
+		}
+	}
+
 	// Collisions //
 
 	/**

@@ -95,15 +95,16 @@ public class Game implements GameInterface {
 	public void loadRoom(Room room) {
 		// Initialise scenes
 		currentRoom = room;
-		primaryScene.grid = new GridSector(room.getDimensions(), new PVector(),
-				(int) room.getDimensions().x, (int) room.getDimensions().y);
+		PVector extraDimensions = PVector.add(room.getDimensions(), new PVector(2, 2));
+		primaryScene.grid = new GridSector(extraDimensions, new PVector(-1, -1),
+				(int) extraDimensions.x, (int) extraDimensions.y);
 		primaryNode = new GObject(null, PVector.div(room.getDimensions(), 2), 0);
 		VisualAttribute primaryBg = VisualUtils.makeRect(room.getDimensions(),
 				colours.a);
 		// primaryNode.addVisualAttributes(primaryBg); //TODO re-add bg
 		primaryScene.attachToGObject(primaryScene.scene, primaryNode);
-		secondaryScene.grid = new GridSector(room.getDimensions(), new PVector(),
-				(int) room.getDimensions().x, (int) room.getDimensions().y);
+		secondaryScene.grid = new GridSector(extraDimensions, new PVector(-1, -1),
+				(int) extraDimensions.x, (int) extraDimensions.y);
 
 		// Add geometries to both scenes
 		primaryScene.attachToGObject(primaryScene.scene, room.getPrimaryGeometry());
@@ -130,7 +131,8 @@ public class Game implements GameInterface {
 			}
 		}
 	}
-	// Alex TODO when called this method should switch the current room
+
+
 	public void loadNextRoom(Room room, PVector newPlayerPosition) {
 
 	}
@@ -140,8 +142,10 @@ public class Game implements GameInterface {
 
 	}
 
+	//
 	// Alex TODO when called this should return the user to the MapUI (set RunnerState to MENU)
 	public void completeLevel() {
+	//
 		level.setCompleted(true);
 		//TODO rest of the method :)
 	}

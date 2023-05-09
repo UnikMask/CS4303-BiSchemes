@@ -146,8 +146,7 @@ public class Room extends GObject {
             pf.createCornerRect(room.secondaryGeometry, new PVector(dims.x, 0), new PVector(1, dims.y), 0).removeAllVisualAttributes();
             pf.createCornerRect(room.secondaryGeometry, new PVector(0, dims.y), new PVector(dims.x, 1), 0).removeAllVisualAttributes();
 
-            //TODO remove primary visual attributes
-            //for (GObject g : room.primaryGeometry.getChildren()) g.removeAllVisualAttributes();
+            for (GObject g : room.primaryGeometry.getChildren()) g.removeAllVisualAttributes();
 
             JParser.parseRObjectArr(roomJson, "objects", room, room.roomObjects);
 

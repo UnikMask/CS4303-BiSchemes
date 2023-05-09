@@ -7,24 +7,24 @@
       "colour": "SECONDARY",
       "range" : [3, 7],
       "side" : "LEFT",
-      "destRoomId" : 0,
-      "linkId" : 0
+      "destRoomId" : 1,
+      "linkId" : 3
     },
     {
       "id": 1,
       "colour": "PRIMARY",
       "range" : [0, 3],
       "side" : "LEFT",
-      "destRoomId" : 0,
-      "linkId" : 1
+      "destRoomId" : 1,
+      "linkId" : 4
     },
     {
       "id": 2,
       "colour": "PRIMARY",
       "range" : [7, 10],
       "side" : "LEFT",
-      "destRoomId" : 0,
-      "linkId" : 2
+      "destRoomId" : 1,
+      "linkId" : 5
     },
     {
       "id": 3,

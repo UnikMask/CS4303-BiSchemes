@@ -80,7 +80,7 @@
       "type" : "EXIT",
       "id" : 1,
       "side" : "RIGHT",
-      "range" : [6, 8]
+      "range" : [0, 10]
     }
   ]
 }

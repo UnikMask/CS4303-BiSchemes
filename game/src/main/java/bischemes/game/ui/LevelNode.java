@@ -17,7 +17,7 @@ public final class LevelNode {
     private static final int   GREY_OUTER_COLOUR  = 0x4F4F4F - 16777216; // Colour used for unavailable levels
     private static final int   GREY_INNER_COLOUR  = 0xB9B9B9 - 16777216; // Colour used for unavailable levels
 
-    private static final boolean GREY_UNAVAILABLE = false;
+    private static final boolean GREY_UNAVAILABLE = true;
 
     /** Level held by this LevelNode */
     public final Level level;
@@ -167,7 +167,7 @@ public final class LevelNode {
         PVector dependencyPos;
         for (LevelNode node : dependencies) {
             dependencyPos = node.getRealPosition();
-            if (node.isCompleted()) g.stroke(node.level.getColourPrimary());
+            if (node.isCompleted()) g.stroke(node.level.getColourSecondary());
             else g.stroke(GREY_INNER_COLOUR);
             g.line(dependencyPos.x, dependencyPos.y, realPosition.x, realPosition.y);
         }

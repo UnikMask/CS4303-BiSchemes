@@ -123,7 +123,7 @@
       "type" : "EXIT",
       "id" : 7,
       "side" : "RIGHT",
-      "range" : [7, 9]
+      "range" : [0, 10]
     }
   ]
 }

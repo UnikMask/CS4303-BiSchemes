@@ -104,11 +104,11 @@ public class Teleporter {
                 PVector direction = player.getGravityDirection().copy();
                 direction.y *= -1;
                 player.setGravityDirection(direction);
-            }
-            else if (destination != null && destination.getId() == room.getId())
+            } else if (destination != null && destination.getId() != room.getId()) {
                 room.getLevel().getGame().loadNextRoom(destination, newPosition);
-            else
+			} else {
                 target.setLocalPosition(newPosition);
+			}
 
             if (swapColour)
                 room.getLevel().getGame().switchPlayerColour();

@@ -121,7 +121,7 @@ class CollisionTests {
 		GObject bA = new GObject(null, new PVector(-2, 0), 0);
 		GObject bB = new GObject(null, new PVector(2, 0), 0);
 		bA.setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mesh", cube.copy()))));
-		bB.setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("mesh", cube.copy()))));
+		bB.setRigidBody(new RigidBody(new RigidBodyProperties(Map.of("move", true, "mesh", cube.copy()))));
 
 		// Case 1 - no overlap
 		g.move(bA.getRigidBody());

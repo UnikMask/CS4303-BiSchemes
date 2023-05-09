@@ -26,9 +26,10 @@
             "dimensions": [16, 2]
           },
           {
-            "type": "RECT",
-            "corner": [2, 0],
-            "dimensions": [10, 2]
+            "type": "TRAPEZIUM",
+            "corner": [2, 5],
+            "widths": [5, 3],
+            "height": 1
           }
         ]
       },

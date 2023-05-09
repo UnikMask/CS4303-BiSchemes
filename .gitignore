@@ -20,6 +20,8 @@ gradpe-app.setting
 .classpath
 .settings
 .project
+game/levels
+game/src/main/resources/levels
 
 # Ignore Gradle build output directory
 build

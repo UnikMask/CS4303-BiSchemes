@@ -1,9 +1,0 @@
-{
-  "name": "Level 1",
-  "id": 0,
-  "prerequisites": [],
-  "colourPrimary": "A5BDC8",
-  "colourSecondary": "212F3C",
-  "initRoomID": 0,
-  "rooms": ["r0.json", "r1.json", "r2.json", "r3.json"]
-}

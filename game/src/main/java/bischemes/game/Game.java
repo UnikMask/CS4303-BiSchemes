@@ -125,17 +125,15 @@ public class Game implements GameInterface {
 		PVector extraDimensions = PVector.add(room.getDimensions(), new PVector(2, 2));
 
 		// Load primary scene
-		primaryScene.scene = new GObject(null, new PVector(), 0);
-		primaryScene.grid = new GridSector(extraDimensions, new PVector(-1, -1),
-				(int) extraDimensions.x, (int) extraDimensions.y);
+		primaryScene.resetScene(new GridSector(extraDimensions, new PVector(-1, -1),
+				(int) extraDimensions.x, (int) extraDimensions.y));
 		VisualAttribute primaryBg = VisualUtils.makeRect(room.getDimensions(), colours.a);
 		primaryBg.setOffset(PVector.div(room.getDimensions(), 2));
 		primaryScene.scene.addVisualAttributes(primaryBg);
 
 		// Load secondary scene
-		secondaryScene.scene = new GObject(null, new PVector(), 0);
-		secondaryScene.grid = new GridSector(extraDimensions, new PVector(-1, -1),
-				(int) extraDimensions.x, (int) extraDimensions.y);
+		secondaryScene.resetScene(new GridSector(extraDimensions, new PVector(-1, -1),
+				(int) extraDimensions.x, (int) extraDimensions.y));
 
 		// Load player
 		if (player == null) {
@@ -153,8 +151,7 @@ public class Game implements GameInterface {
 
 		// Add geometries to both scenes
 		primaryScene.attachToGObject(primaryScene.scene, room.getPrimaryGeometry());
-		secondaryScene.attachToGObject(secondaryScene.scene,
-				room.getSecondaryGeometry());
+		secondaryScene.attachToGObject(secondaryScene.scene, room.getSecondaryGeometry());
 
 		// Initialise and load objects into the game
 		ArrayDeque<RObject> q = new ArrayDeque<>(room.getObjects());
@@ -183,11 +180,10 @@ public class Game implements GameInterface {
 
 	public void loadNextRoom(Room room, PVector newPlayerPosition) {
 		engine.setPause(true);
-		loadRoom(room, PVector.add(newPlayerPosition, new PVector(1, 0)));
+		loadRoom(room, newPlayerPosition);
 		engine.setPause(false);
 	}
 
-	// Alex TODO when called this should switch the player's colour
 	public void switchPlayerColour() {
 		if (isPrimaryScene) {
 			System.out.println("Updog primary");
@@ -204,9 +200,6 @@ public class Game implements GameInterface {
 		isPrimaryScene = !isPrimaryScene;
 	}
 
-	//
-	// Alex TODO when called this should return the user to the MapUI (set
-	// RunnerState to MENU)
 	public void completeLevel() {
 		//
 		level.setCompleted(true);

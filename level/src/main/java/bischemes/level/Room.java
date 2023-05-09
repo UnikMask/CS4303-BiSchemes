@@ -2,6 +2,7 @@ package bischemes.level;
 
 import bischemes.engine.GObject;
 import bischemes.level.parts.Adjacency;
+import bischemes.level.parts.PartFactory;
 import bischemes.level.parts.RObject;
 import bischemes.level.util.InvalidIdException;
 import bischemes.level.util.JParser;
@@ -139,15 +140,26 @@ public class Room extends GObject {
                  throw new LevelParseException("\"spawnPosition\" is invalid with [" + spawnPos.x + ", " + spawnPos.y + "]. Spawn position must be within the room");
             room = new Room(parent, id, dims, spawnPos);
 
-             JsonObject geometry = JParser.parseObj(roomJson, "geometry");
-             JParser.parseGeometryArr(geometry, "primary", room.primaryGeometry);
-             //TODO remove primary visual attributes
-             //for (GObject g : room.primaryGeometry.getChildren()) g.removeAllVisualAttributes();
-             JParser.parseGeometryArr(geometry, "secondary", room.secondaryGeometry);
+            JsonObject geometry = JParser.parseObj(roomJson, "geometry");
+            JParser.parseGeometryArr(geometry, "primary", room.primaryGeometry);
+            JParser.parseGeometryArr(geometry, "secondary", room.secondaryGeometry);
 
-             JParser.parseRObjectArr(roomJson, "objects", room, room.roomObjects);
+            PartFactory pf = new PartFactory();
+            pf.createCornerRect(room.primaryGeometry, new PVector(0, 0), new PVector(-1, dims.y), 0).removeAllVisualAttributes();
+            pf.createCornerRect(room.primaryGeometry, new PVector(0, 0), new PVector(dims.x, -1), 0).removeAllVisualAttributes();
+            pf.createCornerRect(room.primaryGeometry, new PVector(dims.x, 0), new PVector(-1, dims.y), 0).removeAllVisualAttributes();
+            pf.createCornerRect(room.primaryGeometry, new PVector(0, dims.y), new PVector(dims.x, -1), 0).removeAllVisualAttributes();
+            pf.createCornerRect(room.secondaryGeometry, new PVector(0, 0), new PVector(-1, dims.y), 0).removeAllVisualAttributes();
+            pf.createCornerRect(room.secondaryGeometry, new PVector(0, 0), new PVector(dims.x, -1), 0).removeAllVisualAttributes();
+            pf.createCornerRect(room.secondaryGeometry, new PVector(dims.x, 0), new PVector(1, dims.y), 0).removeAllVisualAttributes();
+            pf.createCornerRect(room.secondaryGeometry, new PVector(0, dims.y), new PVector(dims.x, 1), 0).removeAllVisualAttributes();
 
-             JParser.parseAdjacencyArr(roomJson, "adjacent", room, room.adjacencies);
+            //TODO remove primary visual attributes
+            //for (GObject g : room.primaryGeometry.getChildren()) g.removeAllVisualAttributes();
+
+            JParser.parseRObjectArr(roomJson, "objects", room, room.roomObjects);
+
+            JParser.parseAdjacencyArr(roomJson, "adjacent", room, room.adjacencies);
 
         } catch (LevelParseException e) {
             throw new LevelParseException("parseRoom(" + ((id!=-1) ? id : "") + "), encountered a LevelParseException\n\t"+e.getLocalizedMessage());

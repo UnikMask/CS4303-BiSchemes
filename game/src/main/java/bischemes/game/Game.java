@@ -176,6 +176,7 @@ public class Game implements GameInterface {
 				}
 			}
 		}
+		engine.setCameraPosition(PVector.div(room.getDimensions(), 2));
 	}
 
 	public void loadNextRoom(Room room, PVector newPlayerPosition) {

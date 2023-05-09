@@ -58,9 +58,9 @@ public class MapUI {
      * @param screenHeight height of the screen
      */
     private void bindCameraPosition(int screenWidth, int screenHeight) {
-        scale = min(3.0f, max(0.2f, min(
+        scale = min(3.0f, max(0.2f, max(scale, min(
                 ((float) screenWidth / (float) map.width),
-                ((float) screenHeight / (float) map.height))));
+                ((float) screenHeight / (float) map.height)))));
         cameraPosition.x = min(0, max(cameraPosition.x, (screenWidth / scale) - map.width));
         cameraPosition.y = min(0, max(cameraPosition.y, (screenHeight / scale) - map.height));
     }

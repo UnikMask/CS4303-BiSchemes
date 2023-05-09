@@ -391,7 +391,7 @@ public class PartFactory {
 		LColour colour2 = (colour1 == LColour.PRIMARY) ? LColour.SECONDARY : LColour.PRIMARY;
 
 		float orientation1 = 0f;
-		float orientation2 = (float) (Math.PI / 2f);
+		float orientation2 = (float) (Math.PI);
 
 		PVector anchor1 = anchor.copy();
 		PVector anchor2 = anchor.copy();
@@ -399,11 +399,11 @@ public class PartFactory {
 		PVector offset = new PVector();
 
 		if (isVertical)
-			offset.y = PORTAL_PROTRUDE;
+			offset.y = PORTAL_PROTRUDE / 2;
 		else {
-			orientation1 += (float) (Math.PI / 4f);
-			orientation2+= (float) (Math.PI / 4f);
-			offset.x = PORTAL_PROTRUDE;
+			orientation1 += (float) (Math.PI / 2f);
+			orientation2 += (float) (Math.PI / 2f);
+			offset.x = PORTAL_PROTRUDE / 2;
 		}
 
 		anchor1.add(offset);
@@ -411,28 +411,40 @@ public class PartFactory {
 
 		initRBNoCollision();
 
+		Room room = Room.getRoom(parent);
 		RObject portal = new RObject(parent, anchor, 0, id);
 
-		RObject childPortal1 = createTrapezium(portal, anchor1, orientation1, PORTAL_PROTRUDE,
-				new PVector(((float) width) * PORTAL_SUB_WIDTH, (float) width), colour1, id);
+		RObject childPortal1 = createTrapezium(portal, anchor1.copy(), orientation1, PORTAL_PROTRUDE,
+				new PVector((float)width, (float) width * PORTAL_SUB_WIDTH), colour1, id);
 
-		RObject childPortal2 = createTrapezium(portal, anchor2, orientation2, PORTAL_PROTRUDE,
-				new PVector(((float) width) * PORTAL_SUB_WIDTH, (float) width), colour2, id);
+		RObject childPortal2 = createTrapezium(portal, anchor2.copy(), orientation2, PORTAL_PROTRUDE,
+				new PVector((float)width, (float) width * PORTAL_SUB_WIDTH), colour2, id);
+		if (colour1 == LColour.PRIMARY) {
+			childPortal1.setColour(room.getLevel().getColourPrimary());
+			childPortal2.setColour(room.getLevel().getColourSecondary());
+		}
+		else {
+			childPortal1.setColour(room.getLevel().getColourSecondary());
+			childPortal2.setColour(room.getLevel().getColourPrimary());
+		}
 
 		portal.setState(initialState);
 
-		BInteractTeleport b1 = BInteractTeleport.assign(childPortal1, width, PORTAL_PROTRUDE, anchor2,true);
-		BInteractTeleport b2 = BInteractTeleport.assign(childPortal2, width, PORTAL_PROTRUDE, anchor1,true);
+		anchor1.add(offset);
+		anchor2.sub(offset);
+
+		BInteractTeleport b1 = BInteractTeleport.assign(childPortal1, width, 1f, anchor2,true);
+		BInteractTeleport b2 = BInteractTeleport.assign(childPortal2, width, 1f, anchor1,true);
 
 		b1.addColourSwitchIndicator(new PVector(0, 1f));
 		b1.setActiveOnState(true);
 		b1.configureGravityFlip(isVertical);
-		b1.configureOffset(true, true, isVertical, !isVertical);
+		b1.configureOffset(true, true, !isVertical, isVertical);
 
 		b2.addColourSwitchIndicator(new PVector(0, 1f));
 		b2.setActiveOnState(true);
 		b2.configureGravityFlip(isVertical);
-		b2.configureOffset(true, true, isVertical, !isVertical);
+		b2.configureOffset(true, true, !isVertical, isVertical);
 
 		return portal;
 	}

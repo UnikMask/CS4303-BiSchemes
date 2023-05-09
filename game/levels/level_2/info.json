@@ -4,6 +4,6 @@
   "prerequisites": [0],
   "colourPrimary": "FFC857",
   "colourSecondary": "54494B",
-  "initRoomID": 0,
+  "initRoomID": 1,
   "rooms": ["r0.json", "r1.json", "r2.json", "r3.json"]
 }

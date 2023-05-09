@@ -116,6 +116,7 @@ public class Teleporter {
             if (mirrorY) offset.y *= -1;
             newPosition.y += offset.y;
         }
+        System.out.println("teleporting from " + target.getLocalPosition() + " to " + newPosition);
 
         if (target instanceof PlayerAbstract player) {
             if (flipGravity) {

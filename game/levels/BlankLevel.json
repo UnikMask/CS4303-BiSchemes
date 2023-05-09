@@ -16,8 +16,31 @@
           {
             "type" : "RECT",
             "corner" : [0, 2],
-            "dimensions" : [10, 8]
+            "dimensions" : [5, 8]
+          },
+          {
+            "type" : "RECT",
+            "corner" : [10, 2],
+            "dimensions" : [6, 8]
+          },
+          {
+            "type" : "RECT",
+            "corner" : [5, 3],
+            "dimensions" : [5, 7]
+          },
+          {
+            "type" : "TRIANGLE",
+            "corner" : [5, 2],
+            "vertex1" : [0, 1],
+            "vertex2" : [1, 1]
+          },
+          {
+            "type" : "TRIANGLE",
+            "corner" : [10, 2],
+            "vertex1" : [0, 1],
+            "vertex2" : [-1, 1]
           }
+
         ],
         "secondary": [
           {

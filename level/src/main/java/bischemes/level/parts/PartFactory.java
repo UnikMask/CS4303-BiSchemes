@@ -257,8 +257,8 @@ public class PartFactory {
 		vertices.add(new PVector(widths.y / 2f, halfHeight));
 
 
-		PVector t1V3 = new PVector(-rectWidth, (widths.x > widths.y) ? -halfHeight : halfHeight );
-		PVector t2V3 = new PVector(rectWidth, t1V3.y );
+		PVector t1V3 = new PVector(-rectWidth / 2, (widths.x > widths.y) ? -halfHeight : halfHeight );
+		PVector t2V3 = new PVector(rectWidth / 2, t1V3.y );
 
 		obj.addVisualAttributes(VisualUtils.makeRect(new PVector(rectWidth, height), DEFAULT_COLOUR));
 

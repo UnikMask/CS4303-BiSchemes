@@ -27,7 +27,7 @@
           },
           {
             "type": "TRAPEZIUM",
-            "corner": [2, 5],
+            "corner": [5, 2],
             "widths": [5, 3],
             "height": 1
           }

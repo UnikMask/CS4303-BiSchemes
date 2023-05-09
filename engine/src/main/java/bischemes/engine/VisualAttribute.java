@@ -18,6 +18,7 @@ public class VisualAttribute {
 	private PImage texture;
 	private PVector size;
 	private List<PVector> texCoords;
+	public boolean visibilityPriority = false;
 	public boolean mirrorX = false;
 	public boolean mirrorY = false;
 	public boolean visible = true;
@@ -59,6 +60,10 @@ public class VisualAttribute {
 
 	public void activate(GObject obj) {
 		this.obj = obj;
+	}
+
+	public void setHighPriority(boolean priority) {
+		this.visibilityPriority = priority;
 	}
 
 	public void setColour(int colour) {

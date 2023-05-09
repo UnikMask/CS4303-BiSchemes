@@ -3,5 +3,5 @@
 
 ./copyLevels.sh
 ./gradlew jar
-cp game/build/libs/game.jar .
+cp game/build/libs/BiSchemes.jar .
 

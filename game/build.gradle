@@ -30,7 +30,7 @@ distTar {
 }
 
 jar {
-	archiveBaseName = "BiSchemes"
+	archiveBaseName = "BiSchemes.jar"
 	dependsOn(':engine:jar')
 	dependsOn(':level:jar')
 	manifest {

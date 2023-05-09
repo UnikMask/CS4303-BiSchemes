@@ -104,11 +104,12 @@ public final class LevelMap {
      * @param scale scale at which to scale all drawing
      */
     public void draw(PGraphics g, PVector cameraPosition, float scale) {
+        PVector offset = cameraPosition.copy();
         g.pushMatrix();
         g.scale(scale);
         g.strokeWeight(10);
         g.textAlign(PConstants.CENTER);
-        for (MapSlice slice : mapSlices) slice.calcPositions(cameraPosition.copy());
+        for (MapSlice slice : mapSlices) slice.calcPositions(offset);
         for (MapSlice slice : mapSlices) slice.drawEdges(g);
         for (MapSlice slice : mapSlices) slice.drawNodes(g);
         g.popMatrix();

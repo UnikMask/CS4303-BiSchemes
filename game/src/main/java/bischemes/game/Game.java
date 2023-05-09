@@ -30,7 +30,6 @@ public class Game implements GameInterface {
 	Pair<Integer> colours;
 	List<Room> rooms;
 	Room currentRoom;
-	GObject primaryNode;
 	boolean isPrimaryScene;
 	Pair<DirectionalGravity> gravities;
 
@@ -82,9 +81,8 @@ public class Game implements GameInterface {
 
 		Room initRoom = level.getInitRoom();
 		gravities = new Pair<>(new DirectionalGravity(new PVector(0, 1)), new DirectionalGravity(new PVector(0, -1)));
-		player = new Player(initRoom.getSpawnPosition(), 0, gravities.b, level.getColourSecondary());
 
-		loadRoom(initRoom);
+		loadRoom(initRoom, initRoom.getSpawnPosition());
 		secondaryScene.attachToGObject(secondaryScene.scene, player);
 
 		level.setGame(this);
@@ -92,19 +90,37 @@ public class Game implements GameInterface {
 		engine.setPause(false);
 	}
 
-	public void loadRoom(Room room) {
+	public void loadRoom(Room room, PVector playerPosition) {
+
 		// Initialise scenes
 		currentRoom = room;
 		PVector extraDimensions = PVector.add(room.getDimensions(), new PVector(2, 2));
+
+		// Load primary scene
+		primaryScene.scene = new GObject(null, new PVector(), 0);
 		primaryScene.grid = new GridSector(extraDimensions, new PVector(-1, -1),
 				(int) extraDimensions.x, (int) extraDimensions.y);
-		primaryNode = new GObject(null, PVector.div(room.getDimensions(), 2), 0);
 		VisualAttribute primaryBg = VisualUtils.makeRect(room.getDimensions(),
 				colours.a);
-		// primaryNode.addVisualAttributes(primaryBg); //TODO re-add bg
-		primaryScene.attachToGObject(primaryScene.scene, primaryNode);
+		primaryBg.setOffset(PVector.div(room.getDimensions(), 2));
+		primaryScene.scene.addVisualAttributes(primaryBg);
+
+		// Load secondary scene
+		secondaryScene.scene = new GObject(null, new PVector(), 0);
 		secondaryScene.grid = new GridSector(extraDimensions, new PVector(-1, -1),
 				(int) extraDimensions.x, (int) extraDimensions.y);
+
+		// Load player
+		if (player == null) {
+			player = new Player(playerPosition, 0, isPrimaryScene? gravities.a: gravities.b, level.getColourSecondary());
+		} else {
+			player.setLocalPosition(playerPosition);
+		}
+		if (isPrimaryScene) {
+			primaryScene.attachToGObject(primaryScene.scene, player);
+		} else {
+			secondaryScene.attachToGObject(secondaryScene.scene, player);
+		}
 
 		// Add geometries to both scenes
 		primaryScene.attachToGObject(primaryScene.scene, room.getPrimaryGeometry());
@@ -134,14 +150,14 @@ public class Game implements GameInterface {
 
 
 	public void loadNextRoom(Room room, PVector newPlayerPosition) {
-		deconstructCurrentRoom();
-		player.setLocalPosition(newPlayerPosition);
-		loadRoom(room);
+		engine.setPause(true);
+		loadRoom(room, PVector.add(newPlayerPosition, new PVector(1, 0)));
+		engine.setPause(false);
 	}
 
 	// Alex TODO when called this should switch the player's colour
 	public void switchPlayerColour() {
-		isPrimaryScene = !isPrimaryScene;
+		//isPrimaryScene = !isPrimaryScene;
 	}
 
 	//
@@ -149,17 +165,6 @@ public class Game implements GameInterface {
 	public void completeLevel() {
 		level.setCompleted(true);
 		state = GameState.END;
-	}
-
-	/////////////////
-	// Destructors //
-	/////////////////
-
-	private void deconstructCurrentRoom() {
-		primaryScene = null;
-		secondaryScene = null;
-		primaryNode = null;
-		currentRoom = null;
 	}
 
 	//////////////////

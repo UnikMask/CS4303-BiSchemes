@@ -124,9 +124,14 @@ public class Player extends PlayerAbstract {
 	public PVector getGravityDirection() {
 		return gravity.getDirection();
 	}
+
 	@Override
 	public void setGravityDirection(PVector direction) {
 		gravity.setDirection(direction);
+	}
+
+	public void setDirectionalGravity(DirectionalGravity g) {
+		this.gravity = g;
 	}
 
 	/////////////////////

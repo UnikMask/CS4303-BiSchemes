@@ -61,7 +61,15 @@ public final class Levels {
      *                       if false, exceptions stop all Level parsing
      */
     public static void loadLevels(boolean skipOnLoadFail, String directory) {
-        try (Stream<Path> stream = Files.list(Paths.get(directory))){
+        Stream<Path> stream = null;
+        try {
+            try {
+                stream = Files.list(Paths.get(directory));
+            } catch (IOException ignored) {}
+            if (stream == null) {
+                directory = "game/" + directory;
+                stream = Files.list(Paths.get(directory));
+            }
             for(Path p : stream.toList()) {
                 Level level;
                 // Each item in the directory is either a subdirectory containing level information or a full level file

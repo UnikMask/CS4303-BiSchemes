@@ -6,6 +6,8 @@ import processing.core.PImage;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 
 public final class SpriteLoader {
@@ -24,8 +26,12 @@ public final class SpriteLoader {
     }
 
     private static PImage loadImage(String file) {
+        InputStream i = null;
         try {
-            InputStream i = new FileInputStream(file);
+            try {
+                i = new FileInputStream(file);
+            } catch (IOException ignored) {}
+            if (i == null) i = new FileInputStream("game/" + file);
             PImage img = PImage.loadTGA(i);
             i.close();
             return img;

@@ -5,13 +5,13 @@
     {
       "id": 0,
       "colour": "SECONDARY",
-      "range" : [4, 8],
+      "range" : [2, 6],
       "side" : "RIGHT",
       "destRoomId" : 1,
       "linkId" : 0
     }
   ],
-  "spawnPosition": [1.5, 7.5],
+  "spawnPosition": [1.5, 2.5],
   "geometry": {
     "primary": [
       {

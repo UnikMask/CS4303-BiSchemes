@@ -1,5 +1,5 @@
 {
-  "name": "Blank Level",
+  "name": "Sample Level",
   "id": 50,
   "prerequisites": [],
   "colourPrimary": "ffffff",
@@ -8,7 +8,7 @@
   "rooms": [
     {
       "id": 0,
-      "dimensions": [16, 10],
+      "dimensions": [32, 14],
       "adjacent": [],
       "spawnPosition": [2, 5],
       "geometry": {
@@ -16,17 +16,17 @@
           {
             "type" : "RECT",
             "corner" : [0, 2],
-            "dimensions" : [5, 8]
+            "dimensions" : [5, 12]
           },
           {
             "type" : "RECT",
             "corner" : [10, 2],
-            "dimensions" : [6, 8]
+            "dimensions" : [22, 12]
           },
           {
             "type" : "RECT",
             "corner" : [5, 3],
-            "dimensions" : [5, 7]
+            "dimensions" : [5, 11]
           },
           {
             "type" : "TRIANGLE",
@@ -46,7 +46,7 @@
           {
             "type": "RECT",
             "corner": [0, 0],
-            "dimensions": [16, 2]
+            "dimensions": [32, 2]
           },
           {
             "type": "TRAPEZIUM",

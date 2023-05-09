@@ -16,6 +16,7 @@ public class VisualAttribute {
 	private GObject obj;
 	private int color = 0xffffffff;
 	private PImage texture;
+	private PVector size;
 	private List<PVector> texCoords;
 	public boolean mirrorX = false;
 	public boolean mirrorY = false;
@@ -65,6 +66,21 @@ public class VisualAttribute {
 			makeUntextured(colour);
 		else
 			makeTintedTexture(colour);
+	}
+
+	public PVector getSize() {
+		if (size == null) {
+			PVector max = new PVector(-Float.MAX_VALUE, -Float.MAX_VALUE);
+			PVector min = new PVector(Float.MAX_VALUE, Float.MAX_VALUE);
+			for (PVector v : vertices) {
+				max.x = v.x > max.x ? v.x : max.x;
+				max.y = v.y > max.y ? v.y : max.y;
+				min.x = v.x < min.x ? v.x : min.x;
+				min.y = v.y < min.y ? v.y : min.y;
+			}
+			size = PVector.sub(max, min);
+		}
+		return size;
 	}
 
 	public void mirrorVerticesV() {

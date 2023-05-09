@@ -2,9 +2,12 @@ package bischemes.engine;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Set;
 
 import bischemes.engine.physics.Manifold;
@@ -41,13 +44,30 @@ public class EngineRuntime {
 	public void draw() {
 		PVector scale = new PVector(applet.width / cameraBounds.x, applet.height / cameraBounds.y);
 		PVector posAnchored = new PVector(cameraPosition.x - cameraBounds.x / 2, cameraPosition.y + cameraBounds.y / 2);
+
+		// Order all visual attributes in all scenes into an array.
+		ArrayList<VisualAttribute> visuals = new ArrayList<>();
+		for (SceneGridPair scene : scenes) {
+			ArrayDeque<GObject> q = new ArrayDeque<>(Arrays.asList(scene.scene));
+			while (!q.isEmpty()) {
+				GObject current = q.pollFirst();
+				visuals.addAll(current.getVisualAttributes());
+				q.addAll(current.getChildren());
+			}
+		}
+		Collections.sort(visuals, new Comparator<VisualAttribute>() {
+			@Override
+			public int compare(VisualAttribute a, VisualAttribute b) {
+				return (int) (b.getSize().x * b.getSize().y - a.getSize().x * a.getSize().y);
+			}
+		});
+
+		// Set up Matrix
 		g.pushMatrix();
 		g.rotate(-cameraRotation);
 		g.scale(scale.x, -scale.y);
 		g.translate(-posAnchored.x, -posAnchored.y);
-		for (SceneGridPair scene : scenes) {
-			scene.scene.draw(g);
-		}
+		visuals.stream().forEach((v) -> v.draw(g));
 		g.popMatrix();
 	}
 

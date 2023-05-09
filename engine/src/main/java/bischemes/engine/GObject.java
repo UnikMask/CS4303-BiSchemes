@@ -93,6 +93,10 @@ public class GObject {
 		return visualAttributes.get(index);
 	}
 
+	public List<VisualAttribute> getVisualAttributes() {
+		return visualAttributes;
+	}
+
 	public void removeVisualAttributes(int... indices) {
 		for (int i : indices)
 			visualAttributes.remove(i);
@@ -105,7 +109,6 @@ public class GObject {
 	public void removeAllVisualAttributes() {
 		visualAttributes.clear();
 	}
-
 
 	public void setRigidBody(RigidBody rb) {
 		this.rigidBody = rb;
@@ -128,7 +131,9 @@ public class GObject {
 		return parent;
 	}
 
-	public List<GObject> getChildren() { return children; }
+	public List<GObject> getChildren() {
+		return children;
+	}
 
 	/////////////////////
 	// Private Methods //

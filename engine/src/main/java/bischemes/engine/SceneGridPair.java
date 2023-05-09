@@ -32,14 +32,14 @@ public class SceneGridPair {
 		}
 	}
 
-	public void addRigidBody(RigidBody rb) {
+	public void addRigidBody(RigidBody b) {
 		if (bodies.contains(b)) {
 			bodies.add(b);
-			grid.add(b);
+			grid.move(b);
 		}
 	}
 
-	public void removeRigidBody(RigidBody rb) {
+	public void removeRigidBody(RigidBody b) {
 		if (bodies.contains(b)) {
 			bodies.remove(b);
 			grid.remove(b);

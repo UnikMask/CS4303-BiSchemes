@@ -1,7 +1,7 @@
 {
   "name": "Level 2",
   "id": 1,
-  "prerequisites": [],
+  "prerequisites": [0],
   "colourPrimary": "FFC857",
   "colourSecondary": "54494B",
   "initRoomID": 0,

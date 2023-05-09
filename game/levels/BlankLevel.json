@@ -10,7 +10,7 @@
       "id": 0,
       "dimensions": [16, 10],
       "adjacent": [],
-      "spawnPosition": [2.5, 5],
+      "spawnPosition": [2, 5],
       "geometry": {
         "primary": [
           {

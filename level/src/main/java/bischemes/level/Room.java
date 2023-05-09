@@ -56,8 +56,8 @@ public class Room extends GObject {
 
     public Level getLevel() { return parent; }
     public int getId() { return id; }
-    public PVector getDimensions() { return dimensions; }
-    public PVector getSpawnPosition() { return spawnPos; }
+    public PVector getDimensions() { return dimensions.copy(); }
+    public PVector getSpawnPosition() { return spawnPos.copy(); }
     public GObject getPrimaryGeometry() { return primaryGeometry; }
     public GObject getSecondaryGeometry() { return secondaryGeometry; }
     public List<RObject> getObjects() { return roomObjects; }

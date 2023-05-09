@@ -3,6 +3,7 @@
  */
 package bischemes.game;
 
+import bischemes.game.Game.GameState;
 import bischemes.game.ui.MapUI;
 import bischemes.level.Level;
 import processing.core.PApplet;
@@ -42,6 +43,10 @@ public class Runner extends PApplet {
 					game = new Game(this, g);
 				} else {
 					game.update(g);
+					if (game.state == GameState.END) {
+						game = null;
+						state = RunnerState.MENU;
+					}
 				}
 				break;
 			case MENU:

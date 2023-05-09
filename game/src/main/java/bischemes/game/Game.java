@@ -97,6 +97,7 @@ public class Game implements GameInterface {
 
 	public void setLevel(Level level) {
 		this.level = level;
+		level.initialiseRooms();
 		rooms = Arrays.asList(level.getRooms());
 		colours = new Pair<>(level.getColourPrimary(), level.getColourSecondary());
 
@@ -106,8 +107,7 @@ public class Game implements GameInterface {
 		loadRoom(initRoom);
 		secondaryScene.attachToGObject(secondaryScene.scene, player);
 
-		level.setGameInterface(this);
-		level.setPlayer(player);
+		level.setGameParameters(this, player);
 
 		engine.setPause(false);
 	}

@@ -75,11 +75,9 @@ public class Level {
     public void setCompleted(boolean completed) { this.completed = completed; }
     public boolean isCompleted() { return completed; }
 
-    public void setGameInterface(GameInterface g) {
-        game = g;
-    }
-    public void setPlayer(PlayerAbstract p) {
-        player = p;
+    public void setGameParameters(GameInterface g, PlayerAbstract p) {
+        this.game = g;
+        this.player = p;
     }
 
     public GameInterface getGame() {

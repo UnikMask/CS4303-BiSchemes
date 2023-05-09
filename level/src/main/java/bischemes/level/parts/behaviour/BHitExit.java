@@ -2,6 +2,7 @@ package bischemes.level.parts.behaviour;
 
 import bischemes.engine.GObject;
 import bischemes.engine.physics.Manifold;
+import bischemes.level.PlayerAbstract;
 import bischemes.level.Room;
 import bischemes.level.parts.RObject;
 
@@ -27,9 +28,8 @@ public class BHitExit extends BHit {
     @Override
     public void run(GObject hit, Manifold m) {
         if (activeOnState && (stateActivity != exit.getState())) return;
-        //TODO check if player is 'hit'
-        Room.getRoom(exit).getLevel().setCompleted(true);
-        //TODO return to menu
+        if (hit instanceof PlayerAbstract)
+            Room.getRoom(exit).getLevel().getGame().completeLevel();
     }
 
     @Override

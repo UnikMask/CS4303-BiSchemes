@@ -14,8 +14,8 @@ public class Manifold {
 
 	// Manifold properties
 	private List<Interpenetration> contactPoints = new ArrayList<>();
-	private RigidBody objectA;
-	private RigidBody objectB;
+	public RigidBody objectA;
+	public RigidBody objectB;
 
 	/**
 	 * Representation of an interpenetration of a point from one rigid body into the

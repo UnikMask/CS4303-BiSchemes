@@ -141,6 +141,7 @@ public class Game implements GameInterface {
 
 	// Alex TODO when called this should switch the player's colour
 	public void switchPlayerColour() {
+		isPrimaryScene = !isPrimaryScene;
 	}
 
 	//

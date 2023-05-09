@@ -78,10 +78,11 @@ public class Player extends PlayerAbstract {
 	public void update() {
 		// Get movement vector
 		PVector movement = new PVector();
+		double projectedGravity = PVector.dot(gravity.getDirection(), new PVector(0, -1));
 		for (InputCommand c : InputHandler.getInstance().getHeldCommands()) {
 			movement.add(switch (c) {
-				case RIGHT -> new PVector(1, 0);
-				case LEFT -> new PVector(-1, 0);
+				case RIGHT -> projectedGravity > 0 ? new PVector(1, 0) : new PVector(-1, 0);
+				case LEFT -> projectedGravity > 0 ? new PVector(-1, 0) : new PVector(1, 0);
 				default -> new PVector();
 			});
 
@@ -120,7 +121,8 @@ public class Player extends PlayerAbstract {
 
 		// Mirror character accordingly
 		VisualAttribute current = getVisualAttribute(playerVisuals);
-		current.mirrorX = projectedVelocity + MIRROR_THRESHOLD * (current.mirrorX ? -1 : 1) < 0;
+		current.mirrorX = current.mirrorY ? projectedVelocity + MIRROR_THRESHOLD * (current.mirrorX ? 1 : -1) > 0
+				: projectedVelocity + MIRROR_THRESHOLD * (current.mirrorX ? -1 : 1) < 0;
 		current.mirrorY = PVector.dot(gravity.getDirection(), new PVector(0, 1)) > 0;
 
 		// Set new animation frame
@@ -188,6 +190,7 @@ public class Player extends PlayerAbstract {
 	private int generateSprite(String fp) {
 		VisualAttribute a = VisualUtils.makeRect(new PVector(2, 2), color, EngineRuntime.applet.loadImage(fp));
 		a.visible = false;
+		a.setHighPriority(true);
 		return addVisualAttributes(a).get(0);
 	}
 

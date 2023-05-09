@@ -77,7 +77,7 @@ public class Game {
 		loadRoom(initRoom);
 		gravity = new DirectionalGravity();
 		player = new Player(initRoom.getSpawnPosition(), 0, gravity, level.getColourSecondary());
-		primaryScene.attachToGObject(primaryScene.scene, player);
+		secondaryScene.attachToGObject(secondaryScene.scene, player);
 	}
 
 	public void loadRoom(Room room) {
@@ -89,7 +89,7 @@ public class Game {
 					(int) room.getDimensions().x, (int) room.getDimensions().y);
 			VisualAttribute primaryBg = VisualUtils.makeRect(room.getDimensions(), colours.a);
 			primaryBg.setOffset(PVector.div(room.getDimensions(), 2));
-			//primaryScene.scene.addVisualAttributes(primaryBg);
+			primaryScene.scene.addVisualAttributes(primaryBg);
 			secondaryScene.grid = new GridSector(room.getDimensions(), new PVector(),
 					(int) room.getDimensions().x, (int) room.getDimensions().y);
 

@@ -38,4 +38,9 @@ public class DirectionalGravity implements ForceGenerator {
 		this.direction = direction;
 	}
 
+	public DirectionalGravity(PVector direction) {
+		this.coeff = GRAVITY_DEFAULT_COEFF;
+		this.direction = direction;
+	}
+
 }

@@ -15,7 +15,7 @@ import processing.core.PVector;
 
 public class Player extends PlayerAbstract {
 	// Player Constants
-	private static final double JUMP_INTENSITY = 6.4;
+	private static final double JUMP_INTENSITY = 6.6;
 	public static final PVector PLAYER_SIZE = new PVector(0.75f, 1.8f);
 	private static final double RUN_THRESHOLD = 0.01;
 	private static final double WALL_DOT_THRESHOLD = 0.3;

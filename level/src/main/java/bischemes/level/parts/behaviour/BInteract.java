@@ -23,9 +23,9 @@ public abstract class BInteract extends BUpdate {
 	private boolean activeOnState = false;
 	private boolean stateActivity;
 
-	private PVector indicatorDimension;
-	private PImage indicatorTexture;
-	private PVector indicatorOffset;
+	protected PVector indicatorDimension;
+	protected PImage indicatorTexture;
+	protected PVector indicatorOffset;
 
 	protected BInteract(RObject interactable, float x, float y) {
 		super(interactable);

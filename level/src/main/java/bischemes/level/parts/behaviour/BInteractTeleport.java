@@ -41,22 +41,31 @@ public class BInteractTeleport extends BInteract {
 
     @Override
     public void addIndicator(PVector indicatorOffset) {
-        indicator = VisualUtils.makeTexturedPolygon(
-                new PVector(1, 1), 4, 0, indicatorOffset, SpriteLoader.getSwitchSymbol());
+        this.indicatorOffset = indicatorOffset;
+        this.indicatorDimension = new PVector(1, 1);
+        this.indicatorTexture = SpriteLoader.getInteractSymbol();
+        indicator = VisualUtils.makeTexturedPolygon(indicatorDimension, 4, 0, indicatorOffset,
+                indicatorTexture);
     }
 
     public void addTeleportIndicator(PVector indicatorOffset) {
-        indicator = VisualUtils.makeTexturedPolygon(
-                new PVector(1, 1), 4, 0, indicatorOffset, SpriteLoader.getTeleportSymbol());
+        this.indicatorOffset = indicatorOffset;
+        this.indicatorDimension = new PVector(1, 1);
+        this.indicatorTexture = SpriteLoader.getTeleportSymbol();
+        indicator = VisualUtils.makeTexturedPolygon(indicatorDimension, 4, 0, indicatorOffset,
+                indicatorTexture);
     }
 
     public void addColourSwitchIndicator(PVector indicatorOffset) {
-        indicator = VisualUtils.makeTexturedPolygon(
-                new PVector(1, 1), 4, 0, indicatorOffset, SpriteLoader.getSwitchSymbol());
+        this.indicatorOffset = indicatorOffset;
+        this.indicatorDimension = new PVector(1, 1);
+        this.indicatorTexture = SpriteLoader.getSwitchSymbol();
+        indicator = VisualUtils.makeTexturedPolygon(indicatorDimension, 4, 0, indicatorOffset,
+                indicatorTexture);
     }
 
     public void addTeleportIcon(PVector maxDimension) {
-        teleporter.addTeleportIcon(maxDimension);
+        teleporter.addIcon(maxDimension, SpriteLoader.getTeleportSymbol());
     }
 
     public void configureGravityFlip(boolean flipGravity) { teleporter.configureGravityFlip(flipGravity);}

@@ -9,6 +9,7 @@ import bischemes.level.Room;
 import bischemes.level.parts.RObject;
 import bischemes.level.util.LColour;
 import bischemes.level.util.SpriteLoader;
+import processing.core.PImage;
 import processing.core.PVector;
 
 import javax.crypto.interfaces.PBEKey;
@@ -27,6 +28,8 @@ public class Teleporter {
     private final int colourSecondary;
 
     private VisualAttribute teleportIcon = null;
+    private PVector iconDimensions;
+    private PImage iconTexture;
 
     private boolean mirrorX = false;
     private boolean mirrorY = false;
@@ -57,12 +60,17 @@ public class Teleporter {
     }
 
 
-    public void addTeleportIcon(PVector maxDimension) {
-        PVector dimension = new PVector(
+    public void addIcon(PVector maxDimension, PImage iconTexture) {
+        iconDimensions = new PVector(
                 min(maxDimension.x, 1),
                 min(maxDimension.y, 1));
-        teleportIcon = VisualUtils.makeRect(dimension, SpriteLoader.getSwitchSymbol());
+        this.iconTexture = iconTexture;
+        teleportIcon = VisualUtils.makeRect(iconDimensions, iconTexture);
         base.addVisualAttributes(teleportIcon);
+    }
+
+    public void addTeleportIcon(PVector maxDimension) {
+        addIcon(maxDimension, SpriteLoader.getTeleportSymbol());
     }
 
     public void makePlayerOnly() {
@@ -136,9 +144,8 @@ public class Teleporter {
 
     public void setColour() {
         if (!swapColour || teleportIcon == null) return;
-        if (base.getLColour() == LColour.PRIMARY)
-            teleportIcon.setColour(colourSecondary);
-        if (base.getLColour() == LColour.SECONDARY)
-            teleportIcon.setColour(colourPrimary);
+        int colour = (base.getLColour() == LColour.PRIMARY) ? colourPrimary : colourSecondary;
+        base.removeVisualAttributes(teleportIcon);
+        teleportIcon = VisualUtils.makeRect(iconDimensions, colour, iconTexture);
     }
 }

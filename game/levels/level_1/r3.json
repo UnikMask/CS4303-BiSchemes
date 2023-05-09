@@ -1,0 +1,86 @@
+{
+  "id" : 3,
+  "dimensions" : [16, 10],
+  "adjacent" : [
+    {
+      "id": 0,
+      "colour": "SECONDARY",
+      "range" : [3, 8],
+      "side" : "LEFT",
+      "destRoomId" : 1,
+      "linkId" : 1
+    }
+  ],
+  "spawnPosition": [5, 4],
+  "geometry": {
+    "primary": [
+      {
+        "type" : "RECT",
+        "corner" : [0, 2],
+        "dimensions" : [3, 6]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [3, 2],
+        "dimensions" : [7, 2]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [12, 2],
+        "dimensions" : [2, 2]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [14, 6],
+        "dimensions" : [2, 2]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [7, 4],
+        "dimensions" : [7, 4]
+      },
+      {
+        "type" : "TRIANGLE",
+        "corner" : [3, 4],
+        "vertex1" : [4, 0],
+        "vertex2" : [0, 4]
+      }
+    ],
+    "secondary": [
+      {
+        "type": "RECT",
+        "corner": [0, 0],
+        "dimensions": [14, 2]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [0, 8],
+        "dimensions" : [16, 2]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [10, 2],
+        "dimensions" : [2, 2]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [14, 0],
+        "dimensions" : [2, 6]
+      },
+      {
+        "type" : "TRIANGLE",
+        "corner" : [7, 8],
+        "vertex1" : [-4, 0],
+        "vertex2" : [0, -4]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "type" : "EXIT",
+      "id" : 1,
+      "side" : "RIGHT",
+      "range" : [6, 8]
+    }
+  ]
+}

@@ -184,16 +184,18 @@ public class Primitive implements PhysicsMesh {
 		for (int i = 0; i < this.vertices.size(); i++) {
 			PVector v1 = PVector.add(this.vertices.get(i), this.parent.getPosition());
 
-			PVector v1v2 = PVector.sub(v1, v2);
-			PVector normal = new PVector(-v1v2.y, v1v2.x).mult(reverseFactor).normalize();
+			PVector v1v2 = PVector.sub(v1, v2).mult(reverseFactor);
+			PVector normal = new PVector(-v1v2.y, v1v2.x).normalize();
 			int supportIndex = b.polygonSupportPoint(PVector.mult(normal, -1));
 			PVector support = PVector.add(b.vertices.get(supportIndex), b.parent.getPosition()).add(offset);
 			double dist = PVector.dot(PVector.sub(support, v1), normal);
 
 			if (calibrating && dist > 0) {
-				i--;
+				i = -1;
 				reverseFactor = -1.0f;
 				calibrating = false;
+				minPenetration = -Double.MAX_VALUE;
+				v2 = PVector.add(this.vertices.get(this.vertices.size() - 1), this.parent.getPosition());
 				continue;
 			}
 			if (dist > minPenetration) {
@@ -209,7 +211,6 @@ public class Primitive implements PhysicsMesh {
 				bestIndex = supportIndex;
 			}
 			v2 = v1;
-			calibrating = false;
 		}
 
 		// Get incident face
@@ -247,7 +248,6 @@ public class Primitive implements PhysicsMesh {
 		} else {
 			m.addContactPoint(bestSupport, bestNormal, minPenetration, this, b);
 		}
-
 		return m;
 	}
 

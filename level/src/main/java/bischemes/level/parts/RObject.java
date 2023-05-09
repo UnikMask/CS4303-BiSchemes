@@ -3,6 +3,7 @@ package bischemes.level.parts;
 import bischemes.engine.GObject;
 import bischemes.engine.physics.Manifold;
 import bischemes.engine.physics.ForceGenerators.DirectionalGravity;
+import bischemes.engine.physics.RigidBody;
 import bischemes.level.PlayerAbstract;
 import bischemes.level.parts.behaviour.BHit;
 import bischemes.level.parts.behaviour.BState;
@@ -116,7 +117,7 @@ public class RObject extends GObject {
 		this.gravity = gravity;
 
 		// Add gravity if movable or rotatable.
-		if (getRigidBody().getProperties().isMovable || getRigidBody().getProperties().isRotatable) {
+		if (rigidBody != null && (rigidBody.getProperties().isMovable || getRigidBody().getProperties().isRotatable)) {
 			addOnUpdate(new BUpdate(null) {
 					public void run() {
 						gravity.updateForce(getRigidBody());

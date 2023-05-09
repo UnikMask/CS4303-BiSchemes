@@ -50,9 +50,8 @@ public class Player extends GObject {
 	public void onHit(GObject hit, Manifold m) {
 		// If the player is in the air
 		if (state == PlayerState.JUMP || state == PlayerState.WALL) {
-			PVector normal = m.objectA == getRigidBody() ? PVector.mult(m.getNormal(), -1) : m.getNormal();
-			float projectedCollision = PVector.dot(m.getNormal(), PVector.mult(gravity.getDirection(), -1));
-			System.out.println("Normal: " + m.getNormal() + ", projected collision: " + projectedCollision);
+			PVector normal = m.objectB == getRigidBody() ? m.getNormal() : PVector.mult(m.getNormal(), -1);
+			float projectedCollision = PVector.dot(normal, PVector.mult(gravity.getDirection(), -1));
 			if (projectedCollision < -WALL_DOT_THRESHOLD) {
 				// Hit a ceiling
 				return;
@@ -171,7 +170,7 @@ public class Player extends GObject {
 		super(null, position, orientation);
 		setRigidBody(new RigidBody(
 				new RigidBodyProperties(Map.of("mass", 35.0, "inertia", 20.0, "move", true, "rotate", false, "mesh",
-						new Primitive(new Surface(0, 1.0, 1.0), PrimitiveUtils.makeRect(new PVector(0.8f, 2)))))));
+						new Primitive(new Surface(0.2, 1.0, 1.0), PrimitiveUtils.makeRect(new PVector(0.75f, 2)))))));
 		this.gravity = gravity;
 		this.color = color;
 

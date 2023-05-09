@@ -14,7 +14,7 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
 
-public class Game {
+public class Game implements GameInterface {
 	// Constants
 	private static final double TRANSITION_DURATION = 0.5;
 
@@ -105,6 +105,10 @@ public class Game {
 		player = new Player(initRoom.getSpawnPosition(), 0, gravity, level.getColourSecondary());
 		loadRoom(initRoom);
 		secondaryScene.attachToGObject(secondaryScene.scene, player);
+
+		level.setGameInterface(this);
+		level.setPlayer(player);
+
 		engine.setPause(false);
 	}
 
@@ -142,6 +146,16 @@ public class Game {
 				}
 			}
 		}
+	}
+
+	// Alex TODO when called this method should switch the current room
+	public void loadNextRoom(Room room, PVector newPlayerPosition) {
+
+	}
+
+	// Alex TODO when called this should switch the player's colour
+	public void switchPlayerColour() {
+
 	}
 
 	private void loadNextRoom(Room room, Adjacency adj, PVector direction, boolean isPrimaryScene) {

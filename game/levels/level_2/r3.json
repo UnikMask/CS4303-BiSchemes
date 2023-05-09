@@ -94,7 +94,7 @@
       "type": "BLOCK",
       "anchor": [4, 4],
       "dimensions": [2, 2],
-      "mass": 2.0
+      "mass": 40.0
     }
   ]
 }

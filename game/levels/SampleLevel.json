@@ -59,9 +59,40 @@
       "objects": [
         {
           "type" : "EXIT",
-          "id" : 2,
-          "side" : "RIGHT",
+          "id" : 0,
+          "side" : "LEFT",
           "range" : [0, 10]
+        },
+        {
+          "id" : 1,
+          "type": "LEVER",
+          "colour" : "SECONDARY",
+          "anchor" : [14, 2.5],
+          "linkedTo" : [2]
+        },
+        {
+          "type" : "BLOCK",
+          "id" : 2,
+          "colour" : "SECONDARY",
+          "anchor": [16, 2.5],
+          "dimensions": [1, 1],
+          "mass": 40.0,
+          "initState": false
+        },
+        {
+          "id" : 3,
+          "type": "LEVER",
+          "colour" : "SECONDARY",
+          "anchor" : [18, 2.5],
+          "linkedTo" : [4]
+        },
+        {
+          "id": 4,
+          "colour": "SECONDARY",
+          "type": "DOOR",
+          "corner": [20, 2],
+          "dimensions": [2, 5],
+          "initState": false
         }
       ]
     }

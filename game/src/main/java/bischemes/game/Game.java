@@ -89,7 +89,7 @@ public class Game {
 					(int) room.getDimensions().x, (int) room.getDimensions().y);
 			VisualAttribute primaryBg = VisualUtils.makeRect(room.getDimensions(), colours.a);
 			primaryBg.setOffset(PVector.div(room.getDimensions(), 2));
-			// primaryScene.scene.addVisualAttributes(primaryBg);
+			//primaryScene.scene.addVisualAttributes(primaryBg);
 			secondaryScene.grid = new GridSector(room.getDimensions(), new PVector(),
 					(int) room.getDimensions().x, (int) room.getDimensions().y);
 

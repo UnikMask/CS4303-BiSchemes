@@ -16,7 +16,7 @@ import processing.core.PVector;
 public class Player extends PlayerAbstract {
 	// Player Constants
 	private static final PVector JUMP_FORCE = new PVector(0, 8);
-	public static final PVector PLAYER_SIZE = new PVector(0.75f, 2);
+	public static final PVector PLAYER_SIZE = new PVector(0.75f, 1.8f);
 	private static final double RUN_THRESHOLD = 0.01;
 	private static final double WALL_DOT_THRESHOLD = 0.3;
 	private static final double MIRROR_THRESHOLD = 0.01;
@@ -73,7 +73,6 @@ public class Player extends PlayerAbstract {
 
 	@Override
 	public void update() {
-
 		// Get movement vector
 		PVector movement = new PVector();
 		for (InputCommand c : InputHandler.getInstance().getHeldCommands()) {
@@ -118,6 +117,7 @@ public class Player extends PlayerAbstract {
 
 		// Set new animation frame
 		applyFrame(getVisibleFrame());
+		gravity.updateForce(getRigidBody());
 	}
 
 	@Override

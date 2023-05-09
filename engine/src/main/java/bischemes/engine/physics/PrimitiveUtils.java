@@ -18,7 +18,7 @@ public class PrimitiveUtils {
 	public static double getPrimitiveInertia(Primitive p, double mass, PVector COM) {
 		if (p.getType() == PrimitiveType.CIRCLE && COM == null) {
 			return 2.0 / 5.0 * mass * p.getRadius() * p.getRadius();
-		} else {
+		} else if (p.getType() == PrimitiveType.CIRCLE) {
 			p = circleWithCOM;
 		}
 		double inertia = 0;

@@ -46,6 +46,7 @@ public class Runner extends PApplet {
 					if (game.state == GameState.END) {
 						game = null;
 						state = RunnerState.MENU;
+						mapUI.clearSelection();
 					}
 				}
 				break;

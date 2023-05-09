@@ -87,6 +87,9 @@ public class Adjacency extends RObject {
 
         linkedRoom = level.getRoom(roomId);
         linkedAdjacency = linkedRoom.getAdjacency(linkId);
+        if (linkedRoom.getId() != roomId) {
+            System.out.println("ERRE");
+        }
         if (linkedAdjacency.isVertical != isVertical)
             throw new LevelParseException("adjacency (id = " + id + ") initialisation failed. Vertical/Horizontal orientation does not match linked adjacency (roomID = " + roomId + ", id = " + linkId + ")");
         if (linkedAdjacency.zeroAxis == zeroAxis)

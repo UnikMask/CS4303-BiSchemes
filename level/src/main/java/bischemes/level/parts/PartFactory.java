@@ -405,7 +405,7 @@ public class PartFactory {
 		else {
 			orientation1 += (float) (Math.PI / 2f);
 			orientation2 += (float) (Math.PI / 2f);
-			offset.x = PORTAL_PROTRUDE / 2;
+			offset.x = -PORTAL_PROTRUDE / 2;
 		}
 
 		anchor1.add(offset);

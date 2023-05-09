@@ -5,5 +5,5 @@
   "colourPrimary": "FFC857",
   "colourSecondary": "54494B",
   "initRoomID": 0,
-  "rooms": ["r0.json", "r1.json", "r2.json", "r3.json"]
+  "rooms": ["r0.json", "r1.json", "r2.json"]
 }

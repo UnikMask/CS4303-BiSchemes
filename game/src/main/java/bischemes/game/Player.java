@@ -18,6 +18,7 @@ public class Player extends GObject {
 	private static final double RUN_THRESHOLD = 0.01;
 	private static final double WALL_DOT_THRESHOLD = 0.3;
 	private static final double MIRROR_THRESHOLD = 0.1;
+	private static final double WALL_MAX_TIMER = 0.2;
 	private static final String fpIdle = "char_idle.png";
 	private static final List<String> fpRun = Arrays.asList("char_run2.png", "char_run3.png", "char_run1.png");
 	private static final String fpJump = "char_jump.png";
@@ -39,6 +40,7 @@ public class Player extends GObject {
 	private double tAnimation = 0;
 	private PlayerMovement pMvt = new PlayerMovement(this, new PVector(1, 0));
 	private DirectionalGravity gravity;
+	private double wallTimer;
 
 	/////////////////////
 	// GObject Methods //
@@ -46,18 +48,31 @@ public class Player extends GObject {
 
 	@Override
 	public void onHit(GObject hit, Manifold m) {
-		if (state == PlayerState.JUMP) {
-			if (Math.abs(PVector.dot(m.getNormal(), new PVector(0, 1))) < WALL_DOT_THRESHOLD) {
+		// If the player is in the air
+		if (state == PlayerState.JUMP || state == PlayerState.WALL) {
+			PVector normal = m.objectA == getRigidBody() ? PVector.mult(m.getNormal(), -1) : m.getNormal();
+			float projectedCollision = PVector.dot(m.getNormal(), PVector.mult(gravity.getDirection(), -1));
+			System.out.println("Normal: " + m.getNormal() + ", projected collision: " + projectedCollision);
+			if (projectedCollision < -WALL_DOT_THRESHOLD) {
+				// Hit a ceiling
+				return;
+			} else if (Math.abs(projectedCollision) < WALL_DOT_THRESHOLD) {
+				// Hit a wall
 				state = PlayerState.WALL;
+				wallTimer = 0;
 			} else {
-				state = Math.abs(getRigidBody().getProperties().velocity.x) > RUN_THRESHOLD ? PlayerState.RUN
-						: PlayerState.IDLE;
+				// Hit floor
+				state = Math.abs(
+						PVector.dot(getRigidBody().getProperties().velocity, gravity.getTangent())) > RUN_THRESHOLD
+								? PlayerState.RUN
+								: PlayerState.IDLE;
 			}
 		}
 	}
 
 	@Override
 	public void update() {
+
 		// Get movement vector
 		PVector movement = new PVector();
 		for (InputCommand c : InputHandler.getInstance().getHeldCommands()) {
@@ -86,6 +101,14 @@ public class Player extends GObject {
 		if (Math.abs(PVector.dot(movement, tangent)) > RUN_THRESHOLD) {
 			pMvt.setDirection(PVector.dot(movement, tangent) >= 0);
 			pMvt.updateForce(getRigidBody());
+		}
+
+		// Wall-state check
+		if (state == PlayerState.WALL) {
+			wallTimer += 1.0 / 60.0;
+			if (wallTimer > WALL_MAX_TIMER) {
+				state = PlayerState.JUMP;
+			}
 		}
 
 		// Mirror character accordingly

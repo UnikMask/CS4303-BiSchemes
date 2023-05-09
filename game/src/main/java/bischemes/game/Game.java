@@ -158,6 +158,12 @@ public class Game implements GameInterface {
 
 	}
 
+	// Alex TODO when called this should return the user to the MapUI (set RunnerState to MENU)
+	public void completeLevel() {
+		level.setCompleted(true);
+		//TODO rest of the method :)
+	}
+
 	private void loadNextRoom(Room room, Adjacency adj, PVector direction, boolean isPrimaryScene) {
 		engine.setPause(true);
 		nextRoom = room;

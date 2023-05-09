@@ -8,4 +8,6 @@ public interface GameInterface {
 
     void switchPlayerColour();
 
+    void completeLevel();
+
 }

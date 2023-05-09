@@ -4,6 +4,7 @@ import bischemes.engine.GObject;
 import bischemes.engine.VisualAttribute;
 import bischemes.engine.VisualUtils;
 import bischemes.level.Level;
+import bischemes.level.PlayerAbstract;
 import bischemes.level.Room;
 import bischemes.level.parts.RObject;
 import bischemes.level.util.LColour;
@@ -37,6 +38,8 @@ public class Teleporter {
         this.destination = destination;
         this.link = link;
         this.swapColour = swapColour;
+        if (swapColour) //TODO eventually it would be nice for swapColour to be possible on all RObjects
+            makePlayerOnly();
         if (destination != null)
             playerOnly = destination.getLevel().getId() != Room.getRoom(base).getLevel().getId();
         Level l = Room.getRoom(base).getLevel();
@@ -62,6 +65,7 @@ public class Teleporter {
     }
 
     public void configureGravityFlip(boolean flipGravity) {
+        makePlayerOnly(); //TODO eventually it would be nice for flipGravity to be possible on all RObjects
         this.flipGravity = flipGravity;
     }
 
@@ -83,16 +87,6 @@ public class Teleporter {
 
     public void teleport(GObject target) {
 
-        if (playerOnly) {
-            //TODO check if 'hit' is a player
-        }
-
-        //TODO add potential player orientation changing
-
-        //TODO change room (only if roomID is different)
-
-        //TODO change colour if needed
-
         PVector newPosition = link.copy();
         PVector offset = target.getLocalPosition().copy().sub(base.getLocalPosition());
         if (offsetX) {
@@ -104,13 +98,24 @@ public class Teleporter {
             newPosition.y += offset.y;
         }
 
-        //TODO set position of 'hit' as newPosition
+        if (target instanceof PlayerAbstract player) {
+            if (flipGravity) {
+                PVector direction = player.getGravityDirection().copy();
+                direction.y *= -1;
+                player.setGravityDirection(direction);
+            }
+            if (destination != null && destination.getId() == Room.getRoom(base).getId())
+                Room.getRoom(base).getLevel().getGame().loadNextRoom(destination, newPosition);
+            else
+                target.setLocalPosition(newPosition);
 
-        //TODO do stuff with flipGravity
-        if (flipGravity) {
-
+            if (swapColour)
+                Room.getRoom(base).getLevel().getGame().switchPlayerColour();
         }
-
+        else  {
+            if (playerOnly) return;
+            target.setLocalPosition(newPosition);
+        }
     }
 
     public void setColour() {

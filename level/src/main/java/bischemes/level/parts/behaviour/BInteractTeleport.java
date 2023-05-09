@@ -77,6 +77,11 @@ public class BInteractTeleport extends BInteract {
         teleporter.configureMirror(mirrorX, mirrorY);
     }
 
+
+    public void addAdditionalOffset(float x, float y) {
+        teleporter.addAdditionalOffset(x, y);
+    }
+
     @Override
     public void onInteraction() {
         teleporter.teleport(baseObj.getPlayer());

@@ -98,6 +98,9 @@ public class Adjacency extends RObject {
 
         BHitTeleport b = BHitTeleport.assign(this, linkedRoom, linkedAdjacency.position, false);
         b.configureOffset(true, true, !isVertical, isVertical);
+        b.addAdditionalOffset(
+                ((isVertical) ? 0 : 1) * ((zeroAxis) ? 1 : -1),
+                ((isVertical) ? 1 : 0) * ((zeroAxis) ? 1 : -1));
 
         initialised = true;
     }

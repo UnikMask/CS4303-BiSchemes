@@ -11,6 +11,8 @@ import bischemes.level.util.LColour;
 import bischemes.level.util.SpriteLoader;
 import processing.core.PVector;
 
+import javax.crypto.interfaces.PBEKey;
+
 import static java.lang.Math.min;
 
 public class Teleporter {
@@ -30,6 +32,7 @@ public class Teleporter {
     private boolean mirrorY = false;
     private boolean offsetX = false;
     private boolean offsetY = false;
+    private final PVector additionalOffset = new PVector();
     private boolean playerOnly = false;
 
     private boolean flipGravity = false;
@@ -86,10 +89,17 @@ public class Teleporter {
         configureOffset(mirrorX || offsetX, mirrorY || offsetY, mirrorX, mirrorY);
     }
 
+    public void addAdditionalOffset(float x, float y) {
+        offsetX |= x != 0;
+        offsetY |= y != 0;
+        additionalOffset.x = x;
+        additionalOffset.y = y;
+    }
+
     public void teleport(GObject target) {
 
         PVector newPosition = link.copy();
-        PVector offset = target.getLocalPosition().copy().sub(base.getLocalPosition());
+        PVector offset = target.getLocalPosition().copy().sub(base.getLocalPosition()).add(additionalOffset);
         if (offsetX) {
             if (mirrorX) offset.x *= -1;
             newPosition.x += offset.x;

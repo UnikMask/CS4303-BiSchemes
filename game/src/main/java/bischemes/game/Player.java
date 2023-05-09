@@ -15,7 +15,7 @@ import processing.core.PVector;
 
 public class Player extends PlayerAbstract {
 	// Player Constants
-	private static final double JUMP_INTENSITY = 8;
+	private static final double JUMP_INTENSITY = 6.4;
 	public static final PVector PLAYER_SIZE = new PVector(0.75f, 1.8f);
 	private static final double RUN_THRESHOLD = 0.01;
 	private static final double WALL_DOT_THRESHOLD = 0.3;
@@ -91,7 +91,6 @@ public class Player extends PlayerAbstract {
 				PVector jumpForce = PVector.mult(PVector.add(PVector.mult(gravity.getDirection(), -1),
 						state == PlayerState.WALL ? PVector.mult(wallNormal, WALL_JUMP_INTENSITY) : new PVector())
 						.normalize(), (float) JUMP_INTENSITY);
-				System.out.println(jumpForce);
 				rigidBody.applyImpulse(PVector.mult(jumpForce, (float) rigidBody.getMass()),
 						PVector.sub(position, new PVector(0, 0.45f)));
 				state = PlayerState.JUMP;
@@ -188,7 +187,7 @@ public class Player extends PlayerAbstract {
 
 	// Generate a sprite for the player and add it to its list of visual attributes.
 	private int generateSprite(String fp) {
-		VisualAttribute a = VisualUtils.makeRect(new PVector(2, 2), color, EngineRuntime.applet.loadImage(fp));
+		VisualAttribute a = VisualUtils.makeRect(new PVector(1.8f, 1.8f), color, EngineRuntime.applet.loadImage(fp));
 		a.visible = false;
 		a.setHighPriority(true);
 		return addVisualAttributes(a).get(0);

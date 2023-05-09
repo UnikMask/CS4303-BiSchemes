@@ -186,7 +186,6 @@ public class Game implements GameInterface {
 
 	public void switchPlayerColour() {
 		if (isPrimaryScene) {
-			System.out.println("Updog primary");
 			primaryScene.removeRigidBody(player.getRigidBody());
 			primaryScene.scene.removeChild(player);
 			secondaryScene.attachToGObject(secondaryScene.scene, player);
@@ -201,7 +200,6 @@ public class Game implements GameInterface {
 	}
 
 	public void completeLevel() {
-		//
 		level.setCompleted(true);
 		state = GameState.END;
 	}

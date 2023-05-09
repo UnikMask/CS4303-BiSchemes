@@ -162,6 +162,8 @@ public class Room extends GObject {
 
             JParser.parseAdjacencyArr(roomJson, "adjacent", room, room.adjacencies);
 
+            room.roomObjects.addAll(room.adjacencies);
+
         } catch (LevelParseException e) {
             throw new LevelParseException("parseRoom(" + ((id!=-1) ? id : "") + "), encountered a LevelParseException\n\t"+e.getLocalizedMessage());
         } catch (InvalidIdException e) {

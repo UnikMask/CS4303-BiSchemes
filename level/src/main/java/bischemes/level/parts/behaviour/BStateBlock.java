@@ -10,8 +10,8 @@ import static java.lang.Math.min;
 
 public class BStateBlock extends BState {
 
-    private final VisualAttribute blockSymbol;
-    private final VisualAttribute lockSymbol;
+    private VisualAttribute blockSymbol;
+    private VisualAttribute lockSymbol;
     private final RObject block;
 
     private BStateBlock(RObject block, PVector maxDimension) {
@@ -54,6 +54,12 @@ public class BStateBlock extends BState {
 
     @Override
     public void setColour(int colour) {
+        //TODO WIP
+        if (block.getState()) block.removeVisualAttributes(lockSymbol);
+        else block.removeVisualAttributes(blockSymbol);
+
+        this.blockSymbol = VisualUtils.makeRect(new PVector(1, 1), colour, SpriteLoader.getBlockSymbol());
+        this.lockSymbol = VisualUtils.makeRect(new PVector(1, 1), colour, SpriteLoader.getLockSymbol());
         if (block.getState()) blockSymbol.makeTintedTexture(colour);
         else lockSymbol.makeTintedTexture(colour);
     }

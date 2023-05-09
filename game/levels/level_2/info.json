@@ -1,9 +1,9 @@
 {
   "name": "Level 2",
-  "id": 0,
+  "id": 1,
   "prerequisites": [0],
   "colourPrimary": "FFC857",
   "colourSecondary": "54494B",
-  "initRoomID": 1,
+  "initRoomID": 0,
   "rooms": ["r0.json", "r1.json", "r2.json", "r3.json"]
 }

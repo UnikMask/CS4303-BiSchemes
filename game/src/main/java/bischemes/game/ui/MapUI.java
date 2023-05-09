@@ -34,7 +34,7 @@ public class MapUI {
     public MapUI() {
         Levels.loadLevels(true);
         map = new LevelMap(Levels.getLevels());
-        // System.out.println(map); // Debug usage
+        System.out.println(map); // Debug usage
     }
 
     /**

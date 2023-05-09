@@ -14,9 +14,10 @@ public final class LevelNode {
     private static final int   DEFAULT_TEXT_SIZE  = 20; // How large drawn text (level names) should be
 
     private static final int   RECT_CORNER_ROUND  = 20; // Radius value for corners of drawn nodes
-    private static final int   GREY_OUTER_COLOUR  = 0x4F4F4F; // Colour used for unavailable levels
-    private static final int   GREY_INNER_COLOUR  = 0xB9B9B9; // Colour used for unavailable levels
+    private static final int   GREY_OUTER_COLOUR  = 0x4F4F4F - 16777216; // Colour used for unavailable levels
+    private static final int   GREY_INNER_COLOUR  = 0xB9B9B9 - 16777216; // Colour used for unavailable levels
 
+    private static final boolean GREY_UNAVAILABLE = false;
 
     /** Level held by this LevelNode */
     public final Level level;
@@ -124,7 +125,7 @@ public final class LevelNode {
         if (scaling) {
             width *= 1 + (currentScale * SELECT_SCALE_RATE); // Scale width based on currentScale
             // Determine text colour
-            if (isAvailable()) g.fill(level.getColourSecondary());
+            if (!GREY_UNAVAILABLE || isAvailable()) g.fill(level.getColourSecondary());
             else g.fill(GREY_OUTER_COLOUR);
             // Determine text size
             g.textSize(1 + (int) (DEFAULT_TEXT_SIZE * currentScale / SELECT_SCALE_TIME));
@@ -145,7 +146,7 @@ public final class LevelNode {
             else scaling = --currentScale > 1; // Otherwise, decrement currentScale until it reaches 0
         }
         // Determine stroke & fill colour of LevelNode based on whether it is available or not
-        if (isAvailable()) {
+        if (!GREY_UNAVAILABLE || isAvailable()) {
             g.stroke(level.getColourSecondary());
             g.fill(level.getColourPrimary());
         }

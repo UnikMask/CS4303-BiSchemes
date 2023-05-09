@@ -137,12 +137,12 @@ public class Room extends GObject {
             JParser.parseGeometryArr(geometry, "secondary", room.secondaryGeometry);
 
             PartFactory pf = new PartFactory();
-            pf.createCornerRect(room.primaryGeometry, new PVector(0, 0), new PVector(-1, dims.y), 0).removeAllVisualAttributes();
-            pf.createCornerRect(room.primaryGeometry, new PVector(0, 0), new PVector(dims.x, -1), 0).removeAllVisualAttributes();
-            pf.createCornerRect(room.primaryGeometry, new PVector(dims.x, 0), new PVector(-1, dims.y), 0).removeAllVisualAttributes();
+            pf.createCornerRect(room.primaryGeometry, new PVector(-1, 0), new PVector(1, dims.y), 0).removeAllVisualAttributes();
+            pf.createCornerRect(room.primaryGeometry, new PVector(0,-1), new PVector(dims.x, -1), 0).removeAllVisualAttributes();
+            pf.createCornerRect(room.primaryGeometry, new PVector(dims.x, 0), new PVector(1, dims.y), 0).removeAllVisualAttributes();
             pf.createCornerRect(room.primaryGeometry, new PVector(0, dims.y), new PVector(dims.x, -1), 0).removeAllVisualAttributes();
-            pf.createCornerRect(room.secondaryGeometry, new PVector(0, 0), new PVector(-1, dims.y), 0).removeAllVisualAttributes();
-            pf.createCornerRect(room.secondaryGeometry, new PVector(0, 0), new PVector(dims.x, -1), 0).removeAllVisualAttributes();
+            pf.createCornerRect(room.secondaryGeometry, new PVector(-1, 0), new PVector(1, dims.y), 0).removeAllVisualAttributes();
+            pf.createCornerRect(room.secondaryGeometry, new PVector(0, -1), new PVector(dims.x, 1), 0).removeAllVisualAttributes();
             pf.createCornerRect(room.secondaryGeometry, new PVector(dims.x, 0), new PVector(1, dims.y), 0).removeAllVisualAttributes();
             pf.createCornerRect(room.secondaryGeometry, new PVector(0, dims.y), new PVector(dims.x, 1), 0).removeAllVisualAttributes();
 

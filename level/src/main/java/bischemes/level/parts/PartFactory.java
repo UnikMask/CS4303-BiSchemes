@@ -320,7 +320,9 @@ public class PartFactory {
 		rbProperties.put("mesh", assembly);
 		rbProperties.remove("inertia");
 
-		spikes.setRigidBody(new RigidBody(new RigidBodyProperties(rbProperties)));
+		RigidBody b = new RigidBody(new RigidBodyProperties(rbProperties));
+		spikes.setRigidBody(b);
+
 		BHitKill.assign(spikes);
 
 		return spikes;
@@ -350,11 +352,11 @@ public class PartFactory {
 
 		if (isVertical) {
 			offset.y = PORTAL_PROTRUDE;
-			if (flipFace) orientation = (float) (Math.PI / 2f);
+			if (flipFace) orientation = (float) (Math.PI );
 			else offset.y *= -1;
 		}
 		else {
-			orientation = (float) (Math.PI / 4f);
+			orientation = (float) (Math.PI / 2f);
 			offset.x = PORTAL_PROTRUDE;
 			if (!flipFace) {
 				orientation *= 3f;

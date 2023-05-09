@@ -1,0 +1,104 @@
+{
+  "id" : 1,
+  "dimensions" : [16, 10],
+  "adjacent" : [
+    {
+      "id": 0,
+      "colour": "SECONDARY",
+      "range" : [3, 7],
+      "side" : "LEFT",
+      "destRoomId" : 0,
+      "linkId" : 0
+    },
+    {
+      "id": 1,
+      "colour": "PRIMARY",
+      "range" : [0, 3],
+      "side" : "LEFT",
+      "destRoomId" : 0,
+      "linkId" : 1
+    },
+    {
+      "id": 2,
+      "colour": "PRIMARY",
+      "range" : [7, 10],
+      "side" : "LEFT",
+      "destRoomId" : 0,
+      "linkId" : 2
+    },
+    {
+      "id": 3,
+      "colour": "SECONDARY",
+      "range" : [3, 7],
+      "side" : "RIGHT",
+      "destRoomId" : 2,
+      "linkId" : 0
+    },
+    {
+      "id": 4,
+      "colour": "PRIMARY",
+      "range" : [0, 3],
+      "side" : "RIGHT",
+      "destRoomId" : 2,
+      "linkId" :1
+    },
+    {
+      "id": 5,
+      "colour": "PRIMARY",
+      "range" : [7, 10],
+      "side" : "RIGHT",
+      "destRoomId" : 2,
+      "linkId" : 2
+    }
+  ],
+  "spawnPosition": [1, 4],
+  "geometry": {
+    "primary": [
+      {
+        "type" : "RECT",
+        "corner" : [0, 3],
+        "dimensions" : [6, 4]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [10, 3],
+        "dimensions" : [6, 4]
+      }
+    ],
+    "secondary": [
+      {
+        "type" : "RECT",
+        "corner" : [0, 0],
+        "dimensions" : [16, 3]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [0, 7],
+        "dimensions" : [16, 3]
+      },
+      {
+        "type" : "RECT",
+        "corner" : [6, 3],
+        "dimensions" : [4, 4]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "id": 6,
+      "type": "PORTAL",
+      "anchor": [4, 3],
+      "width": 2,
+      "isVertical": true,
+      "topColour": "SECONDARY"
+    },
+    {
+      "id": 7,
+      "type": "PORTAL",
+      "anchor": [12, 7],
+      "width": 2,
+      "isVertical": true,
+      "topColour": "PRIMARY"
+    }
+  ]
+}

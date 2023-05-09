@@ -1,0 +1,40 @@
+{
+  "name": "Placeholder L2.2",
+  "id": 21,
+  "prerequisites": [1],
+  "colourPrimary": "FFC857",
+  "colourSecondary": "54494B",
+  "initRoomID": 0,
+  "rooms": [
+    {
+      "id": 0,
+      "dimensions": [16, 10],
+      "adjacent": [],
+      "spawnPosition": [2, 5],
+      "geometry": {
+        "primary": [
+          {
+            "type": "RECT",
+            "corner": [0, 2],
+            "dimensions": [16, 8]
+          }
+        ],
+        "secondary": [
+          {
+            "type": "RECT",
+            "corner": [0, 0],
+            "dimensions": [16, 2]
+          }
+        ]
+      },
+      "objects": [
+        {
+          "type" : "EXIT",
+          "id" : 2,
+          "side" : "RIGHT",
+          "range" : [0, 10]
+        }
+      ]
+    }
+  ]
+}

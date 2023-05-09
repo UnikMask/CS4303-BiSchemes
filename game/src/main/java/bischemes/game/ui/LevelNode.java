@@ -93,6 +93,7 @@ public final class LevelNode {
      * @return true if this LevelNode has been selected
      */
     public boolean trySelect(PVector mapPosition, float squareWidth) {
+        if (GREY_UNAVAILABLE && !isAvailable()) return false;
         PVector distance = PVector.sub(mapPosition, realPosition);
         if (distance.x < 0) distance.x *= -1;
         if (distance.y < 0) distance.y *= -1;

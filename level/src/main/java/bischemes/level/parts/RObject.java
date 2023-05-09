@@ -2,6 +2,7 @@ package bischemes.level.parts;
 
 import bischemes.engine.GObject;
 import bischemes.engine.physics.Manifold;
+import bischemes.engine.physics.ForceGenerators.DirectionalGravity;
 import bischemes.level.parts.behaviour.BHit;
 import bischemes.level.parts.behaviour.BState;
 import bischemes.level.parts.behaviour.BUpdate;
@@ -55,6 +56,10 @@ public class RObject extends GObject {
     /** Behaviours which are called upon collision with another GObject */
     protected List<BHit> bHit = null;
 
+	// Components related to game
+	protected GObject player;
+	protected DirectionalGravity gravity;
+
     public int getId() { return id; }
     public LColour getLColour() { return colour; }
     public void setLColour(LColour colour) { this.colour = colour; }
@@ -90,6 +95,23 @@ public class RObject extends GObject {
             if (c instanceof RObject r)
                 r.switchState();
     }
+
+	public void init(GObject player, DirectionalGravity gravity) {
+		this.player = player;
+		this.gravity = gravity;
+
+		// Add gravity if movable or rotatable.
+		if (getRigidBody().getProperties().isMovable || getRigidBody().getProperties().isRotatable) {
+			addOnUpdate(new BUpdate() {
+					public void run() {
+						gravity.updateForce(getRigidBody());
+					}
+					public void setColour(int c) {
+						// Placeholder
+					}
+				});
+		}
+	}
 
     /**
      * Calls all the BUpdate Behaviour run() methods

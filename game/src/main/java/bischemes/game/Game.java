@@ -11,6 +11,7 @@ import bischemes.engine.physics.ForceGenerators.DirectionalGravity;
 import bischemes.game.Game.GameState;
 import bischemes.level.parts.*;
 import bischemes.level.*;
+import bischemes.level.util.LColour;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PVector;
@@ -95,6 +96,16 @@ public class Game implements GameInterface {
 		level.setGame(this);
 
 		engine.setPause(false);
+	}
+
+	public void removeRigidBody(RigidBody r, LColour l) {
+		if (l == LColour.PRIMARY) primaryScene.removeRigidBody(r);
+		else secondaryScene.removeRigidBody(r);
+	}
+
+	public void addRigidBody(RigidBody r, LColour l) {
+		if (l == LColour.PRIMARY) primaryScene.addRigidBody(r);
+		else secondaryScene.addRigidBody(r);
 	}
 
 	public void loadRoom(Room room, PVector playerPosition) {

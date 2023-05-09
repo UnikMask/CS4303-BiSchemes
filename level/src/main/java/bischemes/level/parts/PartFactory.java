@@ -336,7 +336,7 @@ public class PartFactory {
 
 		BStateFlip.assign(lever, false);
 		BStateSwitchStates.assign(lever, linkedIDs);
-		BInteractStateSwitch.assign(lever, 1, 1).addIndicator(new PVector(1, 1));
+		BInteractStateSwitch.assign(lever, 1, 1).addIndicator(new PVector(0, 1));
 		return lever;
 	}
 

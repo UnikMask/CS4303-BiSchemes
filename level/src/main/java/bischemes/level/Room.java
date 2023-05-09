@@ -90,23 +90,13 @@ public class Room extends GObject {
      * Flags that an INTERACT command has occurred within the last update() frame
      */
     public void interact() {
-        System.out.println("INTERACTION DETECTED");
         interaction = true;
     }
 
-    // TODO
     public boolean isInteraction() {
         if (!interaction) return false;
-        //interaction = false; // will potentially only want to allow one interaction per key press?
-        return true;
-    }
-
-    // TODO
-    @Override
-    public void update() {
-        super.update();
-        // TODO might need to change when interaction is set to false, the idea is its set to false after all RObjects have been updated
         interaction = false;
+        return true;
     }
 
     private Room(Level level, int id, PVector dimensions, PVector spawnPos) {

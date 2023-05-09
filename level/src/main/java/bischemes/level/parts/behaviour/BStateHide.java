@@ -3,6 +3,7 @@ package bischemes.level.parts.behaviour;
 import bischemes.engine.VisualAttribute;
 import bischemes.engine.VisualUtils;
 import bischemes.engine.physics.PhysicsMesh;
+import bischemes.engine.physics.RigidBody;
 import bischemes.level.parts.RObject;
 import bischemes.level.util.SpriteLoader;
 import processing.core.PVector;
@@ -16,6 +17,8 @@ public class BStateHide extends BState {
     private PhysicsMesh mesh;
 
     private PVector symbolDimension;
+
+    private RigidBody rb;
 
 
     private BStateHide(RObject hideable) {
@@ -53,15 +56,14 @@ public class BStateHide extends BState {
         if (lockSymbol != null) baseObj.removeVisualAttributes(1, 0);
         else baseObj.removeVisualAttributes(0);
         // TODO Alter RigidBody properties of door to make passable
-        baseObj.getRigidBody().getProperties().mesh = mesh;
+        rb = baseObj.getRigidBody();
+        room.getLevel().getGame().removeRigidBody(rb, baseObj.getLColour());
     }
 
     private void closeDoor() {
         if (lockSymbol != null) baseObj.addVisualAttributes(doorVAttr, lockSymbol);
         else baseObj.addVisualAttributes(doorVAttr);
-        // TODO Alter RigidBody properties of door to make impassable
-        mesh = baseObj.getRigidBody().getProperties().mesh;
-        baseObj.getRigidBody().getProperties().mesh = null;
+        room.getLevel().getGame().addRigidBody(rb, baseObj.getLColour());
     }
 
     @Override

@@ -32,6 +32,14 @@ public class SceneGridPair {
 		}
 	}
 
+	public void addRigidBody(RigidBody rb) {
+		bodies.add(rb);
+	}
+
+	public void removeRigidBody(RigidBody rb) {
+		bodies.remove(rb);
+	}
+
 	public SceneGridPair(GObject scene, GridSector grid) {
 		this.scene = scene;
 		this.grid = grid;

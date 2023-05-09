@@ -47,7 +47,7 @@ public abstract class BInteract extends BUpdate {
 		this.indicatorDimension = new PVector(1, 1);
 		this.indicatorOffset = indicatorOffset;
 		indicator = VisualUtils.makeTexturedPolygon(indicatorDimension, 4, 0, indicatorOffset,
-				indicatorTexture);
+				indicatorTexture, room.getLevel().getColour(baseObj.getLColour()));
 	}
 
 	public void setActiveOnState(boolean activeOnState) {
@@ -74,8 +74,6 @@ public abstract class BInteract extends BUpdate {
 
 	// Checks whether the InputHandler currently holds the InputCommand INTERACT
 	private boolean isInteraction() {
-		// TODO check if this works
-		if (room.isInteraction()) System.out.println("Interaction Detected for RObject with id=" + baseObj.getId());
 		return room.isInteraction();
 	}
 
@@ -90,12 +88,12 @@ public abstract class BInteract extends BUpdate {
 				if (indicatorScale > 1f)
 					indicatorScale = 1f;
 			}
-			indicator.setScaling(indicatorScale);
+			//indicator.setScaling(indicatorScale);
 		} else if (showingIndicator) {
 			indicatorScale -= INDICATOR_SCALE_RATE;
 			showingIndicator = indicatorScale >= 0f;
-			if (showingIndicator)
-				indicator.setScaling(indicatorScale);
+			if (showingIndicator){}
+				//indicator.setScaling(indicatorScale);
 			else
 				baseObj.removeVisualAttributes(indicator);
 		}
